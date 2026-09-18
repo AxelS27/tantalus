@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion } from 'motion/react';
 
 export type NavItem = 'home' | 'timeline' | 'projects' | 'certificate';
@@ -16,10 +15,7 @@ const navItems: { id: NavItem; label: string }[] = [
 ];
 
 export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
-  const [active, setActive] = useState<NavItem>(activeTab);
-
   const handleSelect = (id: NavItem) => {
-    setActive(id);
     onTabChange?.(id);
   };
 
@@ -29,19 +25,15 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
         initial={{ opacity: 0, y: -20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{
-          duration: 2.2,
+          duration: 1.8,
           ease: [0.16, 1, 0.3, 1],
         }}
-        style={{
-          willChange: 'transform, opacity',
-          transform: 'translateZ(0)', // Force immediate GPU composite layer
-        }}
-        className="pointer-events-auto"
+        className="pointer-events-auto transform-gpu"
       >
-        {/* Apple Frosted Glass Container (Immediate High-Definition Frosted Body) */}
-        <div className="relative flex items-center p-1 rounded-full bg-[#FAF8F5]/45 hover:bg-[#FAF8F5]/55 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300">
+        {/* Apple Frosted Glass Container */}
+        <div className="relative flex items-center p-1 rounded-full bg-[#FAF8F5]/50 hover:bg-[#FAF8F5]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300">
           {navItems.map((item) => {
-            const isActive = active === item.id;
+            const isActive = activeTab === item.id;
 
             return (
               <button
@@ -63,7 +55,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                       damping: 30,
                       mass: 0.8,
                     }}
-                    className="absolute inset-0 rounded-full bg-white/60 border border-white/70 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
+                    className="absolute inset-0 rounded-full bg-white/65 border border-white/75 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
                   />
                 )}
 

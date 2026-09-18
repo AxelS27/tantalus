@@ -1,9 +1,77 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
+import { TimelineRoller } from './components/TimelineRoller';
+
+const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'certificate'];
+
+const getTabFromHash = (): NavItem => {
+  if (typeof window === 'undefined') return 'home';
+  const hash = window.location.hash.replace('#', '').toLowerCase();
+  if (validTabs.includes(hash as NavItem)) {
+    return hash as NavItem;
+  }
+  return 'home';
+};
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<NavItem>('home');
+  const [activeTab, setActiveTab] = useState<NavItem>(getTabFromHash);
+  const isTransitioningRef = useRef(false);
+
+  // Sync tab change with URL Hash without page reload
+  const handleTabChange = (newTab: NavItem) => {
+    setActiveTab(newTab);
+    const targetHash = newTab === 'home' ? '' : `#${newTab}`;
+    if (window.location.hash !== targetHash) {
+      window.history.replaceState(
+        null,
+        '',
+        targetHash || window.location.pathname + window.location.search
+      );
+    }
+  };
+
+  // Safe global section switch with cooldown to prevent skipping
+  const triggerSectionChange = (newTab: NavItem) => {
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
+    handleTabChange(newTab);
+    setTimeout(() => {
+      isTransitioningRef.current = false;
+    }, 1400);
+  };
+
+  // Listen to browser Back/Forward or direct hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const tab = getTabFromHash();
+      setActiveTab(tab);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Global mouse wheel listener for section-to-section navigation
+  const handleGlobalWheel = (e: React.WheelEvent) => {
+    if (isTransitioningRef.current) return;
+
+    if (activeTab === 'home') {
+      if (e.deltaY > 25) {
+        triggerSectionChange('timeline');
+      }
+    } else if (activeTab === 'projects') {
+      if (e.deltaY > 25) {
+        triggerSectionChange('certificate');
+      } else if (e.deltaY < -25) {
+        triggerSectionChange('timeline');
+      }
+    } else if (activeTab === 'certificate') {
+      if (e.deltaY < -25) {
+        triggerSectionChange('projects');
+      }
+    }
+  };
 
   // Map each tab to 2D camera coordinates (Center, East, South, West)
   const getCameraCoordinates = () => {
@@ -29,13 +97,16 @@ export default function App() {
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5] select-none">
+    <div
+      onWheel={handleGlobalWheel}
+      className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5] select-none"
+    >
       {/* Floating Centered Apple Frosted Glass Navbar */}
-      <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+      <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
 
       {/* 2D Spatial Canvas World */}
       <motion.div
-        initial={{ x: '0vw', y: '0vh' }}
+        initial={{ x: coords.x, y: coords.y }}
         animate={{
           x: coords.x,
           y: coords.y,
@@ -115,7 +186,8 @@ export default function App() {
         </div>
 
         {/* ================= 2. TIMELINE SECTION (East: +100vw, 0) ================= */}
-        <div className="absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10">
+        <div className="absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+          {/* Background Image with Ultra-Subtle Vignette */}
           <motion.div
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
@@ -134,7 +206,14 @@ export default function App() {
               alt="Timeline Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/16 via-transparent to-black/10 pointer-events-none" />
           </motion.div>
+
+          {/* Vertical Cylindrical Roller Wheel Component with Boundary Handoff */}
+          <TimelineRoller
+            onReachEnd={() => triggerSectionChange('projects')}
+            onReachStart={() => triggerSectionChange('home')}
+          />
         </div>
 
         {/* ================= 3. PROJECTS SECTION (South: 0, +100vh) ================= */}
