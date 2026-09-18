@@ -17,7 +17,6 @@ const navItems: { id: NavItem; label: string }[] = [
 
 export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
   const [active, setActive] = useState<NavItem>(activeTab);
-  const [hovered, setHovered] = useState<NavItem | null>(null);
 
   const handleSelect = (id: NavItem) => {
     setActive(id);
@@ -25,52 +24,29 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full px-5 sm:px-10 py-5 sm:py-6 flex items-center justify-between pointer-events-none">
-      {/* Brand / Logo */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
+    <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none">
+      <motion.nav
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="pointer-events-auto"
       >
-        <button
-          onClick={() => handleSelect('home')}
-          className="flex items-center gap-2 text-left group cursor-pointer focus:outline-none"
-        >
-          <span className="font-serif tracking-[0.3em] text-xs sm:text-sm uppercase font-semibold text-[#1C1917]/90 drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)] transition-colors group-hover:text-[#94723E]">
-            TANTALIZE
-          </span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#94723E]/80 group-hover:scale-125 transition-transform" />
-        </button>
-      </motion.div>
-
-      {/* Floating Glass Pill Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-        className="pointer-events-auto"
-      >
-        <div
-          onMouseLeave={() => setHovered(null)}
-          className="relative flex items-center p-1 sm:p-1.5 rounded-full bg-[#FAF8F5]/55 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgba(44,38,30,0.08)] ring-1 ring-[#1C1917]/5"
-        >
+        {/* Apple Frosted Glass Container */}
+        <div className="relative flex items-center p-1 rounded-full bg-white/[0.18] backdrop-blur-3xl backdrop-saturate-[180%] border border-white/35 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.45),0_8px_28px_-6px_rgba(0,0,0,0.06)]">
           {navItems.map((item) => {
             const isActive = active === item.id;
-            const isHover = hovered === item.id;
 
             return (
               <button
                 key={item.id}
                 onClick={() => handleSelect(item.id)}
-                onMouseEnter={() => setHovered(item.id)}
-                className={`relative px-3.5 sm:px-5 py-1.5 sm:py-2 text-[11px] sm:text-xs tracking-[0.18em] uppercase transition-colors duration-200 cursor-pointer focus:outline-none select-none rounded-full ${
+                className={`group relative px-4 sm:px-5 py-1.5 sm:py-2 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
                   isActive
-                    ? 'text-[#1C1917] font-medium'
-                    : 'text-[#1C1917]/70 hover:text-[#1C1917]'
+                    ? 'text-stone-950 font-medium'
+                    : 'text-stone-800/70 hover:text-stone-950'
                 }`}
               >
-                {/* Active Background Pill with Spring Motion */}
+                {/* Active Lens Indicator with Butter-Smooth Spring */}
                 {isActive && (
                   <motion.div
                     layoutId="activeNavPill"
@@ -78,42 +54,26 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                       type: 'spring',
                       stiffness: 380,
                       damping: 30,
+                      mass: 0.8,
                     }}
-                    className="absolute inset-0 rounded-full bg-white/90 shadow-[0_2px_12px_rgba(44,38,30,0.08)] border border-white/80"
+                    className="absolute inset-0 rounded-full bg-white/40 border border-white/50 shadow-[0_1px_4px_rgba(0,0,0,0.02),inset_0_1px_0.5px_rgba(255,255,255,0.6)]"
                   />
                 )}
 
-                {/* Subtle Hover Pill */}
-                {!isActive && isHover && (
-                  <motion.div
-                    layoutId="hoverNavPill"
-                    transition={{
-                      type: 'spring',
-                      stiffness: 400,
-                      damping: 32,
-                    }}
-                    className="absolute inset-0 rounded-full bg-white/40"
-                  />
+                {/* Smooth Non-glitching Hover Background */}
+                {!isActive && (
+                  <div className="absolute inset-0 rounded-full bg-white/0 group-hover:bg-white/18 border border-transparent group-hover:border-white/25 transition-all duration-250 ease-out" />
                 )}
 
                 {/* Text Label */}
-                <span className="relative z-10">{item.label}</span>
+                <span className="relative z-10 block pointer-events-none">
+                  {item.label}
+                </span>
               </button>
             );
           })}
         </div>
       </motion.nav>
-
-      {/* Right Minimalist Status / Year Indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="pointer-events-auto hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF8F5]/40 backdrop-blur-md border border-white/40 text-[10px] tracking-[0.25em] text-[#1C1917]/70 uppercase"
-      >
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600/80 animate-pulse" />
-        <span>Available 2026</span>
-      </motion.div>
     </header>
   );
 }
