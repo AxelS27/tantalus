@@ -3,12 +3,16 @@ import { motion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { TimelineRoller } from './components/TimelineRoller';
 import { ProjectsGrid } from './components/ProjectsGrid';
+import { ArchiveHub, type PortfolioSettings, getSavedSettings } from './components/ArchiveHub';
 
-const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'certificate'];
+const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'archive'];
 
 const getTabFromHash = (): NavItem => {
   if (typeof window === 'undefined') return 'home';
   const hash = window.location.hash.replace('#', '').toLowerCase();
+  if (hash === 'certificate' || hash.startsWith('archive') || hash.includes('settings')) {
+    return 'archive';
+  }
   if (validTabs.includes(hash as NavItem)) {
     return hash as NavItem;
   }
@@ -17,7 +21,30 @@ const getTabFromHash = (): NavItem => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavItem>(getTabFromHash);
+  const [settings, setSettings] = useState<PortfolioSettings>(getSavedSettings);
   const isTransitioningRef = useRef(false);
+
+  // Sync settings and HTML dark class
+  const handleUpdateSettings = (patch: Partial<PortfolioSettings>) => {
+    setSettings((prev) => {
+      const updated = { ...prev, ...patch };
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('tantalize_portfolio_settings', JSON.stringify(updated));
+        } catch {}
+        if (patch.theme) {
+          document.documentElement.classList.toggle('dark', patch.theme === 'dark');
+        }
+      }
+      return updated;
+    });
+  };
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.toggle('dark', settings.theme === 'dark');
+    }
+  }, [settings.theme]);
 
   // Sync tab change with URL Hash without page reload
   const handleTabChange = (newTab: NavItem) => {
@@ -61,10 +88,6 @@ export default function App() {
       if (e.deltaY > 25) {
         triggerSectionChange('timeline');
       }
-    } else if (activeTab === 'certificate') {
-      if (e.deltaY < -25) {
-        triggerSectionChange('projects');
-      }
     }
   };
 
@@ -75,7 +98,7 @@ export default function App() {
         return { x: '-100vw', y: '0vh' };
       case 'projects':
         return { x: '0vw', y: '-100vh' };
-      case 'certificate':
+      case 'archive':
         return { x: '100vw', y: '0vh' };
       case 'home':
       default:
@@ -107,8 +130,8 @@ export default function App() {
           y: coords.y,
         }}
         transition={{
-          duration: 1.6,
-          ease: [0.22, 1, 0.36, 1],
+          duration: settings.reducedMotion ? 0.25 : 1.6,
+          ease: settings.reducedMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
         }}
         className="absolute inset-0 w-full h-full"
       >
@@ -118,14 +141,18 @@ export default function App() {
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
             animate={{
-              scale: [1.02, 1.05, 1.02],
+              scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
             }}
-            transition={{
-              duration: 22,
-              repeat: Infinity,
-              repeatType: 'mirror',
-              ease: 'easeInOut',
-            }}
+            transition={
+              settings.ambientParallax
+                ? {
+                    duration: 22,
+                    repeat: Infinity,
+                    repeatType: 'mirror',
+                    ease: 'easeInOut',
+                  }
+                : { duration: 0.3 }
+            }
           >
             <img
               src="/home.png"
@@ -187,14 +214,18 @@ export default function App() {
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
             animate={{
-              scale: [1.02, 1.05, 1.02],
+              scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
             }}
-            transition={{
-              duration: 22,
-              repeat: Infinity,
-              repeatType: 'mirror',
-              ease: 'easeInOut',
-            }}
+            transition={
+              settings.ambientParallax
+                ? {
+                    duration: 22,
+                    repeat: Infinity,
+                    repeatType: 'mirror',
+                    ease: 'easeInOut',
+                  }
+                : { duration: 0.3 }
+            }
           >
             <img
               src="/timeline.png"
@@ -218,14 +249,18 @@ export default function App() {
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
             animate={{
-              scale: [1.02, 1.05, 1.02],
+              scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
             }}
-            transition={{
-              duration: 22,
-              repeat: Infinity,
-              repeatType: 'mirror',
-              ease: 'easeInOut',
-            }}
+            transition={
+              settings.ambientParallax
+                ? {
+                    duration: 22,
+                    repeat: Infinity,
+                    repeatType: 'mirror',
+                    ease: 'easeInOut',
+                  }
+                : { duration: 0.3 }
+            }
           >
             <img
               src="/projects.png"
@@ -237,32 +272,44 @@ export default function App() {
 
           {/* 3D Cube Projects Grid with Full Mousewheel & Boundary Handoff */}
           <ProjectsGrid
-            onReachEnd={() => triggerSectionChange('certificate')}
+            onReachEnd={() => triggerSectionChange('archive')}
             onReachStart={() => triggerSectionChange('timeline')}
           />
         </div>
 
-        {/* ================= 4. CERTIFICATES SECTION (West: -100vw, 0) ================= */}
+        {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
         <div className="absolute left-[-100vw] top-0 w-screen h-screen overflow-hidden z-10">
           <motion.div
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
             animate={{
-              scale: [1.02, 1.05, 1.02],
+              scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
             }}
-            transition={{
-              duration: 22,
-              repeat: Infinity,
-              repeatType: 'mirror',
-              ease: 'easeInOut',
-            }}
+            transition={
+              settings.ambientParallax
+                ? {
+                    duration: 22,
+                    repeat: Infinity,
+                    repeatType: 'mirror',
+                    ease: 'easeInOut',
+                  }
+                : { duration: 0.3 }
+            }
           >
             <img
               src="/certificates.png"
-              alt="Certificates Background"
+              alt="Archive Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
           </motion.div>
+
+          {/* macOS Launchpad / App Hub */}
+          <ArchiveHub
+            settings={settings}
+            onUpdateSettings={handleUpdateSettings}
+            onReachStart={() => triggerSectionChange('projects')}
+          />
         </div>
 
         {/* ================= 5. STATUE SECTION (Bottom-Right: +100vw, +100vh) ================= */}
@@ -271,14 +318,18 @@ export default function App() {
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
             animate={{
-              scale: [1.02, 1.05, 1.02],
+              scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
             }}
-            transition={{
-              duration: 22,
-              repeat: Infinity,
-              repeatType: 'mirror',
-              ease: 'easeInOut',
-            }}
+            transition={
+              settings.ambientParallax
+                ? {
+                    duration: 22,
+                    repeat: Infinity,
+                    repeatType: 'mirror',
+                    ease: 'easeInOut',
+                  }
+                : { duration: 0.3 }
+            }
           >
             <img
               src="/statue.png"
@@ -294,14 +345,18 @@ export default function App() {
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
             animate={{
-              scale: [1.02, 1.05, 1.02],
+              scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
             }}
-            transition={{
-              duration: 22,
-              repeat: Infinity,
-              repeatType: 'mirror',
-              ease: 'easeInOut',
-            }}
+            transition={
+              settings.ambientParallax
+                ? {
+                    duration: 22,
+                    repeat: Infinity,
+                    repeatType: 'mirror',
+                    ease: 'easeInOut',
+                  }
+                : { duration: 0.3 }
+            }
           >
             <img
               src="/bridge.png"

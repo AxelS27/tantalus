@@ -289,7 +289,7 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
             <button
               onClick={handlePrev}
               title="Rotate Cube Left"
-              className="p-2.5 sm:p-3 rounded-full bg-white/50 hover:bg-white/75 active:bg-white/90 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 hover:border-white text-stone-900 hover:text-black transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)]"
+              className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
@@ -351,13 +351,13 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
                         y: !isDragging && isFaceActive ? -5 : 0,
                         transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] },
                       }}
-                      className="group relative flex flex-col justify-start p-1.5 sm:p-2 rounded-xl bg-white/40 hover:bg-white/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 hover:border-white/95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.85),0_8px_24px_-4px_rgba(0,0,0,0.18)] hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.95),0_16px_40px_-4px_rgba(0,0,0,0.28)] z-10 hover:z-40 transition-colors duration-150 cursor-pointer"
+                      className="group relative flex flex-col justify-start p-1.5 sm:p-2 rounded-xl bg-white/40 dark:bg-[#121110]/80 hover:bg-white/60 dark:hover:bg-[#121110]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 hover:border-white/95 dark:hover:border-white/35 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.85),0_8px_24px_-4px_rgba(0,0,0,0.18)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.12),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.95),0_16px_40px_-4px_rgba(0,0,0,0.28)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2),0_18px_44px_-4px_rgba(0,0,0,0.85)] z-10 hover:z-40 transition-colors duration-200 cursor-pointer"
                     >
                       {/* Specular Top Light Accent */}
-                      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-xl" />
+                      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/35 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-xl" />
 
                       {/* 16:9 Thumbnail Image */}
-                      <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/10 border border-white/40 mb-1 flex-shrink-0">
+                      <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/10 dark:bg-black/40 border border-white/40 dark:border-white/15 mb-1 flex-shrink-0">
                         <img
                           src={project.image}
                           alt={project.title}
@@ -375,7 +375,7 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
                       <div className="w-full flex items-center justify-center text-center px-1 pt-0.5 pb-0.5 min-h-[22px] overflow-hidden">
                         <h3
                           title={project.title}
-                          className="font-sans text-[11px] sm:text-[12px] font-semibold leading-normal tracking-normal text-stone-950 group-hover:text-amber-900 transition-colors w-full truncate whitespace-nowrap drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]"
+                          className="font-sans text-[11px] sm:text-[12px] font-semibold leading-normal tracking-normal text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors w-full truncate whitespace-nowrap drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)]"
                         >
                           {project.title}
                         </h3>
@@ -394,7 +394,7 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
             <button
               onClick={handleNext}
               title="Rotate Cube Right"
-              className="p-2.5 sm:p-3 rounded-full bg-white/50 hover:bg-white/75 active:bg-white/90 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 hover:border-white text-stone-900 hover:text-black transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)]"
+              className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
