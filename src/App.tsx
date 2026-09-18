@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { TimelineRoller } from './components/TimelineRoller';
+import { ProjectsGrid } from './components/ProjectsGrid';
 
 const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'certificate'];
 
@@ -60,12 +61,6 @@ export default function App() {
       if (e.deltaY > 25) {
         triggerSectionChange('timeline');
       }
-    } else if (activeTab === 'projects') {
-      if (e.deltaY > 25) {
-        triggerSectionChange('certificate');
-      } else if (e.deltaY < -25) {
-        triggerSectionChange('timeline');
-      }
     } else if (activeTab === 'certificate') {
       if (e.deltaY < -25) {
         triggerSectionChange('projects');
@@ -99,7 +94,7 @@ export default function App() {
   return (
     <div
       onWheel={handleGlobalWheel}
-      className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5] select-none"
+      className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
     >
       {/* Floating Centered Apple Frosted Glass Navbar */}
       <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
@@ -140,7 +135,7 @@ export default function App() {
           </motion.div>
 
           {/* Upper-Left Editorial Identity */}
-          <div className="absolute top-[25%] sm:top-[27%] left-6 sm:left-14 md:left-20 z-20 pointer-events-none select-none space-y-2 sm:space-y-2.5 max-w-5xl">
+          <div className="absolute top-[25%] sm:top-[27%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 sm:space-y-2.5 max-w-5xl">
             {/* Line 1: Name */}
             <h1
               className="font-serif italic text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white tracking-tight font-light leading-none whitespace-nowrap"
@@ -209,7 +204,7 @@ export default function App() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/16 via-transparent to-black/10 pointer-events-none" />
           </motion.div>
 
-          {/* Vertical Cylindrical Roller Wheel Component with Boundary Handoff */}
+          {/* Vertical Cylindrical Roller Wheel Component */}
           <TimelineRoller
             onReachEnd={() => triggerSectionChange('projects')}
             onReachStart={() => triggerSectionChange('home')}
@@ -217,7 +212,8 @@ export default function App() {
         </div>
 
         {/* ================= 3. PROJECTS SECTION (South: 0, +100vh) ================= */}
-        <div className="absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10">
+        <div className="absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+          {/* Background Image with Subtle Vignette */}
           <motion.div
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
@@ -236,7 +232,14 @@ export default function App() {
               alt="Projects Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
           </motion.div>
+
+          {/* 3D Cube Projects Grid with Full Mousewheel & Boundary Handoff */}
+          <ProjectsGrid
+            onReachEnd={() => triggerSectionChange('certificate')}
+            onReachStart={() => triggerSectionChange('timeline')}
+          />
         </div>
 
         {/* ================= 4. CERTIFICATES SECTION (West: -100vw, 0) ================= */}

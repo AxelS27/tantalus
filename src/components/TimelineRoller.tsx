@@ -62,12 +62,19 @@ export const timelineData: TimelineItem[] = [
 ];
 
 interface TimelineRollerProps {
-  onReachEnd?: () => void;   // Triggered when scrolling past the last item -> go to Projects
-  onReachStart?: () => void; // Triggered when scrolling before the first item -> go to Home
+  onReachEnd?: () => void;
+  onReachStart?: () => void;
 }
 
 export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(1);
+  const selectedIndexRef = useRef(1);
+  const [virtualIndex, setVirtualIndex] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const isDraggingRef = useRef(false);
+  const dragStartYRef = useRef(0);
+  const dragStartIndexRef = useRef(1);
+  const hasDraggedRef = useRef(false);
   const lastWheelTimeRef = useRef<number>(0);
 
   const activeItem = timelineData[selectedIndex] || timelineData[0];
@@ -76,7 +83,10 @@ export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps
     if (selectedIndex >= timelineData.length - 1) {
       onReachEnd?.();
     } else {
-      setSelectedIndex((prev) => prev + 1);
+      const next = selectedIndex + 1;
+      selectedIndexRef.current = next;
+      setSelectedIndex(next);
+      setVirtualIndex(next);
     }
   }, [selectedIndex, onReachEnd]);
 
@@ -84,11 +94,79 @@ export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps
     if (selectedIndex <= 0) {
       onReachStart?.();
     } else {
-      setSelectedIndex((prev) => prev - 1);
+      const prev = selectedIndex - 1;
+      selectedIndexRef.current = prev;
+      setSelectedIndex(prev);
+      setVirtualIndex(prev);
     }
   }, [selectedIndex, onReachStart]);
 
-  // Wheel listener with boundary handoff to global section navigation
+  // Pointer drag controls for holding & rolling freely
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    hasDraggedRef.current = false;
+    dragStartYRef.current = e.clientY;
+    dragStartIndexRef.current = virtualIndex;
+
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // fallback
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    const dy = e.clientY - dragStartYRef.current;
+
+    if (Math.abs(dy) > 4) {
+      hasDraggedRef.current = true;
+    }
+
+    // Dragging down (dy > 0) pulls upper cards down (decreases index)
+    // Dragging up (dy < 0) pulls lower cards up (increases index)
+    const rawIndex = dragStartIndexRef.current - dy / 118;
+    const maxIdx = timelineData.length - 1;
+
+    // Soft elastic resistance beyond boundaries
+    let boundedIndex = rawIndex;
+    if (rawIndex < 0) {
+      boundedIndex = rawIndex * 0.25;
+    } else if (rawIndex > maxIdx) {
+      boundedIndex = maxIdx + (rawIndex - maxIdx) * 0.25;
+    }
+
+    setVirtualIndex(boundedIndex);
+
+    // Update left detail text & active selection in real time while still holding & dragging
+    const nearestIndex = Math.max(0, Math.min(maxIdx, Math.round(boundedIndex)));
+    if (nearestIndex !== selectedIndexRef.current) {
+      selectedIndexRef.current = nearestIndex;
+      setSelectedIndex(nearestIndex);
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    setIsDragging(false);
+
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {
+      // fallback
+    }
+
+    // Snap smoothly to nearest item
+    const targetIndex = Math.max(0, Math.min(timelineData.length - 1, Math.round(virtualIndex)));
+    selectedIndexRef.current = targetIndex;
+    setSelectedIndex(targetIndex);
+    setVirtualIndex(targetIndex);
+  };
+
+  // Weighted wheel listener with deliberate mechanical interval
   const handleWheel = (e: React.WheelEvent) => {
     e.stopPropagation();
     const now = Date.now();
@@ -108,7 +186,7 @@ export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps
   return (
     <div
       onWheel={handleWheel}
-      className="relative w-full h-full flex items-center justify-center select-none z-20 pointer-events-auto px-6 sm:px-12 md:px-16"
+      className="relative w-full h-full flex items-center justify-center z-20 pointer-events-auto px-6 sm:px-12 md:px-16"
     >
       {/* Centered Enlarged Snug Cluster */}
       <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-10 sm:gap-14 lg:gap-18">
@@ -185,54 +263,77 @@ export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps
         {/* RIGHT: Cylindrical Roller Wheel */}
         <div className="flex-shrink-0 flex flex-col items-center justify-center z-30">
           
-          {/* Scroll Up Button Indicator */}
-          <button
-            onClick={handlePrev}
-            title={selectedIndex === 0 ? 'Back to Home' : 'Previous Experience'}
-            className="p-2.5 rounded-full backdrop-blur-md border border-white/25 text-white mb-2.5 transition-all duration-300 cursor-pointer bg-black/30 hover:bg-black/50 hover:scale-110 active:scale-95"
-          >
-            <ChevronUp className="w-4 h-4" />
-          </button>
+          {/* Scroll Up Button Indicator (Only visible when not at top) */}
+          <div className="h-10 flex items-center justify-center mb-2.5">
+            {selectedIndex > 0 ? (
+              <button
+                onClick={handlePrev}
+                title="Previous Experience"
+                className="p-2.5 rounded-full bg-white/50 hover:bg-white/75 active:bg-white/90 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 hover:border-white text-stone-900 hover:text-black transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)]"
+              >
+                <ChevronUp className="w-4 h-4" />
+              </button>
+            ) : null}
+          </div>
 
           {/* Roller Wheel Chamber */}
           <div
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
             style={{
               maskImage: 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)',
               WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)',
             }}
-            className="relative h-[440px] sm:h-[500px] w-[280px] sm:w-[330px] md:w-[370px] flex items-center justify-center perspective-[1200px] overflow-visible py-4"
+            className={`relative h-[440px] sm:h-[500px] w-[280px] sm:w-[330px] md:w-[370px] flex items-center justify-center perspective-[1200px] overflow-visible py-4 touch-none select-none ${
+              isDragging ? 'cursor-grabbing' : 'cursor-grab'
+            }`}
           >
             {timelineData.map((item, index) => {
-              const offset = index - selectedIndex;
+              const currentPos = isDragging ? virtualIndex : selectedIndex;
+              const offset = index - currentPos;
               const absOffset = Math.abs(offset);
-              const isCenter = offset === 0;
-              const isNear = absOffset === 1;
-              const isFar = absOffset === 2;
+              const isCenter = absOffset < 0.5;
 
               // Gentle cylindrical wheel calculations
               const translateY = offset * 118;
-              const scale = isCenter ? 1 : isNear ? 0.86 : 0.72;
-              const opacity = isCenter ? 1 : isNear ? 0.55 : 0.25;
+              const scale = Math.max(0.68, 1 - absOffset * 0.14);
+              const opacity =
+                absOffset <= 1
+                  ? Math.max(0, 1 - absOffset * 0.45)
+                  : Math.max(0, 0.55 - (absOffset - 1) * 0.3);
               const rotateX = Math.max(-25, Math.min(25, offset * -9));
-              const zIndex = 30 - Math.abs(offset) * 10;
-              const isInteractive = absOffset <= 2;
+              const zIndex = Math.round(30 - Math.min(25, absOffset * 10));
+              const isInteractive = absOffset <= 2.2;
 
               return (
                 <motion.div
                   key={item.id}
-                  onClick={() => isInteractive && setSelectedIndex(index)}
+                  onClick={() => {
+                    if (hasDraggedRef.current) return;
+                    if (isInteractive) {
+                      selectedIndexRef.current = index;
+                      setSelectedIndex(index);
+                      setVirtualIndex(index);
+                    }
+                  }}
                   animate={{
                     y: translateY,
                     scale,
                     opacity,
                     rotateX,
                   }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 130, // Heavier, graceful pull
-                    damping: 24,    // Silky cushioned stop
-                    mass: 1.25,     // Weighted mechanical inertia
-                  }}
+                  transition={
+                    isDragging
+                      ? { type: 'tween', duration: 0 }
+                      : {
+                          type: 'spring',
+                          stiffness: 130,
+                          damping: 24,
+                          mass: 1.25,
+                        }
+                  }
                   style={{
                     zIndex,
                     transformStyle: 'preserve-3d',
@@ -256,7 +357,8 @@ export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps
                       <img
                         src={item.image}
                         alt={item.company}
-                        className="w-full h-full object-cover object-center"
+                        draggable={false}
+                        className="w-full h-full object-cover object-center pointer-events-none select-none"
                         onError={(e) => {
                           const target = e.currentTarget;
                           target.onerror = null;
@@ -300,14 +402,18 @@ export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps
             })}
           </div>
 
-          {/* Scroll Down Button Indicator */}
-          <button
-            onClick={handleNext}
-            title={selectedIndex === timelineData.length - 1 ? 'Continue to Projects' : 'Next Experience'}
-            className="p-2.5 rounded-full backdrop-blur-md border border-white/25 text-white mt-2.5 transition-all duration-300 cursor-pointer bg-black/30 hover:bg-black/50 hover:scale-110 active:scale-95"
-          >
-            <ChevronDown className="w-4 h-4" />
-          </button>
+          {/* Scroll Down Button Indicator (Only visible when not at bottom) */}
+          <div className="h-10 flex items-center justify-center mt-2.5">
+            {selectedIndex < timelineData.length - 1 ? (
+              <button
+                onClick={handleNext}
+                title="Next Experience"
+                className="p-2.5 rounded-full bg-white/50 hover:bg-white/75 active:bg-white/90 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 hover:border-white text-stone-900 hover:text-black transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)]"
+              >
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            ) : null}
+          </div>
         </div>
 
       </div>
