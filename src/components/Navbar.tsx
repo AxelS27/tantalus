@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 
-export type NavItem = 'home' | 'timeline' | 'projects' | 'archive';
+export type NavItem = 'home' | 'timeline' | 'projects' | 'archive' | 'certificates';
 
 interface NavbarProps {
   activeTab?: NavItem;
@@ -19,6 +19,8 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
     onTabChange?.(id);
   };
 
+  const currentNavTab = activeTab === 'certificates' ? 'archive' : activeTab;
+
   return (
     <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none">
       <motion.nav
@@ -33,7 +35,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
         {/* Apple Frosted Glass Container */}
         <div className="relative flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300">
           {navItems.map((item) => {
-            const isActive = activeTab === item.id;
+            const isActive = currentNavTab === item.id;
 
             return (
               <button

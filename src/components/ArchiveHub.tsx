@@ -47,7 +47,7 @@ const launchpadApps: ArchiveAppItem[] = [
   {
     id: 'certificates',
     name: 'Certificates',
-    route: '/certificates.png',
+    route: '#certificates',
     icon: Award,
   },
   {
@@ -284,11 +284,7 @@ export function ArchiveHub({
       return;
     }
 
-    if (app.route.startsWith('/') || app.route.endsWith('.png')) {
-      window.location.href = app.route;
-    } else {
-      window.location.hash = app.route;
-    }
+    window.location.hash = app.route;
   };
 
   // Track when the user arrives at the top so momentum from scrolling up doesn't accidentally trigger section handoff

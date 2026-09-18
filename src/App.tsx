@@ -1,16 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
+import { ArrowUp } from 'lucide-react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { TimelineRoller } from './components/TimelineRoller';
 import { ProjectsGrid } from './components/ProjectsGrid';
 import { ArchiveHub, type PortfolioSettings, getSavedSettings } from './components/ArchiveHub';
 
-const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'archive'];
+const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'archive', 'certificates'];
 
 const getTabFromHash = (): NavItem => {
   if (typeof window === 'undefined') return 'home';
   const hash = window.location.hash.replace('#', '').toLowerCase();
-  if (hash === 'certificate' || hash.startsWith('archive') || hash.includes('settings')) {
+  if (hash === 'certificates' || hash === 'certificate' || hash === 'archive/certificates') {
+    return 'certificates';
+  }
+  if (hash.startsWith('archive') || hash.includes('settings')) {
     return 'archive';
   }
   if (validTabs.includes(hash as NavItem)) {
@@ -88,6 +92,14 @@ export default function App() {
       if (e.deltaY > 25) {
         triggerSectionChange('timeline');
       }
+    } else if (activeTab === 'certificates') {
+      if (e.deltaY < -25) {
+        // Scrolling up glides back to Archive Hub
+        triggerSectionChange('archive');
+      } else if (e.deltaY > 25 || e.deltaX > 25) {
+        // Scrolling down or right glides to Projects
+        triggerSectionChange('projects');
+      }
     }
   };
 
@@ -100,6 +112,8 @@ export default function App() {
         return { x: '0vw', y: '-100vh' };
       case 'archive':
         return { x: '100vw', y: '0vh' };
+      case 'certificates':
+        return { x: '100vw', y: '-100vh' };
       case 'home':
       default:
         return { x: '0vw', y: '0vh' };
@@ -297,7 +311,7 @@ export default function App() {
             }
           >
             <img
-              src="/certificates.png"
+              src="/bridge.png"
               alt="Archive Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
@@ -308,6 +322,11 @@ export default function App() {
           <ArchiveHub
             settings={settings}
             onUpdateSettings={handleUpdateSettings}
+            onAppSelect={(appId) => {
+              if (appId === 'certificates') {
+                triggerSectionChange('certificates');
+              }
+            }}
             onReachStart={() => triggerSectionChange('projects')}
           />
         </div>
@@ -339,7 +358,7 @@ export default function App() {
           </motion.div>
         </div>
 
-        {/* ================= 6. BRIDGE SECTION (Bottom-Left: -100vw, +100vh) ================= */}
+        {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
         <div className="absolute left-[-100vw] top-[100vh] w-screen h-screen overflow-hidden z-10">
           <motion.div
             style={seamlessMaskStyle}
@@ -359,11 +378,42 @@ export default function App() {
             }
           >
             <img
-              src="/bridge.png"
-              alt="Greek Bridge Background"
+              src="/certificates.png"
+              alt="Certificates Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
           </motion.div>
+
+          {/* Upper-Left Editorial Identity for Certificates */}
+          <div className="absolute top-20 sm:top-24 left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 max-w-2xl">
+            <h1
+              className="font-serif italic text-3xl sm:text-5xl md:text-6xl text-white tracking-tight font-light leading-none"
+              style={{
+                textShadow: '0 2px 14px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.65)',
+              }}
+            >
+              Certificates & Honors
+            </h1>
+            <p
+              className="font-serif italic text-base sm:text-xl text-[#E8C582] tracking-wide font-normal"
+              style={{
+                textShadow: '0 2px 10px rgba(0,0,0,0.85)',
+              }}
+            >
+              Ad Altiora Semper - Classical Scholarly Distinctions
+            </p>
+          </div>
+
+          {/* Floating Back to Archive Hub Pill */}
+          <div className="absolute top-6 left-6 z-20 pointer-events-auto">
+            <button
+              onClick={() => triggerSectionChange('archive')}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-[#161412]/60 hover:bg-white/60 dark:hover:bg-[#161412]/80 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif italic text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] transition-all cursor-pointer"
+            >
+              <ArrowUp className="w-3.5 h-3.5" />
+              <span>Back to Archive</span>
+            </button>
+          </div>
         </div>
 
       </motion.div>
