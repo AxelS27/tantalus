@@ -1,21 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: "Cormorant Garamond", Georgia, serif;
-  --font-display: "Instrument Serif", serif;
-  --font-classic: "Cinzel", serif;
-  --font-manrope: "Manrope", sans-serif;
-
-  --color-warm-bg: #F7F5F0;
-  --color-warm-surface: #EFECE5;
-  --color-warm-card: #FFFFFF;
-  --color-warm-border: rgba(44, 38, 30, 0.09);
-  --color-warm-text: #1C1917;
-  --color-warm-muted: #78716C;
-  --color-warm-faint: #A8A29E;
-  --color-warm-gold: #94723E;
-  --color-warm-gold-hover: #7E6032;
 }
 
 :root {
@@ -26,22 +13,10 @@ html,
 body {
   margin: 0;
   padding: 0;
-  min-height: 100%;
-  background-color: #F7F5F0;
+  width: 100%;
+  height: 100%;
+  background-color: #FAF8F5;
   color: #1C1917;
   font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-/* Subtle greek marble dot grain */
-.greek-canvas-grain {
-  background-image: radial-gradient(rgba(44, 38, 30, 0.04) 1px, transparent 0);
-  background-size: 28px 28px;
-}
-
-/* Smooth custom cursor indicator or smooth interaction */
-.feather-mask {
-  mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 50%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 50%, transparent 100%);
+  overflow: hidden;
 }
