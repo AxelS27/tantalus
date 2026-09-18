@@ -47,7 +47,7 @@ const launchpadApps: ArchiveAppItem[] = [
   {
     id: 'certificates',
     name: 'Certificates',
-    route: '#archive/certificates',
+    route: '/certificates.png',
     icon: Award,
   },
   {
@@ -281,6 +281,11 @@ export function ArchiveHub({
 
     if (onAppSelect) {
       onAppSelect(app.id);
+      return;
+    }
+
+    if (app.route.startsWith('/') || app.route.endsWith('.png')) {
+      window.location.href = app.route;
     } else {
       window.location.hash = app.route;
     }
