@@ -3,7 +3,6 @@ import { motion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { type PortfolioSettings, getSavedSettings } from './lib/settings';
 import { getAssetUrl } from './lib/assets';
-import ImageWithSkeleton from './components/common/ImageWithSkeleton';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import CanvasSectionSkeleton from './components/skeletons/CanvasSectionSkeleton';
 import { prefetchSection } from './lib/prefetch';
@@ -69,6 +68,21 @@ export default function App() {
       document.documentElement.classList.toggle('dark', settings.theme === 'dark');
     }
   }, [settings.theme]);
+
+  // Dynamic Web Title matching active navbar section
+  useEffect(() => {
+    const titleMap: Record<NavItem, string> = {
+      home: 'AxelS27 - Home',
+      timeline: 'AxelS27 - Timeline',
+      projects: 'AxelS27 - Projects',
+      archive: 'AxelS27 - Archive',
+      certificates: 'AxelS27 - Certificates',
+      connect: 'AxelS27 - Connect',
+    };
+    if (typeof document !== 'undefined') {
+      document.title = titleMap[activeTab] || 'AxelS27 - Home';
+    }
+  }, [activeTab]);
 
   // Sync tab change with URL Hash without page reload
   const handleTabChange = (newTab: NavItem) => {
@@ -227,13 +241,12 @@ export default function App() {
                   : { duration: 0.3 }
               }
             >
-              <ImageWithSkeleton
+              <img
                 src={getAssetUrl('/images/tantalize/home.webp')}
                 alt="Home Background"
-                loading="eager"
-                wrapperClassName="w-full h-full pointer-events-none"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
-                skeletonClassName="bg-black/20"
               />
             </motion.div>
 
@@ -317,13 +330,11 @@ export default function App() {
                   : { duration: 0.3 }
               }
             >
-              <ImageWithSkeleton
+              <img
                 src={getAssetUrl('/images/tantalize/timeline.webp')}
                 alt="Timeline Background"
-                loading="lazy"
-                wrapperClassName="w-full h-full pointer-events-none"
+                decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
-                skeletonClassName="bg-black/20"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/16 via-transparent to-black/10 pointer-events-none" />
             </motion.div>
@@ -357,13 +368,11 @@ export default function App() {
                   : { duration: 0.3 }
               }
             >
-              <ImageWithSkeleton
+              <img
                 src={getAssetUrl('/images/tantalize/projects.webp')}
                 alt="Projects Background"
-                loading="lazy"
-                wrapperClassName="w-full h-full pointer-events-none"
+                decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
-                skeletonClassName="bg-black/20"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
             </motion.div>
@@ -396,13 +405,11 @@ export default function App() {
                   : { duration: 0.3 }
               }
             >
-              <ImageWithSkeleton
+              <img
                 src={getAssetUrl('/images/tantalize/archives.webp')}
                 alt="Archive Background"
-                loading="lazy"
-                wrapperClassName="w-full h-full pointer-events-none"
+                decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
-                skeletonClassName="bg-black/20"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
             </motion.div>
@@ -443,13 +450,11 @@ export default function App() {
                   : { duration: 0.3 }
               }
             >
-              <ImageWithSkeleton
+              <img
                 src={getAssetUrl('/images/tantalize/connect.webp')}
                 alt="Connect Background"
-                loading="lazy"
-                wrapperClassName="w-full h-full pointer-events-none"
+                decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
-                skeletonClassName="bg-black/20"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
             </motion.div>
@@ -474,13 +479,11 @@ export default function App() {
                   : { duration: 0.3 }
               }
             >
-              <ImageWithSkeleton
+              <img
                 src={getAssetUrl('/images/tantalize/certificates.webp')}
                 alt="Certificates Background"
-                loading="lazy"
-                wrapperClassName="w-full h-full pointer-events-none"
+                decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
-                skeletonClassName="bg-black/20"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
             </motion.div>

@@ -1,0 +1,24 @@
+{
+  "name": "Farrell Axel Suwandi - Portfolio",
+  "short_name": "AxelS27",
+  "description": "Portfolio of Farrell Axel Suwandi (AxelS27) - Software Engineer & AI Researcher.",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "background_color": "#030303",
+  "theme_color": "#030303",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
