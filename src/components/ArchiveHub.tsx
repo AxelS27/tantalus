@@ -783,9 +783,13 @@ export function ArchiveHub({
                       {/* Tab 4: About (Author: AxelS27 & Last Updated from GitHub) */}
                       {activeSettingsTab === 'about' && (
                         <div className="space-y-5">
-                          <div className="flex items-center gap-3 pb-1 border-b border-stone-200/60 dark:border-stone-800">
-                            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-900 flex items-center justify-center text-white shadow-md font-serif italic text-xl font-bold">
-                              T
+                          <div className="flex items-center gap-3.5 pb-1 border-b border-stone-200/60 dark:border-stone-800">
+                            <div className="w-12 h-12 rounded-2xl overflow-hidden bg-[#FAF8F5] border border-stone-300/80 dark:border-white/20 shadow-md flex items-center justify-center p-1 flex-shrink-0">
+                              <img
+                                src="/favicon.png"
+                                alt="Tantalize OS Icon"
+                                className="w-full h-full object-contain rounded-xl select-none pointer-events-none"
+                              />
                             </div>
                             <div>
                               <h4 className="font-serif italic text-xl font-semibold text-stone-950 dark:text-stone-100 leading-tight">
