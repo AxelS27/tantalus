@@ -43,7 +43,7 @@ const page1Projects: ProjectCardItem[] = [
   {
     id: 'webgl-renderer',
     title: 'Raymarched 3D Shaders',
-    image: '/statue.png',
+    image: '/connect.png',
   },
   {
     id: 'autonomous-nav',
@@ -102,7 +102,7 @@ const page2Projects: ProjectCardItem[] = [
   {
     id: 'astronomy-cv',
     title: 'Exoplanet Curve AI',
-    image: '/statue.png',
+    image: '/connect.png',
   },
   {
     id: 'p2p-sync',

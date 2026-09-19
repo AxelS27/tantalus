@@ -26,7 +26,7 @@ Tantalize/
 │   ├── timeline.png       # East quadrant (+100vw, 0) - Coastal Greek cliff & temple
 │   ├── projects.png       # South quadrant (0, +100vh) - Mountain valley & clouds
 │   ├── archives.png       # West quadrant (-100vw, 0) - Classical Greek bridge & gorge
-│   ├── statue.png         # South-East quadrant (+100vw, +100vh) - Athena colossus
+│   ├── connect.png        # South-East quadrant (+100vw, +100vh) - Athena colossus
 │   └── certificates.png   # South-West quadrant (-100vw, +100vh) - Athena statue & library
 ├── src/
 │   ├── components/
@@ -66,7 +66,7 @@ The world operates on a 2D continuous coordinate plane:
 [ ARCHIVE (-100vw, 0) ]          [ HOME (0, 0) ]          [ TIMELINE (+100vw, 0) ]
   (Greek Bridge & Gorge)              (Tantalus in Lake)        (Cliff Temple & Sea)
 
-[ CERTIFICATES (-100vw, +100vh) ] [ PROJECTS (0, +100vh) ]  [ STATUE (+100vw, +100vh) ]
+[ CERTIFICATES (-100vw, +100vh) ] [ PROJECTS (0, +100vh) ]  [ CONNECT (+100vw, +100vh) ]
    (Athena Statue & Library)        (Mountain Peak Valley)     (Colossal Athena Statue)
 ```
 

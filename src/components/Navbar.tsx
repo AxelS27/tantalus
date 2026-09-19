@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 
-export type NavItem = 'home' | 'timeline' | 'projects' | 'archive' | 'certificates';
+export type NavItem = 'home' | 'timeline' | 'projects' | 'archive' | 'certificates' | 'connect';
 
 interface NavbarProps {
   activeTab?: NavItem;
@@ -46,13 +46,15 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
           className="relative h-10 sm:h-11 flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300"
         >
           {navItems.map((item) => {
+            const isSubApp = activeTab === 'certificates' || activeTab === 'connect';
             const isItemActive =
               item.id === 'archive'
-                ? activeTab === 'archive' || activeTab === 'certificates'
+                ? activeTab === 'archive' || isSubApp
                 : activeTab === item.id;
 
-            // When in certificates sub-page, morph the archive pill into a clean, smooth breadcrumb!
-            if (item.id === 'archive' && activeTab === 'certificates') {
+            // When in sub-page (certificates or connect), morph the archive pill into a clean, smooth breadcrumb!
+            if (item.id === 'archive' && isSubApp) {
+              const subAppLabel = activeTab === 'certificates' ? 'Certificates' : 'Connect';
               return (
                 <motion.div
                   key={item.id}
@@ -78,6 +80,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                   </motion.div>
 
                   <motion.div
+                    key={activeTab}
                     initial={{ opacity: 0, x: 4 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
@@ -88,7 +91,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                       transition={navbarSpring}
                       className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
                     />
-                    <span className="relative z-10 block pointer-events-none">Certificates</span>
+                    <span className="relative z-10 block pointer-events-none">{subAppLabel}</span>
                   </motion.div>
                 </motion.div>
               );

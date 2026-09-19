@@ -71,7 +71,7 @@ const launchpadApps: ArchiveAppItem[] = [
   {
     id: 'connect',
     name: 'Connect',
-    route: '#archive/connect',
+    route: '#connect',
     icon: Share2,
   },
   {

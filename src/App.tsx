@@ -13,6 +13,9 @@ const getTabFromHash = (): NavItem => {
   if (hash === 'certificates' || hash === 'certificate' || hash === 'archive/certificates') {
     return 'certificates';
   }
+  if (hash === 'connect' || hash === 'archive/connect') {
+    return 'connect';
+  }
   if (hash.startsWith('archive') || hash.includes('settings')) {
     return 'archive';
   }
@@ -99,6 +102,14 @@ export default function App() {
         // Scrolling down or right glides to Projects
         triggerSectionChange('projects');
       }
+    } else if (activeTab === 'connect') {
+      if (e.deltaY < -25) {
+        // Scrolling up glides North to Timeline
+        triggerSectionChange('timeline');
+      } else if (e.deltaX < -25 || e.deltaY > 25) {
+        // Scrolling left or down glides West to Projects
+        triggerSectionChange('projects');
+      }
     }
   };
 
@@ -113,6 +124,8 @@ export default function App() {
         return { x: '100vw', y: '0vh' };
       case 'certificates':
         return { x: '100vw', y: '-100vh' };
+      case 'connect':
+        return { x: '-100vw', y: '-100vh' };
       case 'home':
       default:
         return { x: '0vw', y: '0vh' };
@@ -326,14 +339,16 @@ export default function App() {
             onAppSelect={(appId) => {
               if (appId === 'certificates') {
                 triggerSectionChange('certificates');
+              } else if (appId === 'connect') {
+                triggerSectionChange('connect');
               }
             }}
             onReachStart={() => triggerSectionChange('projects')}
           />
         </div>
 
-        {/* ================= 5. STATUE SECTION (Bottom-Right: +100vw, +100vh) ================= */}
-        <div className="absolute left-[100vw] top-[100vh] w-screen h-screen overflow-hidden z-10">
+        {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
+        <div className="absolute left-[100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
           <motion.div
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
@@ -352,10 +367,11 @@ export default function App() {
             }
           >
             <img
-              src="/statue.png"
-              alt="Athena Statue Background"
+              src="/connect.png"
+              alt="Connect Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
           </motion.div>
         </div>
 
