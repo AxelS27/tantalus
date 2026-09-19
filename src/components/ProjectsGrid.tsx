@@ -48,7 +48,7 @@ const page1Projects: ProjectCardItem[] = [
   {
     id: 'autonomous-nav',
     title: 'Stereo Depth Odometry',
-    image: '/bridge.png',
+    image: '/archives.png',
   },
   {
     id: 'ai-code-reviewer',
@@ -107,7 +107,7 @@ const page2Projects: ProjectCardItem[] = [
   {
     id: 'p2p-sync',
     title: 'CRDT Decentralized Sync',
-    image: '/bridge.png',
+    image: '/archives.png',
   },
   {
     id: 'micro-compiler',

@@ -311,7 +311,7 @@ export default function App() {
             }
           >
             <img
-              src="/bridge.png"
+              src="/archives.png"
               alt="Archive Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />

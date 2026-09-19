@@ -25,9 +25,9 @@ Tantalize/
 │   ├── home.png           # Center quadrant (0, 0) - Tantalus reaching for fruit
 │   ├── timeline.png       # East quadrant (+100vw, 0) - Coastal Greek cliff & temple
 │   ├── projects.png       # South quadrant (0, +100vh) - Mountain valley & clouds
-│   ├── certificates.png   # West quadrant (-100vw, 0) - Athena statue & library
+│   ├── archives.png       # West quadrant (-100vw, 0) - Classical Greek bridge & gorge
 │   ├── statue.png         # South-East quadrant (+100vw, +100vh) - Athena colossus
-│   └── bridge.png         # South-West quadrant (-100vw, +100vh) - Classical Greek bridge
+│   └── certificates.png   # South-West quadrant (-100vw, +100vh) - Athena statue & library
 ├── src/
 │   ├── components/
 │   │   ├── Navbar.tsx         # Apple-grade frosted glass floating navigation capsule
@@ -63,11 +63,11 @@ Tantalize/
 The world operates on a 2D continuous coordinate plane:
 
 ```text
-[ CERTIFICATES (-100vw, 0) ]     [ HOME (0, 0) ]          [ TIMELINE (+100vw, 0) ]
-     (Athena & Library)               (Tantalus in Lake)        (Cliff Temple & Sea)
+[ ARCHIVE (-100vw, 0) ]          [ HOME (0, 0) ]          [ TIMELINE (+100vw, 0) ]
+  (Greek Bridge & Gorge)              (Tantalus in Lake)        (Cliff Temple & Sea)
 
-[ BRIDGE (-100vw, +100vh) ]      [ PROJECTS (0, +100vh) ]  [ STATUE (+100vw, +100vh) ]
-    (Arched Bridge & Gorge)         (Mountain Peak Valley)     (Colossal Athena Statue)
+[ CERTIFICATES (-100vw, +100vh) ] [ PROJECTS (0, +100vh) ]  [ STATUE (+100vw, +100vh) ]
+   (Athena Statue & Library)        (Mountain Peak Valley)     (Colossal Athena Statue)
 ```
 
 * **Seamless Edge Blending**: Each artwork applies a radial feather mask (`radial-gradient(ellipse 96% 92% ...)`) so that transitions between quadrants dissolve into a continuous panoramic atmosphere without hard square seams.
