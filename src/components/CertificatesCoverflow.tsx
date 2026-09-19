@@ -28,7 +28,7 @@ export const certificatesData: CertificateItem[] = [
     issuerBadgeColor: 'bg-[#76B900]/15 text-[#4D7C0F] dark:text-[#84CC16] border-[#76B900]/30',
     issueDate: 'OCT 2024',
     credentialUrl: 'https://learn.nvidia.com/certificates?id=wnSF-zEPRmuMGkEWrq1h4A',
-    image: getAssetUrl('/images/certificates/fundamenta-of-deeplearning.webp'),
+    image: getAssetUrl('/images/certificates/fundamental-of-deeplearning.webp'),
     description:
       'Foundational deep learning network design, computer vision feature representations, and transfer learning workflows.',
   },
