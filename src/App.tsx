@@ -45,6 +45,7 @@ const getTabFromHash = (): NavItem => {
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavItem>(getTabFromHash);
   const [settings, setSettings] = useState<PortfolioSettings>(getSavedSettings);
+  const [isNavigating, setIsNavigating] = useState(false);
   const isTransitioningRef = useRef(false);
 
   // Sync settings and HTML dark class
@@ -86,10 +87,12 @@ export default function App() {
   const triggerSectionChange = (newTab: NavItem) => {
     if (isTransitioningRef.current) return;
     isTransitioningRef.current = true;
+    setIsNavigating(true);
     handleTabChange(newTab);
     setTimeout(() => {
       isTransitioningRef.current = false;
-    }, 1400);
+      setIsNavigating(false);
+    }, 1600);
 
     // Intent-aware section chunk prefetching
     if (newTab === 'home') {
@@ -154,22 +157,22 @@ export default function App() {
     }
   };
 
-  // Map each tab to 2D camera coordinates (Center, East, South, West)
+  // Map each tab to 2D camera coordinates with GPU-accelerated percentage matrices
   const getCameraCoordinates = () => {
     switch (activeTab) {
       case 'timeline':
-        return { x: '-100vw', y: '0vh' };
+        return { x: '-100%', y: '0%' };
       case 'projects':
-        return { x: '0vw', y: '-100vh' };
+        return { x: '0%', y: '-100%' };
       case 'archive':
-        return { x: '100vw', y: '0vh' };
+        return { x: '100%', y: '0%' };
       case 'certificates':
-        return { x: '100vw', y: '-100vh' };
+        return { x: '100%', y: '-100%' };
       case 'connect':
-        return { x: '-100vw', y: '-100vh' };
+        return { x: '-100%', y: '-100%' };
       case 'home':
       default:
-        return { x: '0vw', y: '0vh' };
+        return { x: '0%', y: '0%' };
     }
   };
 
@@ -192,7 +195,7 @@ export default function App() {
         {/* Floating Centered Apple Frosted Glass Navbar */}
         <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
 
-        {/* 2D Spatial Canvas World */}
+        {/* 2D Spatial Canvas World with GPU Off-Thread Transform Acceleration */}
         <motion.div
           initial={{ x: coords.x, y: coords.y }}
           animate={{
@@ -203,7 +206,7 @@ export default function App() {
             duration: settings.reducedMotion ? 0.25 : 1.6,
             ease: settings.reducedMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
           }}
-          className="absolute inset-0 w-full h-full bg-[#161412] transform-gpu"
+          className="absolute inset-0 w-full h-full bg-[#161412] transform-gpu will-change-transform"
         >
           {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
           <div className="absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
@@ -211,7 +214,7 @@ export default function App() {
               style={seamlessMaskStyle}
               className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
               animate={{
-                scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
+                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
               }}
               transition={
                 settings.ambientParallax
@@ -235,16 +238,7 @@ export default function App() {
             </motion.div>
 
             {/* Upper-Left Editorial Identity */}
-            <div className="absolute top-[22%] sm:top-[24%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2.5 sm:space-y-3 max-w-5xl">
-              {/* Status Highlight: NOT DONE YET */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/45 backdrop-blur-xl border border-[#E8C582]/45 text-[#E8C582] text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase shadow-[0_4px_20px_rgba(0,0,0,0.4)] select-none">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E8C582] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E8C582]" />
-                </span>
-                <span className="font-semibold">NOT DONE YET</span>
-              </div>
-
+            <div className="absolute top-[25%] sm:top-[27%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 sm:space-y-2.5 max-w-5xl">
               {/* Line 1: Name */}
               <h1
                 className="font-serif italic text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white tracking-tight font-light leading-none whitespace-nowrap"
@@ -310,7 +304,7 @@ export default function App() {
               style={seamlessMaskStyle}
               className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
               animate={{
-                scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
+                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
               }}
               transition={
                 settings.ambientParallax
@@ -350,7 +344,7 @@ export default function App() {
               style={seamlessMaskStyle}
               className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
               animate={{
-                scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
+                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
               }}
               transition={
                 settings.ambientParallax
@@ -389,7 +383,7 @@ export default function App() {
               style={seamlessMaskStyle}
               className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
               animate={{
-                scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
+                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
               }}
               transition={
                 settings.ambientParallax
@@ -436,7 +430,7 @@ export default function App() {
               style={seamlessMaskStyle}
               className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
               animate={{
-                scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
+                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
               }}
               transition={
                 settings.ambientParallax
@@ -467,7 +461,7 @@ export default function App() {
               style={seamlessMaskStyle}
               className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
               animate={{
-                scale: settings.ambientParallax ? [1.02, 1.05, 1.02] : 1,
+                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
               }}
               transition={
                 settings.ambientParallax
