@@ -11,17 +11,18 @@ export interface CertificateItem {
   description: string;
 }
 
+// Ordered chronologically: Newest on the left (index 0) to oldest on the right
 export const certificatesData: CertificateItem[] = [
   {
-    id: 'nvidia-deep-learning',
-    title: 'Fundamentals of Deep Learning',
-    issuer: 'NVIDIA Deep Learning Institute',
-    issuerBadgeColor: 'bg-[#76B900]/15 text-[#4D7C0F] dark:text-[#84CC16] border-[#76B900]/30',
-    issueDate: 'OCT 2024',
-    credentialUrl: 'https://learn.nvidia.com/certificates?id=wnSF-zEPRmuMGkEWrq1h4A',
-    image: getAssetUrl('/images/certificates/fundamental-of-deeplearning.webp'),
+    id: 'ai-career-readiness',
+    title: 'AI Career Readiness Certificate',
+    issuer: 'ASEAN Foundation',
+    issuerBadgeColor: 'bg-[#D97706]/15 text-[#B45309] dark:text-[#FCD34D] border-[#D97706]/30',
+    issueDate: 'SEP 2026',
+    credentialUrl: 'https://drive.google.com/file/d/1W441eL0WyWvlMBlyDY0ElU-Djaq_gsvq/view',
+    image: getAssetUrl('/images/certificates/ai-career-readiness.webp'),
     description:
-      'Foundational deep learning network design, computer vision feature representations, and transfer learning workflows.',
+      'Applied artificial intelligence competence, digital stewardship, and machine learning industrial readiness.',
   },
   {
     id: 'ms-azure-ai-fundamentals',
@@ -35,6 +36,17 @@ export const certificatesData: CertificateItem[] = [
       'Artificial intelligence workloads, cognitive vision & NLP services, and responsible AI principles in cloud environments.',
   },
   {
+    id: 'dean-list-binus',
+    title: "Dean's List Certificate of Academic Excellence",
+    issuer: 'BINUS University',
+    issuerBadgeColor: 'bg-[#B91C1C]/15 text-[#B91C1C] dark:text-[#F87171] border-[#B91C1C]/30',
+    issueDate: 'DEC 2025',
+    credentialUrl: 'https://drive.google.com/file/d/1GdgwtUW11Zn-PcgFVgBObksK-sERQpDQ/view?usp=sharing',
+    image: getAssetUrl('/images/certificates/dean-list-2025.webp'),
+    description:
+      'Academic honor awarded for exceptional scholastic performance, research dedication, and highest GPA honors.',
+  },
+  {
     id: 'bncc-lnt-c-programming',
     title: 'BNCC LNT C Programming',
     issuer: 'Bina Nusantara Computer Club',
@@ -46,25 +58,14 @@ export const certificatesData: CertificateItem[] = [
       'Low-level systems programming, manual pointer arithmetic, dynamic memory allocation, and algorithmic problem solving.',
   },
   {
-    id: 'ai-career-readiness',
-    title: 'AI Career Readiness Certificate',
-    issuer: 'ASEAN Foundation',
-    issuerBadgeColor: 'bg-[#D97706]/15 text-[#B45309] dark:text-[#FCD34D] border-[#D97706]/30',
-    issueDate: 'SEP 2026',
-    credentialUrl: 'https://drive.google.com/file/d/1W441eL0WyWvlMBlyDY0ElU-Djaq_gsvq/view',
-    image: getAssetUrl('/images/certificates/ai-career-readiness.webp'),
+    id: 'nvidia-deep-learning',
+    title: 'Fundamentals of Deep Learning',
+    issuer: 'NVIDIA Deep Learning Institute',
+    issuerBadgeColor: 'bg-[#76B900]/15 text-[#4D7C0F] dark:text-[#84CC16] border-[#76B900]/30',
+    issueDate: 'OCT 2024',
+    credentialUrl: 'https://learn.nvidia.com/certificates?id=wnSF-zEPRmuMGkEWrq1h4A',
+    image: getAssetUrl('/images/certificates/fundamental-of-deeplearning.webp'),
     description:
-      'Applied artificial intelligence competence, digital stewardship, and machine learning industrial readiness.',
-  },
-  {
-    id: 'dean-list-binus',
-    title: "Dean's List Certificate of Academic Excellence",
-    issuer: 'BINUS University',
-    issuerBadgeColor: 'bg-[#B91C1C]/15 text-[#B91C1C] dark:text-[#F87171] border-[#B91C1C]/30',
-    issueDate: 'DEC 2025',
-    credentialUrl: 'https://drive.google.com/file/d/1GdgwtUW11Zn-PcgFVgBObksK-sERQpDQ/view?usp=sharing',
-    image: getAssetUrl('/images/certificates/dean-list-2025.webp'),
-    description:
-      'Academic honor awarded for exceptional scholastic performance, research dedication, and highest GPA honors.',
+      'Foundational deep learning network design, computer vision feature representations, and transfer learning workflows.',
   },
 ];
