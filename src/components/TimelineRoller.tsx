@@ -13,13 +13,14 @@ interface TimelineRollerProps {
 }
 
 export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps) {
-  const [selectedIndex, setSelectedIndex] = useState(1);
-  const selectedIndexRef = useRef(1);
-  const [virtualIndex, setVirtualIndex] = useState(1);
+  // Initialize on Apple Developer Academy (index 0)
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const selectedIndexRef = useRef(0);
+  const [virtualIndex, setVirtualIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const isDraggingRef = useRef(false);
   const dragStartYRef = useRef(0);
-  const dragStartIndexRef = useRef(1);
+  const dragStartIndexRef = useRef(0);
   const hasDraggedRef = useRef(false);
   const lastWheelTimeRef = useRef<number>(0);
 
