@@ -136,19 +136,7 @@ export default function App() {
       className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
     >
       {/* Floating Centered Apple Frosted Glass Navbar */}
-      <Navbar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        onSubAppSelect={(appId) => {
-          if (appId === 'certificates') {
-            triggerSectionChange('certificates');
-          } else if (appId === 'settings') {
-            window.location.hash = '#archive/settings';
-          } else {
-            window.location.hash = `#archive/${appId}`;
-          }
-        }}
-      />
+      <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
 
       {/* 2D Spatial Canvas World */}
       <motion.div
