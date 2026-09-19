@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { ArrowUp } from 'lucide-react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { TimelineRoller } from './components/TimelineRoller';
 import { ProjectsGrid } from './components/ProjectsGrid';
@@ -386,37 +385,6 @@ export default function App() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
           </motion.div>
-
-          {/* Upper-Left Editorial Identity for Certificates */}
-          <div className="absolute top-20 sm:top-24 left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 max-w-2xl">
-            <h1
-              className="font-serif italic text-3xl sm:text-5xl md:text-6xl text-white tracking-tight font-light leading-none"
-              style={{
-                textShadow: '0 2px 14px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.65)',
-              }}
-            >
-              Certificates & Honors
-            </h1>
-            <p
-              className="font-serif italic text-base sm:text-xl text-[#E8C582] tracking-wide font-normal"
-              style={{
-                textShadow: '0 2px 10px rgba(0,0,0,0.85)',
-              }}
-            >
-              Ad Altiora Semper - Classical Scholarly Distinctions
-            </p>
-          </div>
-
-          {/* Floating Back to Archive Hub Pill */}
-          <div className="absolute top-6 left-6 z-20 pointer-events-auto">
-            <button
-              onClick={() => triggerSectionChange('archive')}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-[#161412]/60 hover:bg-white/60 dark:hover:bg-[#161412]/80 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif italic text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white shadow-[0_4px_20px_rgba(0,0,0,0.15)] transition-all cursor-pointer"
-            >
-              <ArrowUp className="w-3.5 h-3.5" />
-              <span>Back to Archive</span>
-            </button>
-          </div>
         </div>
 
       </motion.div>
