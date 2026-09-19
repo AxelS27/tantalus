@@ -288,15 +288,15 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                 </div>
 
                 {/* Certificate Header: Issuer Badge & Date */}
-                <div className="flex items-center justify-between gap-2 border-b border-stone-200/60 dark:border-white/10 pb-2">
+                <div className="flex items-center justify-between gap-2 border-b border-stone-200/60 dark:border-white/10 pb-2 flex-shrink-0">
                   <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-sans font-semibold border ${cert.issuerBadgeColor}`}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-sans font-semibold border ${cert.issuerBadgeColor} drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)] dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]`}
                   >
                     <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
                     <span className="truncate max-w-[190px]">{cert.issuer}</span>
                   </span>
 
-                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-sans font-medium text-stone-600 dark:text-stone-300">
+                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-sans font-semibold text-stone-900 dark:text-stone-100 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                     <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-[#FFD88A] flex-shrink-0" />
                     <span>{cert.issueDate}</span>
                   </div>
@@ -312,21 +312,21 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                   </h3>
                 </div>
 
-                {/* Bottom Action Footer: Click to Open Official Credential */}
-                <div className="pt-2 border-t border-stone-200/60 dark:border-white/10 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs font-sans text-stone-500 dark:text-stone-400">
-                    <ExternalLink className="w-3.5 h-3.5 text-amber-700 dark:text-[#FFD88A]" />
-                    <span className="font-medium">Official Credential</span>
+                {/* Bottom Action Footer: Click to Open Official Credential (Button removed, clean indicator) */}
+                <div className="pt-2 border-t border-stone-200/60 dark:border-white/10 flex items-center justify-between flex-shrink-0">
+                  <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-sans font-semibold text-stone-900 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                    <ExternalLink className="w-3.5 h-3.5 text-amber-700 dark:text-[#FFD88A] flex-shrink-0" />
+                    <span>Official Credential</span>
                   </div>
 
                   {isCenter ? (
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white text-xs font-sans font-medium shadow-sm transition-all group-hover:scale-105 group-hover:shadow-md">
-                      <span>Open Certificate</span>
+                    <div className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-amber-900 dark:text-[#FFD88A] group-hover:translate-x-0.5 transition-transform drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)] dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                      <span>View</span>
                       <ExternalLink className="w-3 h-3" />
-                    </span>
+                    </div>
                   ) : (
-                    <span className="text-[11px] font-serif italic text-stone-500 dark:text-stone-400">
-                      Click to focus
+                    <span className="text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400">
+                      Focus
                     </span>
                   )}
                 </div>
