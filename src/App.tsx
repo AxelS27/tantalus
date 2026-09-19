@@ -4,6 +4,7 @@ import { Navbar, type NavItem } from './components/Navbar';
 import { TimelineRoller } from './components/TimelineRoller';
 import { ProjectsGrid } from './components/ProjectsGrid';
 import { ArchiveHub, type PortfolioSettings, getSavedSettings } from './components/ArchiveHub';
+import { CertificatesCoverflow } from './components/CertificatesCoverflow';
 
 const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'archive', 'certificates'];
 
@@ -401,6 +402,12 @@ export default function App() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
           </motion.div>
+
+          {/* Interactive 3D Spatial Coverflow Carousel */}
+          <CertificatesCoverflow
+            onReachTop={() => triggerSectionChange('archive')}
+            onReachRight={() => triggerSectionChange('projects')}
+          />
         </div>
 
       </motion.div>
