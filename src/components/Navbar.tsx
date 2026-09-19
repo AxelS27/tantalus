@@ -33,9 +33,9 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
       >
         {/* Main Apple Frosted Glass Capsule with Dynamic Breadcrumb */}
         <motion.div
-          layout
+          layout="position"
           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-          className="relative flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300"
+          className="relative h-10 sm:h-11 flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300"
         >
           {navItems.map((item) => {
             const isItemActive =
@@ -46,17 +46,17 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
             // When in certificates sub-page, morph the archive pill into a clean breadcrumb!
             if (item.id === 'archive' && activeTab === 'certificates') {
               return (
-                <div key={item.id} className="relative flex items-center pl-3 sm:pl-4 pr-1 py-1">
+                <div key={item.id} className="relative h-full flex items-center pl-3 sm:pl-4 pr-0.5">
                   <button
                     onClick={() => handleSelect('archive')}
-                    className="text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans text-stone-700/80 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100 transition-colors cursor-pointer"
+                    className="h-full flex items-center text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans text-stone-700/80 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100 transition-colors cursor-pointer"
                   >
                     Archive
                   </button>
 
                   <ChevronRight className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 mx-1.5 flex-shrink-0" />
 
-                  <div className="relative px-3 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans font-medium text-stone-950 dark:text-stone-100">
+                  <div className="relative h-full flex items-center px-3 sm:px-4 text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans font-medium text-stone-950 dark:text-stone-100">
                     <motion.div
                       layoutId="activeNavPill"
                       transition={{
@@ -77,7 +77,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
               <button
                 key={item.id}
                 onClick={() => handleSelect(item.id)}
-                className={`group relative px-4 sm:px-5 py-1.5 sm:py-2 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
+                className={`group relative h-full flex items-center justify-center px-4 sm:px-5 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
                   isItemActive
                     ? 'text-stone-950 dark:text-stone-100 font-medium'
                     : 'text-stone-800/70 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100'
