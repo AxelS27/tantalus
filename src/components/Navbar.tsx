@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 
 export type NavItem = 'home' | 'timeline' | 'projects' | 'archive' | 'certificates';
@@ -15,6 +15,14 @@ const navItems: { id: NavItem; label: string }[] = [
   { id: 'archive', label: 'Archive' },
 ];
 
+// Unified calming spring physics matching page transition tempo
+const navbarSpring = {
+  type: 'spring' as const,
+  stiffness: 140,
+  damping: 24,
+  mass: 1.1,
+};
+
 export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
   const handleSelect = (id: NavItem) => {
     onTabChange?.(id);
@@ -26,15 +34,15 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
         initial={{ opacity: 0, y: -20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{
-          duration: 1.8,
+          duration: 1.6,
           ease: [0.16, 1, 0.3, 1],
         }}
         className="pointer-events-auto transform-gpu flex flex-col items-center"
       >
         {/* Main Apple Frosted Glass Capsule with Dynamic Breadcrumb */}
         <motion.div
-          layout="position"
-          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+          layout
+          transition={navbarSpring}
           className="relative h-10 sm:h-11 flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300"
         >
           {navItems.map((item) => {
@@ -43,10 +51,17 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                 ? activeTab === 'archive' || activeTab === 'certificates'
                 : activeTab === item.id;
 
-            // When in certificates sub-page, morph the archive pill into a clean breadcrumb!
+            // When in certificates sub-page, morph the archive pill into a clean, smooth breadcrumb!
             if (item.id === 'archive' && activeTab === 'certificates') {
               return (
-                <div key={item.id} className="relative h-full flex items-center pl-3 sm:pl-4 pr-0.5">
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -4 }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative h-full flex items-center pl-3 sm:pl-4 pr-0.5"
+                >
                   <button
                     onClick={() => handleSelect('archive')}
                     className="h-full flex items-center text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans text-stone-700/80 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100 transition-colors cursor-pointer"
@@ -54,22 +69,28 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                     Archive
                   </button>
 
-                  <ChevronRight className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 mx-1.5 flex-shrink-0" />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.7 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+                  >
+                    <ChevronRight className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 mx-1.5 flex-shrink-0" />
+                  </motion.div>
 
-                  <div className="relative h-full flex items-center px-3 sm:px-4 text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans font-medium text-stone-950 dark:text-stone-100">
+                  <motion.div
+                    initial={{ opacity: 0, x: 4 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                    className="relative h-full flex items-center px-3 sm:px-4 text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans font-medium text-stone-950 dark:text-stone-100"
+                  >
                     <motion.div
                       layoutId="activeNavPill"
-                      transition={{
-                        type: 'spring',
-                        stiffness: 380,
-                        damping: 30,
-                        mass: 0.8,
-                      }}
+                      transition={navbarSpring}
                       className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
                     />
                     <span className="relative z-10 block pointer-events-none">Certificates</span>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               );
             }
 
@@ -83,16 +104,11 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                     : 'text-stone-800/70 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100'
                 }`}
               >
-                {/* Active Lens Indicator with Butter-Smooth Spring */}
+                {/* Active Lens Indicator with Calm Butter-Smooth Spring */}
                 {isItemActive && (
                   <motion.div
                     layoutId="activeNavPill"
-                    transition={{
-                      type: 'spring',
-                      stiffness: 380,
-                      damping: 30,
-                      mass: 0.8,
-                    }}
+                    transition={navbarSpring}
                     className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
                   />
                 )}
