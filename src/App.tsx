@@ -5,6 +5,7 @@ import { TimelineRoller } from './components/TimelineRoller';
 import { ProjectsGrid } from './components/ProjectsGrid';
 import { ArchiveHub, type PortfolioSettings, getSavedSettings } from './components/ArchiveHub';
 import { CertificatesCoverflow } from './components/CertificatesCoverflow';
+import { getAssetUrl } from './lib/assets';
 
 const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'archive', 'certificates'];
 
@@ -184,7 +185,7 @@ export default function App() {
             }
           >
             <img
-              src="/home.png"
+              src={getAssetUrl('/images/tantalize/home.webp')}
               alt="Home Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
@@ -257,7 +258,7 @@ export default function App() {
             }
           >
             <img
-              src="/timeline.png"
+              src={getAssetUrl('/images/tantalize/timeline.webp')}
               alt="Timeline Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
@@ -292,7 +293,7 @@ export default function App() {
             }
           >
             <img
-              src="/projects.png"
+              src={getAssetUrl('/images/tantalize/projects.webp')}
               alt="Projects Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
@@ -326,7 +327,7 @@ export default function App() {
             }
           >
             <img
-              src="/archives.png"
+              src={getAssetUrl('/images/tantalize/archives.webp')}
               alt="Archive Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
@@ -368,7 +369,7 @@ export default function App() {
             }
           >
             <img
-              src="/connect.png"
+              src={getAssetUrl('/images/tantalize/connect.webp')}
               alt="Connect Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
@@ -396,7 +397,7 @@ export default function App() {
             }
           >
             <img
-              src="/certificates.png"
+              src={getAssetUrl('/images/tantalize/certificates.webp')}
               alt="Certificates Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />

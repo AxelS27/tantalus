@@ -10,10 +10,10 @@ import {
   Copy,
   Check,
   X,
-  Sparkles,
   Maximize2,
   ShieldCheck,
 } from 'lucide-react';
+import { getAssetUrl } from '../lib/assets';
 
 export type CertificateCategory = 'all' | 'ai' | 'systems' | 'cloud';
 
@@ -25,7 +25,8 @@ export interface CertificateItem {
   issueDate: string;
   credentialId: string;
   credentialUrl: string;
-  category: 'ai' | 'systems' | 'cloud';
+  image: string;
+  category: 'all' | 'ai' | 'systems' | 'cloud';
   skills: string[];
   accentColor: string;
   description: string;
@@ -33,88 +34,79 @@ export interface CertificateItem {
 
 export const certificatesData: CertificateItem[] = [
   {
-    id: 'deep-learning-specialization',
-    title: 'Deep Learning Specialization',
-    issuer: 'DeepLearning.AI & Coursera',
-    issuerBadgeColor: 'bg-[#0056D2]/15 text-[#0056D2] dark:text-[#5B96F7] border-[#0056D2]/30',
-    issueDate: 'Oct 2024',
-    credentialId: 'DLS-849204-AXEL',
-    credentialUrl: 'https://coursera.org/verify/specialization/DLS-AXEL',
-    category: 'ai',
-    skills: ['PyTorch', 'Transformers', 'CNNs & ResNets', 'Optimization'],
-    accentColor: '#3B82F6',
-    description:
-      'Mastery of foundational deep learning architectures, convolutional neural networks, sequence models, and multi-GPU hyperparameter tuning.',
-  },
-  {
-    id: 'stanford-nlp-transformers',
-    title: 'Natural Language Processing & LLMs',
-    issuer: 'Stanford Online',
-    issuerBadgeColor: 'bg-[#8C1515]/15 text-[#8C1515] dark:text-[#FF7D7D] border-[#8C1515]/30',
-    issueDate: 'Jan 2025',
-    credentialId: 'STAN-NLP-99214',
-    credentialUrl: 'https://online.stanford.edu/verify/STAN-NLP-99214',
-    category: 'ai',
-    skills: ['Attention Mechanisms', 'BERT & GPT', 'Hugging Face', 'RLHF'],
-    accentColor: '#EF4444',
-    description:
-      'Advanced semantic understanding, multi-head self-attention mechanics, transformer pre-training, and reinforcement learning from human feedback.',
-  },
-  {
-    id: 'aws-ml-specialty',
-    title: 'AWS Certified Machine Learning Specialty',
-    issuer: 'Amazon Web Services',
-    issuerBadgeColor: 'bg-[#FF9900]/15 text-[#D97706] dark:text-[#FBBF24] border-[#FF9900]/30',
-    issueDate: 'Aug 2024',
-    credentialId: 'AWS-MLS-49102X',
-    credentialUrl: 'https://aws.amazon.com/verification/AWS-MLS-49102X',
-    category: 'cloud',
-    skills: ['SageMaker', 'Distributed Training', 'Feature Store', 'Model Monitor'],
-    accentColor: '#F59E0B',
-    description:
-      'Production-grade cloud machine learning pipelines, scalable model training, endpoint latency optimization, and automated drift detection.',
-  },
-  {
-    id: 'nvidia-cuda-parallel',
-    title: 'Accelerated Computing with CUDA C/C++',
+    id: 'nvidia-deep-learning',
+    title: 'Fundamentals of Deep Learning',
     issuer: 'NVIDIA Deep Learning Institute',
     issuerBadgeColor: 'bg-[#76B900]/15 text-[#4D7C0F] dark:text-[#84CC16] border-[#76B900]/30',
-    issueDate: 'May 2024',
-    credentialId: 'NV-DLI-77319A',
-    credentialUrl: 'https://learn.nvidia.com/certificates/NV-DLI-77319A',
-    category: 'systems',
-    skills: ['CUDA Kernels', 'Shared Memory', 'NCCL', 'Parallel Reduction'],
+    issueDate: 'Oct 2024',
+    credentialId: 'wnSF-zEPRmu',
+    credentialUrl: 'https://learn.nvidia.com/certificates?id=wnSF-zEPRmuMGkEWrq1h4A',
+    image: getAssetUrl('/images/certificates/fundamenta-of-deeplearning.webp'),
+    category: 'ai',
+    skills: ['Deep Learning', 'PyTorch', 'CNNs', 'Computer Vision', 'Transfer Learning'],
     accentColor: '#10B981',
     description:
-      'Hardware-level GPU acceleration, thread block tiling, memory coalescing, and inter-GPU communication primitives for massive parallel workloads.',
+      'Foundational deep neural network design, convolutional feature representations, training optimization, and transfer learning workflows.',
   },
   {
-    id: 'apple-spatial-vision',
-    title: 'Spatial Computing & CoreML Systems',
-    issuer: 'Apple Developer Academy',
-    issuerBadgeColor: 'bg-stone-800/10 dark:bg-white/10 text-stone-900 dark:text-stone-100 border-stone-400/30',
-    issueDate: 'Nov 2024',
-    credentialId: 'ADA-VISIONOS-2024',
-    credentialUrl: 'https://developer.apple.com/academies/verify/ADA-VISIONOS-2024',
+    id: 'ms-azure-ai-fundamentals',
+    title: 'Microsoft Azure AI Fundamentals (AI-900)',
+    issuer: 'Microsoft x BINUS University',
+    issuerBadgeColor: 'bg-[#0078D4]/15 text-[#0078D4] dark:text-[#60A5FA] border-[#0078D4]/30',
+    issueDate: 'Feb 2026',
+    credentialId: '111541121814921/GreatNusa/II/2026',
+    credentialUrl: 'https://drive.google.com/file/d/1EBukOExRhI2w0Lir1uJlHs5avyDDEgUV/view?usp=drive_link',
+    image: getAssetUrl('/images/certificates/microsoft-eleveate-ai-training.webp'),
+    category: 'cloud',
+    skills: ['Azure AI Services', 'Computer Vision', 'NLP', 'Responsible AI', 'Cloud ML'],
+    accentColor: '#3B82F6',
+    description:
+      'Architectural principles of artificial intelligence workloads, Azure cognitive services, natural language pipelines, and ethical AI deployment.',
+  },
+  {
+    id: 'bncc-lnt-c-programming',
+    title: 'BNCC LNT C Programming',
+    issuer: 'Bina Nusantara Computer Club',
+    issuerBadgeColor: 'bg-[#0056D2]/15 text-[#0056D2] dark:text-[#5B96F7] border-[#0056D2]/30',
+    issueDate: 'Aug 2025',
+    credentialId: 'BNCC-LNT-01',
+    credentialUrl: 'https://drive.google.com/file/d/1dJoY8GTQCdgxZApqdUdXIyGXEuTSBmWL/view',
+    image: getAssetUrl('/images/certificates/lnt-c-programming.webp'),
     category: 'systems',
-    skills: ['VisionOS', 'CoreML Quantization', 'Metal Shaders', '3D Pose Tracking'],
+    skills: ['C Programming', 'Memory Management', 'Pointers', 'Data Structures', 'Algorithmic Logic'],
     accentColor: '#8B5CF6',
     description:
-      'Immersive spatial computing architectures, on-device neural engine inference, custom Metal compute pipelines, and real-time kinematic tracking.',
+      'Low-level systems programming, manual memory management, dynamic memory allocation, and algorithmic problem solving in standard C.',
   },
   {
-    id: 'scholarly-research-ai',
-    title: 'Distinction in Artificial Intelligence Research',
-    issuer: 'Binus University & IEEE Student Branch',
+    id: 'ai-career-readiness',
+    title: 'AI Career Readiness Certificate',
+    issuer: 'ASEAN Foundation',
     issuerBadgeColor: 'bg-[#D97706]/15 text-[#B45309] dark:text-[#FCD34D] border-[#D97706]/30',
-    issueDate: 'Dec 2024',
-    credentialId: 'BINUS-RES-AI-2024',
-    credentialUrl: 'https://binus.ac.id/research/verify/BINUS-RES-AI-2024',
+    issueDate: 'Sep 2026',
+    credentialId: 'ASEAN-AICR-2026',
+    credentialUrl: 'https://drive.google.com/file/d/1W441eL0WyWvlMBlyDY0ElU-Djaq_gsvq/view',
+    image: getAssetUrl('/images/certificates/ai-career-readiness.webp'),
     category: 'ai',
-    skills: ['Academic Research', 'Bioinformatics', 'Peer Review', 'Algorithmic Optimization'],
-    accentColor: '#D97706',
+    skills: ['AI Industry Competence', 'Machine Learning Practices', 'Applied Data Analysis'],
+    accentColor: '#F59E0B',
     description:
-      'Scholarly recognition for research contributions in computational genomics, deep biomarker classification, and high-performance biomedical modeling.',
+      'Comprehensive readiness in applied artificial intelligence, industry-standard machine learning practices, and digital ecosystem stewardship.',
+  },
+  {
+    id: 'dean-list-binus',
+    title: "Dean's List Certificate of Academic Excellence",
+    issuer: 'BINUS University',
+    issuerBadgeColor: 'bg-[#B91C1C]/15 text-[#B91C1C] dark:text-[#F87171] border-[#B91C1C]/30',
+    issueDate: 'Dec 2025',
+    credentialId: 'DEANS-LIST-2025',
+    credentialUrl: 'https://drive.google.com/file/d/1GdgwtUW11Zn-PcgFVgBObksK-sERQpDQ/view?usp=sharing',
+    image: getAssetUrl('/images/certificates/dean-list-2025.webp'),
+    category: 'all',
+    skills: ['Academic Honors', 'Computer Science Curriculum', 'Highest Distinction'],
+    accentColor: '#EF4444',
+    description:
+      'Academic honor awarded to students who demonstrated the highest academic performance, analytical rigor, and scholastic achievement in Computer Science.',
   },
 ];
 
@@ -138,8 +130,6 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
   useEffect(() => {
     setActiveIndex(0);
   }, [selectedCategory]);
-
-  const activeCert = filteredCerts[activeIndex] || filteredCerts[0];
 
   const handlePrev = useCallback(() => {
     setActiveIndex((prev) => (prev > 0 ? prev - 1 : prev));
@@ -207,7 +197,6 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
     const now = Date.now();
     if (now - lastWheelTimeRef.current < 450) return;
 
-    // Horizontal wheel or vertical wheel
     const deltaX = e.deltaX;
     const deltaY = e.deltaY;
 
@@ -251,7 +240,7 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
           {[
             { id: 'all', label: 'All Credentials' },
             { id: 'ai', label: 'AI & Research' },
-            { id: 'systems', label: 'Systems & CUDA' },
+            { id: 'systems', label: 'Systems & C' },
             { id: 'cloud', label: 'Cloud' },
           ].map((cat) => {
             const isActive = selectedCategory === cat.id;
@@ -287,7 +276,7 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         style={{ perspective: '1200px' }}
-        className="relative w-full max-w-5xl h-[380px] sm:h-[430px] md:h-[460px] flex items-center justify-center touch-none cursor-grab active:cursor-grabbing"
+        className="relative w-full max-w-5xl h-[410px] sm:h-[450px] md:h-[480px] flex items-center justify-center touch-none cursor-grab active:cursor-grabbing"
       >
         {filteredCerts.map((cert, index) => {
           const offset = index - activeIndex;
@@ -304,19 +293,19 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
           if (isCenter) {
             translateX = 0;
             rotateY = 0;
-            translateZ = 60;
+            translateZ = 70;
             scale = 1;
             opacity = 1;
           } else if (offset < 0) {
             // Left Flank
-            translateX = offset * 180 - 70;
+            translateX = offset * 190 - 75;
             rotateY = 28;
             translateZ = -90 - absOffset * 40;
             scale = Math.max(0.68, 1 - absOffset * 0.12);
             opacity = Math.max(0.2, 1 - absOffset * 0.35);
           } else {
             // Right Flank
-            translateX = offset * 180 + 70;
+            translateX = offset * 190 + 75;
             rotateY = -28;
             translateZ = -90 - absOffset * 40;
             scale = Math.max(0.68, 1 - absOffset * 0.12);
@@ -355,18 +344,31 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                 transformStyle: 'preserve-3d',
                 pointerEvents: isClickable ? 'auto' : 'none',
               }}
-              className="absolute w-[290px] sm:w-[350px] md:w-[410px] h-[250px] sm:h-[280px] md:h-[310px] rounded-3xl p-3 sm:p-4 transition-colors cursor-pointer select-none"
+              className="absolute w-[300px] sm:w-[360px] md:w-[410px] h-[300px] sm:h-[330px] md:h-[355px] rounded-3xl p-2.5 sm:p-3 transition-colors cursor-pointer select-none"
             >
               {/* Apple Frosted Glass Frame with Classical Gold Specular Accent */}
               <div
-                className={`w-full h-full rounded-2xl flex flex-col justify-between p-3.5 sm:p-4.5 border transition-all duration-300 ${
+                className={`w-full h-full rounded-2xl flex flex-col justify-between p-3 sm:p-4 border transition-all duration-300 ${
                   isCenter
                     ? 'bg-[#FAF8F5]/85 dark:bg-[#161412]/85 backdrop-blur-2xl border-white/80 dark:border-white/25 shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,0.9),0_24px_50px_-10px_rgba(0,0,0,0.35)]'
                     : 'bg-[#FAF8F5]/60 dark:bg-[#161412]/60 backdrop-blur-xl border-white/50 dark:border-white/15 shadow-[0_12px_32px_rgba(0,0,0,0.2)] hover:border-white/80'
                 }`}
               >
+                {/* Certificate Document Thumbnail Preview */}
+                <div className="relative w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-1 flex-shrink-0">
+                  <img
+                    src={cert.image}
+                    alt={cert.title}
+                    className="w-full h-full object-cover object-center pointer-events-none select-none"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+                </div>
+
                 {/* Certificate Header: Issuer Badge & Date */}
-                <div className="flex items-center justify-between gap-2 border-b border-stone-200/60 dark:border-white/10 pb-2.5">
+                <div className="flex items-center justify-between gap-2 border-b border-stone-200/60 dark:border-white/10 pb-1.5">
                   <span
                     className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-sans font-semibold border ${cert.issuerBadgeColor}`}
                   >
@@ -380,43 +382,40 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                   </div>
                 </div>
 
-                {/* Certificate Title & Description */}
-                <div className="space-y-1.5 py-1">
+                {/* Certificate Title */}
+                <div className="py-0.5">
                   <h3
-                    className="font-serif italic text-base sm:text-lg md:text-xl font-semibold text-stone-950 dark:text-stone-100 line-clamp-2 leading-snug"
+                    className="font-serif italic text-sm sm:text-base md:text-lg font-semibold text-stone-950 dark:text-stone-100 line-clamp-1 leading-snug"
                     style={{
                       textShadow: '0 1px 2px rgba(0,0,0,0.05)',
                     }}
                   >
                     {cert.title}
                   </h3>
-                  <p className="text-[11px] sm:text-xs font-sans text-stone-600 dark:text-stone-400 line-clamp-2 leading-relaxed">
-                    {cert.description}
-                  </p>
                 </div>
 
                 {/* Skills Badges */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="flex flex-wrap gap-1 py-0.5">
                   {cert.skills.slice(0, 3).map((skill, i) => (
                     <span
                       key={i}
-                      className="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[10px] sm:text-[10.5px] font-sans text-stone-800 dark:text-stone-300 font-medium"
+                      className="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[9.5px] sm:text-[10px] font-sans text-stone-800 dark:text-stone-300 font-medium"
                     >
                       {skill}
                     </span>
                   ))}
                   {cert.skills.length > 3 && (
-                    <span className="px-1.5 py-0.5 text-[10px] font-sans text-stone-500 dark:text-stone-400">
+                    <span className="px-1.5 py-0.5 text-[9.5px] font-sans text-stone-500 dark:text-stone-400">
                       +{cert.skills.length - 3}
                     </span>
                   )}
                 </div>
 
                 {/* Bottom Footer: Verification Link & QuickLook hint */}
-                <div className="pt-2.5 border-t border-stone-200/60 dark:border-white/10 flex items-center justify-between text-xs font-sans">
-                  <div className="flex items-center gap-1 font-mono text-[10px] sm:text-[11px] text-stone-500 dark:text-stone-400">
+                <div className="pt-2 border-t border-stone-200/60 dark:border-white/10 flex items-center justify-between text-xs font-sans">
+                  <div className="flex items-center gap-1 font-mono text-[10px] sm:text-[10.5px] text-stone-500 dark:text-stone-400">
                     <span>ID:</span>
-                    <span className="text-stone-800 dark:text-stone-200 font-medium">{cert.credentialId}</span>
+                    <span className="text-stone-800 dark:text-stone-200 font-medium truncate max-w-[120px]">{cert.credentialId}</span>
                   </div>
 
                   {isCenter ? (
@@ -527,31 +526,43 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
               </div>
 
               {/* Modal Content */}
-              <div className="p-6 sm:p-8 space-y-6 overflow-y-auto max-h-[75vh]">
+              <div className="p-5 sm:p-7 space-y-5 overflow-y-auto max-h-[78vh]">
+                {/* Certificate High-Res Document Preview */}
+                <div className="w-full rounded-2xl overflow-hidden bg-black/5 dark:bg-black/30 border border-stone-200/60 dark:border-white/10 flex items-center justify-center p-2">
+                  <img
+                    src={inspectItem.image}
+                    alt={inspectItem.title}
+                    className="w-full h-auto max-h-[38vh] object-contain rounded-xl shadow-md pointer-events-none select-none"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                </div>
+
                 {/* Title & Issuer */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-sans font-semibold border ${inspectItem.issuerBadgeColor}`}>
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>{inspectItem.issuer}</span>
                   </span>
-                  <h2 className="font-serif italic text-2xl sm:text-3xl font-semibold leading-tight text-stone-950 dark:text-stone-100">
+                  <h2 className="font-serif italic text-xl sm:text-2xl font-semibold leading-tight text-stone-950 dark:text-stone-100">
                     {inspectItem.title}
                   </h2>
-                  <p className="text-xs sm:text-sm font-sans text-stone-600 dark:text-stone-400 leading-relaxed pt-1">
+                  <p className="text-xs sm:text-sm font-sans text-stone-600 dark:text-stone-400 leading-relaxed pt-0.5">
                     {inspectItem.description}
                   </p>
                 </div>
 
                 {/* Skills Grid */}
-                <div className="space-y-2 border-t border-stone-200/60 dark:border-stone-800 pt-4">
+                <div className="space-y-2 border-t border-stone-200/60 dark:border-stone-800 pt-3">
                   <label className="text-xs font-sans uppercase tracking-widest text-stone-500 font-semibold">
                     Competencies & Tooling
                   </label>
-                  <div className="flex flex-wrap gap-2 pt-0.5">
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
                     {inspectItem.skills.map((skill, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1 rounded-xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-200"
+                        className="px-2.5 py-1 rounded-xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-200"
                       >
                         {skill}
                       </span>
@@ -560,13 +571,13 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                 </div>
 
                 {/* Credential Verification Bar */}
-                <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-stone-200/60 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-sans">
+                <div className="p-3.5 rounded-2xl bg-white/70 dark:bg-white/5 border border-stone-200/60 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-sans">
                   <div className="space-y-0.5">
-                    <span className="text-[11px] text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
+                    <span className="text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
                       Credential Identification
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-medium text-stone-900 dark:text-stone-100">
+                      <span className="font-mono font-medium text-stone-900 dark:text-stone-100 truncate max-w-[200px]">
                         {inspectItem.credentialId}
                       </span>
                       <button

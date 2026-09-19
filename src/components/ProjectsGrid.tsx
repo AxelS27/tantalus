@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getAssetUrl } from '../lib/assets';
 
 export interface ProjectCardItem {
   id: string;
@@ -23,7 +24,7 @@ const page1Projects: ProjectCardItem[] = [
   {
     id: 'tantalus-spatial',
     title: 'Tantalus 2D Spatial Canvas',
-    image: '/projects.png',
+    image: getAssetUrl('/images/tantalize/projects.webp'),
   },
   {
     id: 'apple-spatial',
@@ -43,32 +44,32 @@ const page1Projects: ProjectCardItem[] = [
   {
     id: 'webgl-renderer',
     title: 'Raymarched 3D Shaders',
-    image: '/connect.png',
+    image: getAssetUrl('/images/tantalize/connect.webp'),
   },
   {
     id: 'autonomous-nav',
     title: 'Stereo Depth Odometry',
-    image: '/archives.png',
+    image: getAssetUrl('/images/tantalize/archives.webp'),
   },
   {
     id: 'ai-code-reviewer',
     title: 'Static Analyzer AI Agent',
-    image: '/certificates.png',
+    image: getAssetUrl('/images/tantalize/certificates.webp'),
   },
   {
     id: 'distributed-queue',
     title: 'Zero-Allocation Stream',
-    image: '/timeline.png',
+    image: getAssetUrl('/images/tantalize/timeline.webp'),
   },
   {
     id: 'biometric-auth',
     title: 'Facial Anti-Spoofing',
-    image: '/home.png',
+    image: getAssetUrl('/images/tantalize/home.webp'),
   },
   {
     id: 'cloud-orchestration',
     title: 'Self-Healing Mesh',
-    image: '/projects.png',
+    image: getAssetUrl('/images/tantalize/projects.webp'),
   },
 ];
 
@@ -87,12 +88,12 @@ const page2Projects: ProjectCardItem[] = [
   {
     id: 'audio-dsp',
     title: 'Real-time Synthesizer',
-    image: '/home.png',
+    image: getAssetUrl('/images/tantalize/home.webp'),
   },
   {
     id: 'edge-inference',
     title: 'FPGA DL Accelerator',
-    image: '/timeline.png',
+    image: getAssetUrl('/images/tantalize/timeline.webp'),
   },
   {
     id: 'graph-rag',
@@ -102,17 +103,17 @@ const page2Projects: ProjectCardItem[] = [
   {
     id: 'astronomy-cv',
     title: 'Exoplanet Curve AI',
-    image: '/connect.png',
+    image: getAssetUrl('/images/tantalize/connect.webp'),
   },
   {
     id: 'p2p-sync',
     title: 'CRDT Decentralized Sync',
-    image: '/archives.png',
+    image: getAssetUrl('/images/tantalize/archives.webp'),
   },
   {
     id: 'micro-compiler',
     title: 'LLVM Bytecode JIT',
-    image: '/certificates.png',
+    image: getAssetUrl('/images/tantalize/certificates.webp'),
   },
   {
     id: 'vision-pose',
@@ -127,12 +128,12 @@ const page2Projects: ProjectCardItem[] = [
   {
     id: 'gpu-particles',
     title: 'Million-Body Physics',
-    image: '/projects.png',
+    image: getAssetUrl('/images/tantalize/projects.webp'),
   },
   {
     id: 'kernel-driver',
     title: 'Zero-Copy Packet Filter',
-    image: '/home.png',
+    image: getAssetUrl('/images/tantalize/home.webp'),
   },
 ];
 
@@ -366,7 +367,7 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
                           onError={(e) => {
                             const target = e.currentTarget;
                             target.onerror = null;
-                            target.src = '/projects.png';
+                            target.src = getAssetUrl('/images/tantalize/projects.webp');
                           }}
                         />
                       </div>

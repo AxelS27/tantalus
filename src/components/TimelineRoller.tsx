@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { ChevronUp, ChevronDown, MapPin, Calendar, Sparkles } from 'lucide-react';
+import { getAssetUrl } from '../lib/assets';
 
 export interface TimelineItem {
   id: string;
@@ -362,7 +363,7 @@ export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps
                         onError={(e) => {
                           const target = e.currentTarget;
                           target.onerror = null;
-                          target.src = '/timeline.png';
+                          target.src = getAssetUrl('/images/tantalize/timeline.webp');
                         }}
                       />
                     </div>
