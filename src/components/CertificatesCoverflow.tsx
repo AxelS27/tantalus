@@ -1,21 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
-  Award,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
   Calendar,
-  CheckCircle2,
-  Copy,
-  Check,
-  X,
-  Maximize2,
   ShieldCheck,
 } from 'lucide-react';
 import { getAssetUrl } from '../lib/assets';
-
-export type CertificateCategory = 'all' | 'ai' | 'systems' | 'cloud';
 
 export interface CertificateItem {
   id: string;
@@ -23,12 +15,8 @@ export interface CertificateItem {
   issuer: string;
   issuerBadgeColor: string;
   issueDate: string;
-  credentialId: string;
   credentialUrl: string;
   image: string;
-  category: 'all' | 'ai' | 'systems' | 'cloud';
-  skills: string[];
-  accentColor: string;
   description: string;
 }
 
@@ -38,75 +26,55 @@ export const certificatesData: CertificateItem[] = [
     title: 'Fundamentals of Deep Learning',
     issuer: 'NVIDIA Deep Learning Institute',
     issuerBadgeColor: 'bg-[#76B900]/15 text-[#4D7C0F] dark:text-[#84CC16] border-[#76B900]/30',
-    issueDate: 'Oct 2024',
-    credentialId: 'wnSF-zEPRmu',
+    issueDate: 'OCT 2024',
     credentialUrl: 'https://learn.nvidia.com/certificates?id=wnSF-zEPRmuMGkEWrq1h4A',
     image: getAssetUrl('/images/certificates/fundamenta-of-deeplearning.webp'),
-    category: 'ai',
-    skills: ['Deep Learning', 'PyTorch', 'CNNs', 'Computer Vision', 'Transfer Learning'],
-    accentColor: '#10B981',
     description:
-      'Foundational deep neural network design, convolutional feature representations, training optimization, and transfer learning workflows.',
+      'Foundational deep learning network design, computer vision feature representations, and transfer learning workflows.',
   },
   {
     id: 'ms-azure-ai-fundamentals',
     title: 'Microsoft Azure AI Fundamentals (AI-900)',
     issuer: 'Microsoft x BINUS University',
     issuerBadgeColor: 'bg-[#0078D4]/15 text-[#0078D4] dark:text-[#60A5FA] border-[#0078D4]/30',
-    issueDate: 'Feb 2026',
-    credentialId: '111541121814921/GreatNusa/II/2026',
+    issueDate: 'FEB 2026',
     credentialUrl: 'https://drive.google.com/file/d/1EBukOExRhI2w0Lir1uJlHs5avyDDEgUV/view?usp=drive_link',
     image: getAssetUrl('/images/certificates/microsoft-eleveate-ai-training.webp'),
-    category: 'cloud',
-    skills: ['Azure AI Services', 'Computer Vision', 'NLP', 'Responsible AI', 'Cloud ML'],
-    accentColor: '#3B82F6',
     description:
-      'Architectural principles of artificial intelligence workloads, Azure cognitive services, natural language pipelines, and ethical AI deployment.',
+      'Artificial intelligence workloads, cognitive vision & NLP services, and responsible AI principles in cloud environments.',
   },
   {
     id: 'bncc-lnt-c-programming',
     title: 'BNCC LNT C Programming',
     issuer: 'Bina Nusantara Computer Club',
     issuerBadgeColor: 'bg-[#0056D2]/15 text-[#0056D2] dark:text-[#5B96F7] border-[#0056D2]/30',
-    issueDate: 'Aug 2025',
-    credentialId: 'BNCC-LNT-01',
+    issueDate: 'AUG 2025',
     credentialUrl: 'https://drive.google.com/file/d/1dJoY8GTQCdgxZApqdUdXIyGXEuTSBmWL/view',
     image: getAssetUrl('/images/certificates/lnt-c-programming.webp'),
-    category: 'systems',
-    skills: ['C Programming', 'Memory Management', 'Pointers', 'Data Structures', 'Algorithmic Logic'],
-    accentColor: '#8B5CF6',
     description:
-      'Low-level systems programming, manual memory management, dynamic memory allocation, and algorithmic problem solving in standard C.',
+      'Low-level systems programming, manual pointer arithmetic, dynamic memory allocation, and algorithmic problem solving.',
   },
   {
     id: 'ai-career-readiness',
     title: 'AI Career Readiness Certificate',
     issuer: 'ASEAN Foundation',
     issuerBadgeColor: 'bg-[#D97706]/15 text-[#B45309] dark:text-[#FCD34D] border-[#D97706]/30',
-    issueDate: 'Sep 2026',
-    credentialId: 'ASEAN-AICR-2026',
+    issueDate: 'SEP 2026',
     credentialUrl: 'https://drive.google.com/file/d/1W441eL0WyWvlMBlyDY0ElU-Djaq_gsvq/view',
     image: getAssetUrl('/images/certificates/ai-career-readiness.webp'),
-    category: 'ai',
-    skills: ['AI Industry Competence', 'Machine Learning Practices', 'Applied Data Analysis'],
-    accentColor: '#F59E0B',
     description:
-      'Comprehensive readiness in applied artificial intelligence, industry-standard machine learning practices, and digital ecosystem stewardship.',
+      'Applied artificial intelligence competence, digital stewardship, and machine learning industrial readiness.',
   },
   {
     id: 'dean-list-binus',
     title: "Dean's List Certificate of Academic Excellence",
     issuer: 'BINUS University',
     issuerBadgeColor: 'bg-[#B91C1C]/15 text-[#B91C1C] dark:text-[#F87171] border-[#B91C1C]/30',
-    issueDate: 'Dec 2025',
-    credentialId: 'DEANS-LIST-2025',
+    issueDate: 'DEC 2025',
     credentialUrl: 'https://drive.google.com/file/d/1GdgwtUW11Zn-PcgFVgBObksK-sERQpDQ/view?usp=sharing',
     image: getAssetUrl('/images/certificates/dean-list-2025.webp'),
-    category: 'all',
-    skills: ['Academic Honors', 'Computer Science Curriculum', 'Highest Distinction'],
-    accentColor: '#EF4444',
     description:
-      'Academic honor awarded to students who demonstrated the highest academic performance, analytical rigor, and scholastic achievement in Computer Science.',
+      'Academic honor awarded for exceptional scholastic performance, research dedication, and highest GPA honors.',
   },
 ];
 
@@ -116,42 +84,25 @@ interface CertificatesCoverflowProps {
 }
 
 export function CertificatesCoverflow({ onReachTop, onReachRight }: CertificatesCoverflowProps) {
-  const [selectedCategory, setSelectedCategory] = useState<CertificateCategory>('all');
   const [activeIndex, setActiveIndex] = useState(0);
-  const [inspectItem, setInspectItem] = useState<CertificateItem | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  // Filtered dataset
-  const filteredCerts = certificatesData.filter((cert) =>
-    selectedCategory === 'all' ? true : cert.category === selectedCategory
-  );
-
-  // Keep active index in range when category changes
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [selectedCategory]);
 
   const handlePrev = useCallback(() => {
     setActiveIndex((prev) => (prev > 0 ? prev - 1 : prev));
   }, []);
 
   const handleNext = useCallback(() => {
-    setActiveIndex((prev) => (prev < filteredCerts.length - 1 ? prev + 1 : prev));
-  }, [filteredCerts.length]);
+    setActiveIndex((prev) => (prev < certificatesData.length - 1 ? prev + 1 : prev));
+  }, []);
 
-  // Keyboard arrow listeners
+  // Keyboard arrow navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (inspectItem) {
-        if (e.key === 'Escape') setInspectItem(null);
-        return;
-      }
       if (e.key === 'ArrowLeft') handlePrev();
       if (e.key === 'ArrowRight') handleNext();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handlePrev, handleNext, inspectItem]);
+  }, [handlePrev, handleNext]);
 
   // Pointer drag controls for dragging the coverflow deck
   const isDraggingRef = useRef(false);
@@ -206,7 +157,7 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
       onReachTop?.();
       return;
     }
-    if ((deltaY > 35 || deltaX > 35) && activeIndex === filteredCerts.length - 1) {
+    if ((deltaY > 35 || deltaX > 35) && activeIndex === certificatesData.length - 1) {
       lastWheelTimeRef.current = now;
       onReachRight?.();
       return;
@@ -221,11 +172,13 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
     }
   };
 
-  const handleCopyId = (idText: string) => {
-    if (typeof navigator !== 'undefined') {
-      navigator.clipboard.writeText(idText);
-      setCopiedId(idText);
-      setTimeout(() => setCopiedId(null), 2000);
+  // Click handler: opens official credential link if center, or rotates to center if flank
+  const handleCardClick = (cert: CertificateItem, index: number, isCenter: boolean) => {
+    if (hasDraggedRef.current) return;
+    if (isCenter) {
+      window.open(cert.credentialUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      setActiveIndex(index);
     }
   };
 
@@ -234,51 +187,16 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
       onWheel={handleWheel}
       className="relative w-full h-full flex flex-col items-center justify-center select-none pointer-events-auto px-4 sm:px-8 py-6 z-20 overflow-hidden"
     >
-      {/* ================= 1. CATEGORY FILTER PILLS ================= */}
-      <div className="absolute top-6 sm:top-8 z-30 flex items-center justify-center">
-        <div className="flex items-center p-1 rounded-full bg-white/40 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.1)] gap-1">
-          {[
-            { id: 'all', label: 'All Credentials' },
-            { id: 'ai', label: 'AI & Research' },
-            { id: 'systems', label: 'Systems & C' },
-            { id: 'cloud', label: 'Cloud' },
-          ].map((cat) => {
-            const isActive = selectedCategory === cat.id;
-
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id as CertificateCategory)}
-                className={`relative px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-sans tracking-wide transition-colors cursor-pointer ${
-                  isActive
-                    ? 'text-stone-950 dark:text-stone-100 font-semibold'
-                    : 'text-stone-700/80 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100'
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeCertFilterPill"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30, mass: 0.8 }}
-                    className="absolute inset-0 rounded-full bg-white/70 dark:bg-white/20 border border-white/80 dark:border-white/25 shadow-sm"
-                  />
-                )}
-                <span className="relative z-10">{cat.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ================= 2. SPATIAL COVERFLOW CAROUSEL STAGE ================= */}
+      {/* ================= 1. SPATIAL COVERFLOW CAROUSEL STAGE ================= */}
       <div
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         style={{ perspective: '1200px' }}
-        className="relative w-full max-w-5xl h-[410px] sm:h-[450px] md:h-[480px] flex items-center justify-center touch-none cursor-grab active:cursor-grabbing"
+        className="relative w-full max-w-5xl h-[420px] sm:h-[460px] md:h-[490px] flex items-center justify-center touch-none cursor-grab active:cursor-grabbing"
       >
-        {filteredCerts.map((cert, index) => {
+        {certificatesData.map((cert, index) => {
           const offset = index - activeIndex;
           const absOffset = Math.abs(offset);
           const isCenter = offset === 0;
@@ -318,14 +236,7 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
           return (
             <motion.div
               key={cert.id}
-              onClick={() => {
-                if (hasDraggedRef.current) return;
-                if (isCenter) {
-                  setInspectItem(cert);
-                } else if (isClickable) {
-                  setActiveIndex(index);
-                }
-              }}
+              onClick={() => handleCardClick(cert, index, isCenter)}
               animate={{
                 x: translateX,
                 rotateY,
@@ -344,48 +255,48 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                 transformStyle: 'preserve-3d',
                 pointerEvents: isClickable ? 'auto' : 'none',
               }}
-              className="absolute w-[300px] sm:w-[360px] md:w-[410px] h-[300px] sm:h-[330px] md:h-[355px] rounded-3xl p-2.5 sm:p-3 transition-colors cursor-pointer select-none"
+              className="group absolute w-[310px] sm:w-[380px] md:w-[430px] h-[330px] sm:h-[370px] md:h-[400px] rounded-3xl p-2.5 sm:p-3 transition-all cursor-pointer select-none"
             >
               {/* Apple Frosted Glass Frame with Classical Gold Specular Accent */}
               <div
-                className={`w-full h-full rounded-2xl flex flex-col justify-between p-3 sm:p-4 border transition-all duration-300 ${
+                className={`w-full h-full rounded-2xl flex flex-col justify-between p-3.5 sm:p-4.5 border transition-all duration-300 ${
                   isCenter
-                    ? 'bg-[#FAF8F5]/85 dark:bg-[#161412]/85 backdrop-blur-2xl border-white/80 dark:border-white/25 shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,0.9),0_24px_50px_-10px_rgba(0,0,0,0.35)]'
+                    ? 'bg-[#FAF8F5]/85 dark:bg-[#161412]/85 backdrop-blur-2xl border-white/80 dark:border-white/25 shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,0.9),0_24px_50px_-10px_rgba(0,0,0,0.35)] group-hover:border-amber-700/60 dark:group-hover:border-amber-400/50 group-hover:shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,1),0_28px_60px_-10px_rgba(0,0,0,0.45)]'
                     : 'bg-[#FAF8F5]/60 dark:bg-[#161412]/60 backdrop-blur-xl border-white/50 dark:border-white/15 shadow-[0_12px_32px_rgba(0,0,0,0.2)] hover:border-white/80'
                 }`}
               >
                 {/* Certificate Document Thumbnail Preview */}
-                <div className="relative w-full h-24 sm:h-28 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-1 flex-shrink-0">
+                <div className="relative w-full h-36 sm:h-44 md:h-48 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-2 flex-shrink-0">
                   <img
                     src={cert.image}
                     alt={cert.title}
-                    className="w-full h-full object-cover object-center pointer-events-none select-none"
+                    className="w-full h-full object-cover object-center pointer-events-none select-none transition-transform duration-500 group-hover:scale-103"
                     onError={(e) => {
                       (e.currentTarget as HTMLElement).style.display = 'none';
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
                 </div>
 
                 {/* Certificate Header: Issuer Badge & Date */}
-                <div className="flex items-center justify-between gap-2 border-b border-stone-200/60 dark:border-white/10 pb-1.5">
+                <div className="flex items-center justify-between gap-2 border-b border-stone-200/60 dark:border-white/10 pb-2">
                   <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-sans font-semibold border ${cert.issuerBadgeColor}`}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-sans font-semibold border ${cert.issuerBadgeColor}`}
                   >
-                    <ShieldCheck className="w-3 h-3 flex-shrink-0" />
-                    <span className="truncate max-w-[170px]">{cert.issuer}</span>
+                    <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span className="truncate max-w-[190px]">{cert.issuer}</span>
                   </span>
 
                   <div className="flex items-center gap-1 text-[11px] font-serif italic text-stone-600 dark:text-stone-400">
-                    <Calendar className="w-3 h-3 text-amber-700 dark:text-amber-400 flex-shrink-0" />
+                    <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 flex-shrink-0" />
                     <span>{cert.issueDate}</span>
                   </div>
                 </div>
 
                 {/* Certificate Title */}
-                <div className="py-0.5">
+                <div className="py-1">
                   <h3
-                    className="font-serif italic text-sm sm:text-base md:text-lg font-semibold text-stone-950 dark:text-stone-100 line-clamp-1 leading-snug"
+                    className="font-serif italic text-base sm:text-lg md:text-xl font-semibold text-stone-950 dark:text-stone-100 line-clamp-1 leading-snug group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors"
                     style={{
                       textShadow: '0 1px 2px rgba(0,0,0,0.05)',
                     }}
@@ -394,43 +305,20 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                   </h3>
                 </div>
 
-                {/* Skills Badges */}
-                <div className="flex flex-wrap gap-1 py-0.5">
-                  {cert.skills.slice(0, 3).map((skill, i) => (
-                    <span
-                      key={i}
-                      className="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[9.5px] sm:text-[10px] font-sans text-stone-800 dark:text-stone-300 font-medium"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                  {cert.skills.length > 3 && (
-                    <span className="px-1.5 py-0.5 text-[9.5px] font-sans text-stone-500 dark:text-stone-400">
-                      +{cert.skills.length - 3}
-                    </span>
-                  )}
-                </div>
-
-                {/* Bottom Footer: Verification Link & QuickLook hint */}
-                <div className="pt-2 border-t border-stone-200/60 dark:border-white/10 flex items-center justify-between text-xs font-sans">
-                  <div className="flex items-center gap-1 font-mono text-[10px] sm:text-[10.5px] text-stone-500 dark:text-stone-400">
-                    <span>ID:</span>
-                    <span className="text-stone-800 dark:text-stone-200 font-medium truncate max-w-[120px]">{cert.credentialId}</span>
+                {/* Bottom Action Footer: Click to Open Official Credential */}
+                <div className="pt-2 border-t border-stone-200/60 dark:border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-sans text-stone-500 dark:text-stone-400">
+                    <ExternalLink className="w-3.5 h-3.5 text-amber-700 dark:text-[#FFD88A]" />
+                    <span className="font-medium">Official Credential</span>
                   </div>
 
                   {isCenter ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setInspectItem(cert);
-                      }}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-800 dark:bg-amber-700 hover:bg-amber-900 text-white text-[11px] font-medium shadow-sm transition-transform active:scale-95 cursor-pointer"
-                    >
-                      <span>Inspect</span>
-                      <Maximize2 className="w-3 h-3" />
-                    </button>
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white text-xs font-sans font-medium shadow-sm transition-all group-hover:scale-105 group-hover:shadow-md">
+                      <span>Open Certificate</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </span>
                   ) : (
-                    <span className="text-[10px] font-serif italic text-stone-500 dark:text-stone-400">
+                    <span className="text-[11px] font-serif italic text-stone-500 dark:text-stone-400">
                       Click to focus
                     </span>
                   )}
@@ -441,7 +329,7 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
         })}
       </div>
 
-      {/* ================= 3. NAVIGATION CONTROLS & STEP COUNTER ================= */}
+      {/* ================= 2. NAVIGATION CONTROLS & STEP COUNTER ================= */}
       <div className="absolute bottom-6 sm:bottom-8 z-30 flex items-center gap-5">
         {/* Previous Button */}
         <button
@@ -468,147 +356,20 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
               textShadow: '0 1px 6px rgba(0,0,0,0.85)',
             }}
           >
-            0{filteredCerts.length}
+            0{certificatesData.length}
           </span>
         </div>
 
         {/* Next Button */}
         <button
           onClick={handleNext}
-          disabled={activeIndex === filteredCerts.length - 1}
+          disabled={activeIndex === certificatesData.length - 1}
           title="Next Certificate"
           className="p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 backdrop-blur-2xl border border-white/70 dark:border-white/20 text-stone-900 dark:text-stone-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer hover:scale-110 active:scale-95 shadow-sm"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>
-
-      {/* ================= 4. QUICKLOOK INSPECT MODAL (macOS Style) ================= */}
-      <AnimatePresence>
-        {inspectItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 select-text">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setInspectItem(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
-            />
-
-            {/* Modal Window */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-              className="relative w-full max-w-xl rounded-3xl bg-[#FAF8F5]/95 dark:bg-[#1A1816]/95 backdrop-blur-2xl border border-white/80 dark:border-white/20 shadow-[0_24px_70px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden text-stone-900 dark:text-stone-100 z-10"
-            >
-              {/* Header Titlebar */}
-              <div className="h-12 px-5 flex items-center justify-between border-b border-stone-200/60 dark:border-stone-800 bg-white/40 dark:bg-stone-900/60">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#FF5F56]" />
-                  <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                  <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
-                </div>
-
-                <div className="flex items-center gap-2 font-serif italic text-sm font-semibold">
-                  <Award className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                  <span>Credential Inspector</span>
-                </div>
-
-                <button
-                  onClick={() => setInspectItem(null)}
-                  className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-stone-500 dark:text-stone-400 transition-colors cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Modal Content */}
-              <div className="p-5 sm:p-7 space-y-5 overflow-y-auto max-h-[78vh]">
-                {/* Certificate High-Res Document Preview */}
-                <div className="w-full rounded-2xl overflow-hidden bg-black/5 dark:bg-black/30 border border-stone-200/60 dark:border-white/10 flex items-center justify-center p-2">
-                  <img
-                    src={inspectItem.image}
-                    alt={inspectItem.title}
-                    className="w-full h-auto max-h-[38vh] object-contain rounded-xl shadow-md pointer-events-none select-none"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLElement).style.display = 'none';
-                    }}
-                  />
-                </div>
-
-                {/* Title & Issuer */}
-                <div className="space-y-1.5">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-sans font-semibold border ${inspectItem.issuerBadgeColor}`}>
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>{inspectItem.issuer}</span>
-                  </span>
-                  <h2 className="font-serif italic text-xl sm:text-2xl font-semibold leading-tight text-stone-950 dark:text-stone-100">
-                    {inspectItem.title}
-                  </h2>
-                  <p className="text-xs sm:text-sm font-sans text-stone-600 dark:text-stone-400 leading-relaxed pt-0.5">
-                    {inspectItem.description}
-                  </p>
-                </div>
-
-                {/* Skills Grid */}
-                <div className="space-y-2 border-t border-stone-200/60 dark:border-stone-800 pt-3">
-                  <label className="text-xs font-sans uppercase tracking-widest text-stone-500 font-semibold">
-                    Competencies & Tooling
-                  </label>
-                  <div className="flex flex-wrap gap-1.5 pt-0.5">
-                    {inspectItem.skills.map((skill, i) => (
-                      <span
-                        key={i}
-                        className="px-2.5 py-1 rounded-xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-200"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Credential Verification Bar */}
-                <div className="p-3.5 rounded-2xl bg-white/70 dark:bg-white/5 border border-stone-200/60 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-sans">
-                  <div className="space-y-0.5">
-                    <span className="text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-wider block">
-                      Credential Identification
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-medium text-stone-900 dark:text-stone-100 truncate max-w-[200px]">
-                        {inspectItem.credentialId}
-                      </span>
-                      <button
-                        onClick={() => handleCopyId(inspectItem.credentialId)}
-                        title="Copy ID"
-                        className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 text-stone-500 transition-colors cursor-pointer"
-                      >
-                        {copiedId === inspectItem.credentialId ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  <a
-                    href={inspectItem.credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white text-xs font-sans font-medium shadow-sm transition-transform active:scale-95 cursor-pointer"
-                  >
-                    <span>Verify Credential</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
