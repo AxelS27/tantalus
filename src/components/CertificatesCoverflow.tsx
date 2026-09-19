@@ -3,7 +3,6 @@ import { motion } from 'motion/react';
 import {
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   Calendar,
   ShieldCheck,
 } from 'lucide-react';
@@ -259,7 +258,7 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                 WebkitFontSmoothing: 'antialiased',
                 MozOsxFontSmoothing: 'grayscale',
               }}
-              className="group absolute w-[320px] sm:w-[390px] md:w-[440px] h-[330px] sm:h-[370px] md:h-[400px] rounded-3xl p-2.5 sm:p-3 transition-all cursor-pointer select-none"
+              className="group absolute w-[320px] sm:w-[390px] md:w-[440px] h-[300px] sm:h-[340px] md:h-[370px] rounded-3xl p-2.5 sm:p-3 transition-all cursor-pointer select-none"
             >
               {/* Apple Frosted Glass Frame with Classical Gold Specular Accent */}
               <div
@@ -275,7 +274,7 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                 }`}
               >
                 {/* Certificate Document Thumbnail Preview */}
-                <div className="relative w-full h-36 sm:h-44 md:h-48 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-2 flex-shrink-0">
+                <div className="relative w-full h-40 sm:h-48 md:h-52 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-2 flex-shrink-0">
                   <img
                     src={cert.image}
                     alt={cert.title}
@@ -310,25 +309,6 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                   >
                     {cert.title}
                   </h3>
-                </div>
-
-                {/* Bottom Action Footer: Click to Open Official Credential (Button removed, clean indicator) */}
-                <div className="pt-2 border-t border-stone-200/60 dark:border-white/10 flex items-center justify-between flex-shrink-0">
-                  <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-sans font-semibold text-stone-900 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
-                    <ExternalLink className="w-3.5 h-3.5 text-amber-700 dark:text-[#FFD88A] flex-shrink-0" />
-                    <span>Official Credential</span>
-                  </div>
-
-                  {isCenter ? (
-                    <div className="inline-flex items-center gap-1 text-xs font-sans font-semibold text-amber-900 dark:text-[#FFD88A] group-hover:translate-x-0.5 transition-transform drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)] dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
-                      <span>View</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </div>
-                  ) : (
-                    <span className="text-[11px] font-sans font-medium text-stone-500 dark:text-stone-400">
-                      Focus
-                    </span>
-                  )}
                 </div>
               </div>
             </motion.div>
