@@ -245,13 +245,17 @@ export default function App() {
             </p>
           </div>
 
-          {/* Bottom-Right Editorial Watermark */}
-          <div className="absolute bottom-8 right-8 sm:bottom-12 sm:right-14 z-20 pointer-events-none select-none text-right">
-            <div className="font-mono text-[10px] sm:text-xs tracking-[0.35em] uppercase text-white/40 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-              Canvas State
-            </div>
-            <div className="font-serif italic text-2xl sm:text-3xl md:text-4xl text-white/25 tracking-[0.2em] uppercase mt-0.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-              NOT DONE YET
+          {/* Colossal Diagonal Archival Watermark (Full-Screen Stamp) */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-15 overflow-hidden">
+            <div
+              className="-rotate-12 transform-gpu text-center flex flex-col items-center justify-center"
+              style={{
+                WebkitTextStroke: '2px rgba(255, 255, 255, 0.22)',
+              }}
+            >
+              <span className="font-serif italic font-black text-[13vw] sm:text-[14vw] md:text-[15vw] leading-none tracking-[0.06em] text-white/10 dark:text-white/[0.07] uppercase select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.45)] whitespace-nowrap">
+                NOT DONE YET
+              </span>
             </div>
           </div>
         </div>
