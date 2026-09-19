@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
+import { getPrefetchProps, type PrefetchSectionKey } from '../lib/prefetch';
 
 export type NavItem = 'home' | 'timeline' | 'projects' | 'archive' | 'certificates' | 'connect';
 
@@ -46,11 +47,13 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
           {/* Main 3 Quadrant Tabs: Home, Timeline, Projects */}
           {mainNavItems.map((item) => {
             const isActive = activeTab === item.id;
+            const prefetchProps = item.id === 'home' ? {} : getPrefetchProps(item.id as PrefetchSectionKey);
 
             return (
               <button
                 key={item.id}
                 onClick={() => handleSelect(item.id)}
+                {...prefetchProps}
                 className={`group relative h-full flex items-center justify-center px-4 sm:px-5 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
                   isActive
                     ? 'text-stone-950 dark:text-stone-100 font-medium'
@@ -82,6 +85,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
             {/* Archive Button */}
             <button
               onClick={() => handleSelect('archive')}
+              {...getPrefetchProps('archive')}
               className={`group relative h-full flex items-center justify-center px-4 sm:px-5 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
                 activeTab === 'archive'
                   ? 'text-stone-950 dark:text-stone-100 font-medium'

@@ -2,149 +2,16 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAssetUrl } from '../lib/assets';
+import ImageWithSkeleton from './common/ImageWithSkeleton';
+import {
+  page1Projects,
+  page2Projects,
+  projectPages,
+  cubeFaces,
+  type ProjectCardItem,
+} from '../data/projects';
 
-export interface ProjectCardItem {
-  id: string;
-  title: string;
-  image: string;
-}
-
-// Batch 1 (Page 01 - 12 Items)
-const page1Projects: ProjectCardItem[] = [
-  {
-    id: 'comp-bio',
-    title: 'Biomarker Discovery for Cancer',
-    image: 'https://media.liemaxels.com/images/career-trace/binus-anggrek.webp',
-  },
-  {
-    id: 'railroad-cv',
-    title: 'Railroad Safety System',
-    image: 'https://media.liemaxels.com/images/career-trace/madiun-office.webp',
-  },
-  {
-    id: 'tantalus-spatial',
-    title: 'Tantalus 2D Spatial Canvas',
-    image: getAssetUrl('/images/tantalize/projects.webp'),
-  },
-  {
-    id: 'apple-spatial',
-    title: 'Spatial Audio & Vision',
-    image: 'https://media.liemaxels.com/images/career-trace/apple-academy.webp',
-  },
-  {
-    id: 'liem-monorepo',
-    title: 'Liem Distributed Monorepo',
-    image: 'https://media.liemaxels.com/images/career-trace/online-tutoring.webp',
-  },
-  {
-    id: 'neural-nlp',
-    title: 'Lexical Intent Classifier',
-    image: 'https://media.liemaxels.com/images/career-trace/binus-malang.webp',
-  },
-  {
-    id: 'webgl-renderer',
-    title: 'Raymarched 3D Shaders',
-    image: getAssetUrl('/images/tantalize/connect.webp'),
-  },
-  {
-    id: 'autonomous-nav',
-    title: 'Stereo Depth Odometry',
-    image: getAssetUrl('/images/tantalize/archives.webp'),
-  },
-  {
-    id: 'ai-code-reviewer',
-    title: 'Static Analyzer AI Agent',
-    image: getAssetUrl('/images/tantalize/certificates.webp'),
-  },
-  {
-    id: 'distributed-queue',
-    title: 'Zero-Allocation Stream',
-    image: getAssetUrl('/images/tantalize/timeline.webp'),
-  },
-  {
-    id: 'biometric-auth',
-    title: 'Facial Anti-Spoofing',
-    image: getAssetUrl('/images/tantalize/home.webp'),
-  },
-  {
-    id: 'cloud-orchestration',
-    title: 'Self-Healing Mesh',
-    image: getAssetUrl('/images/tantalize/projects.webp'),
-  },
-];
-
-// Batch 2 (Page 02 - 12 Items)
-const page2Projects: ProjectCardItem[] = [
-  {
-    id: 'quantum-sim',
-    title: 'Qubit State Simulator',
-    image: 'https://media.liemaxels.com/images/career-trace/binus-malang.webp',
-  },
-  {
-    id: 'swift-neural',
-    title: 'CoreML Neural Style',
-    image: 'https://media.liemaxels.com/images/career-trace/apple-academy.webp',
-  },
-  {
-    id: 'audio-dsp',
-    title: 'Real-time Synthesizer',
-    image: getAssetUrl('/images/tantalize/home.webp'),
-  },
-  {
-    id: 'edge-inference',
-    title: 'FPGA DL Accelerator',
-    image: getAssetUrl('/images/tantalize/timeline.webp'),
-  },
-  {
-    id: 'graph-rag',
-    title: 'Knowledge Graph RAG',
-    image: 'https://media.liemaxels.com/images/career-trace/binus-anggrek.webp',
-  },
-  {
-    id: 'astronomy-cv',
-    title: 'Exoplanet Curve AI',
-    image: getAssetUrl('/images/tantalize/connect.webp'),
-  },
-  {
-    id: 'p2p-sync',
-    title: 'CRDT Decentralized Sync',
-    image: getAssetUrl('/images/tantalize/archives.webp'),
-  },
-  {
-    id: 'micro-compiler',
-    title: 'LLVM Bytecode JIT',
-    image: getAssetUrl('/images/tantalize/certificates.webp'),
-  },
-  {
-    id: 'vision-pose',
-    title: '3D Kinematic Tracker',
-    image: 'https://media.liemaxels.com/images/career-trace/madiun-office.webp',
-  },
-  {
-    id: 'semantic-search',
-    title: 'HNSW Vector Index',
-    image: 'https://media.liemaxels.com/images/career-trace/online-tutoring.webp',
-  },
-  {
-    id: 'gpu-particles',
-    title: 'Million-Body Physics',
-    image: getAssetUrl('/images/tantalize/projects.webp'),
-  },
-  {
-    id: 'kernel-driver',
-    title: 'Zero-Copy Packet Filter',
-    image: getAssetUrl('/images/tantalize/home.webp'),
-  },
-];
-
-const projectPages = [page1Projects, page2Projects];
-
-const cubeFaces = [
-  { faceIdx: 0, pageIdx: 0, items: page1Projects },
-  { faceIdx: 1, pageIdx: 1, items: page2Projects },
-  { faceIdx: 2, pageIdx: 0, items: page1Projects },
-  { faceIdx: 3, pageIdx: 1, items: page2Projects },
-];
+export type { ProjectCardItem };
 
 interface ProjectsGridProps {
   onReachEnd?: () => void;
@@ -357,18 +224,14 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
                       {/* Specular Top Light Accent */}
                       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/35 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-xl" />
 
-                      {/* 16:9 Thumbnail Image */}
+                      {/* 16:9 Thumbnail Image with Skeleton Shimmer */}
                       <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/10 dark:bg-black/40 border border-white/40 dark:border-white/15 mb-1 flex-shrink-0">
-                        <img
+                        <ImageWithSkeleton
                           src={project.image}
                           alt={project.title}
-                          draggable={false}
+                          wrapperClassName="w-full h-full"
                           className="w-full h-full object-cover object-center pointer-events-none select-none"
-                          onError={(e) => {
-                            const target = e.currentTarget;
-                            target.onerror = null;
-                            target.src = getAssetUrl('/images/tantalize/projects.webp');
-                          }}
+                          skeletonClassName="bg-white/10 dark:bg-black/40"
                         />
                       </div>
 
