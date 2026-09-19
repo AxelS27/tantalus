@@ -122,10 +122,12 @@ export default function App() {
 
   const coords = getCameraCoordinates();
 
-  // Reusable mask style for seamless atmospheric edge feathering
+  // Reusable mask style for seamless atmospheric edge feathering without transparent gap
   const seamlessMaskStyle = {
-    maskImage: 'radial-gradient(ellipse 96% 92% at 50% 50%, black 60%, rgba(0,0,0,0.85) 80%, transparent 100%)',
-    WebkitMaskImage: 'radial-gradient(ellipse 96% 92% at 50% 50%, black 60%, rgba(0,0,0,0.85) 80%, transparent 100%)',
+    maskImage: 'radial-gradient(ellipse 99% 98% at 50% 50%, black 80%, rgba(0,0,0,0.96) 94%, transparent 100%)',
+    WebkitMaskImage: 'radial-gradient(ellipse 99% 98% at 50% 50%, black 80%, rgba(0,0,0,0.96) 94%, transparent 100%)',
+    backfaceVisibility: 'hidden' as const,
+    WebkitBackfaceVisibility: 'hidden' as const,
   };
 
   return (
@@ -147,7 +149,7 @@ export default function App() {
           duration: settings.reducedMotion ? 0.25 : 1.6,
           ease: settings.reducedMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
         }}
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full bg-[#161412] transform-gpu"
       >
         {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
         <div className="absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
@@ -292,7 +294,7 @@ export default function App() {
         </div>
 
         {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
-        <div className="absolute left-[-100vw] top-0 w-screen h-screen overflow-hidden z-10">
+        <div className="absolute left-[-100vw] top-0 w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
           <motion.div
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
@@ -359,7 +361,7 @@ export default function App() {
         </div>
 
         {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
-        <div className="absolute left-[-100vw] top-[100vh] w-screen h-screen overflow-hidden z-10">
+        <div className="absolute left-[-100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
           <motion.div
             style={seamlessMaskStyle}
             className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
@@ -382,6 +384,7 @@ export default function App() {
               alt="Certificates Background"
               className="w-full h-full object-cover object-center pointer-events-none"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
           </motion.div>
 
           {/* Upper-Left Editorial Identity for Certificates */}
