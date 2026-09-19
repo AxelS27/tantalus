@@ -192,7 +192,16 @@ export default function App() {
           </motion.div>
 
           {/* Upper-Left Editorial Identity */}
-          <div className="absolute top-[25%] sm:top-[27%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 sm:space-y-2.5 max-w-5xl">
+          <div className="absolute top-[22%] sm:top-[24%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2.5 sm:space-y-3 max-w-5xl">
+            {/* Status Highlight: NOT DONE YET */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/45 backdrop-blur-xl border border-[#E8C582]/45 text-[#E8C582] text-[10px] sm:text-[11px] font-mono tracking-[0.25em] uppercase shadow-[0_4px_20px_rgba(0,0,0,0.4)] select-none">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E8C582] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E8C582]" />
+              </span>
+              <span className="font-semibold">NOT DONE YET</span>
+            </div>
+
             {/* Line 1: Name */}
             <h1
               className="font-serif italic text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white tracking-tight font-light leading-none whitespace-nowrap"
@@ -234,6 +243,16 @@ export default function App() {
             >
               love to playing piano, coding, and watching movies
             </p>
+          </div>
+
+          {/* Bottom-Right Editorial Watermark */}
+          <div className="absolute bottom-8 right-8 sm:bottom-12 sm:right-14 z-20 pointer-events-none select-none text-right">
+            <div className="font-mono text-[10px] sm:text-xs tracking-[0.35em] uppercase text-white/40 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+              Canvas State
+            </div>
+            <div className="font-serif italic text-2xl sm:text-3xl md:text-4xl text-white/25 tracking-[0.2em] uppercase mt-0.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+              NOT DONE YET
+            </div>
           </div>
         </div>
 
