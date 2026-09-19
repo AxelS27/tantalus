@@ -201,7 +201,7 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
           const absOffset = Math.abs(offset);
           const isCenter = offset === 0;
 
-          // 3D Spatial Geometry: Center spotlight is significantly larger and pushed forward
+          // 3D Spatial Geometry: Center spotlight is at natural 1:1 scale (no pixel stretching/blur)
           let translateX = 0;
           let rotateY = 0;
           let translateZ = 0;
@@ -211,21 +211,21 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
           if (isCenter) {
             translateX = 0;
             rotateY = 0;
-            translateZ = 120;
-            scale = 1.08;
+            translateZ = 80;
+            scale = 1;
             opacity = 1;
           } else if (offset < 0) {
             // Left Flank (Pushed back, rotated, visibly smaller)
             translateX = offset * 210 - 100;
-            rotateY = 36;
-            translateZ = -140 - (absOffset - 1) * 60;
+            rotateY = 32;
+            translateZ = -120 - (absOffset - 1) * 50;
             scale = Math.max(0.55, 0.76 - (absOffset - 1) * 0.14);
             opacity = Math.max(0.15, 0.48 - (absOffset - 1) * 0.25);
           } else {
             // Right Flank (Pushed back, rotated, visibly smaller)
             translateX = offset * 210 + 100;
-            rotateY = -36;
-            translateZ = -140 - (absOffset - 1) * 60;
+            rotateY = -32;
+            translateZ = -120 - (absOffset - 1) * 50;
             scale = Math.max(0.55, 0.76 - (absOffset - 1) * 0.14);
             opacity = Math.max(0.15, 0.48 - (absOffset - 1) * 0.25);
           }
@@ -254,11 +254,20 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                 zIndex,
                 transformStyle: 'preserve-3d',
                 pointerEvents: isClickable ? 'auto' : 'none',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
               }}
-              className="group absolute w-[310px] sm:w-[380px] md:w-[430px] h-[330px] sm:h-[370px] md:h-[400px] rounded-3xl p-2.5 sm:p-3 transition-all cursor-pointer select-none"
+              className="group absolute w-[320px] sm:w-[390px] md:w-[440px] h-[330px] sm:h-[370px] md:h-[400px] rounded-3xl p-2.5 sm:p-3 transition-all cursor-pointer select-none"
             >
               {/* Apple Frosted Glass Frame with Classical Gold Specular Accent */}
               <div
+                style={{
+                  transform: 'translateZ(0)',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                }}
                 className={`w-full h-full rounded-2xl flex flex-col justify-between p-3.5 sm:p-4.5 border transition-all duration-300 ${
                   isCenter
                     ? 'bg-[#FAF8F5]/85 dark:bg-[#161412]/85 backdrop-blur-2xl border-white/80 dark:border-white/25 shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,0.9),0_24px_50px_-10px_rgba(0,0,0,0.35)] group-hover:border-amber-700/60 dark:group-hover:border-amber-400/50 group-hover:shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,1),0_28px_60px_-10px_rgba(0,0,0,0.45)]'
@@ -287,19 +296,17 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
                     <span className="truncate max-w-[190px]">{cert.issuer}</span>
                   </span>
 
-                  <div className="flex items-center gap-1 text-[11px] font-serif italic text-stone-600 dark:text-stone-400">
-                    <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 flex-shrink-0" />
+                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-sans font-medium text-stone-600 dark:text-stone-300">
+                    <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-[#FFD88A] flex-shrink-0" />
                     <span>{cert.issueDate}</span>
                   </div>
                 </div>
 
-                {/* Certificate Title */}
+                {/* Certificate Title (Razor-Sharp High-Legibility Typography) */}
                 <div className="py-1">
                   <h3
-                    className="font-serif italic text-base sm:text-lg md:text-xl font-semibold text-stone-950 dark:text-stone-100 line-clamp-1 leading-snug group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors"
-                    style={{
-                      textShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                    }}
+                    title={cert.title}
+                    className="font-sans text-xs sm:text-sm md:text-base font-semibold text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors leading-snug line-clamp-1 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)]"
                   >
                     {cert.title}
                   </h3>
