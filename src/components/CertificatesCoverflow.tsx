@@ -194,14 +194,14 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         style={{ perspective: '1200px' }}
-        className="relative w-full max-w-5xl h-[420px] sm:h-[460px] md:h-[490px] flex items-center justify-center touch-none cursor-grab active:cursor-grabbing"
+        className="relative w-full max-w-6xl h-[440px] sm:h-[480px] md:h-[510px] flex items-center justify-center touch-none cursor-grab active:cursor-grabbing"
       >
         {certificatesData.map((cert, index) => {
           const offset = index - activeIndex;
           const absOffset = Math.abs(offset);
           const isCenter = offset === 0;
 
-          // 3D Spatial Geometry
+          // 3D Spatial Geometry: Center spotlight is significantly larger and pushed forward
           let translateX = 0;
           let rotateY = 0;
           let translateZ = 0;
@@ -211,23 +211,23 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
           if (isCenter) {
             translateX = 0;
             rotateY = 0;
-            translateZ = 70;
-            scale = 1;
+            translateZ = 120;
+            scale = 1.08;
             opacity = 1;
           } else if (offset < 0) {
-            // Left Flank
-            translateX = offset * 190 - 75;
-            rotateY = 28;
-            translateZ = -90 - absOffset * 40;
-            scale = Math.max(0.68, 1 - absOffset * 0.12);
-            opacity = Math.max(0.2, 1 - absOffset * 0.35);
+            // Left Flank (Pushed back, rotated, visibly smaller)
+            translateX = offset * 210 - 100;
+            rotateY = 36;
+            translateZ = -140 - (absOffset - 1) * 60;
+            scale = Math.max(0.55, 0.76 - (absOffset - 1) * 0.14);
+            opacity = Math.max(0.15, 0.48 - (absOffset - 1) * 0.25);
           } else {
-            // Right Flank
-            translateX = offset * 190 + 75;
-            rotateY = -28;
-            translateZ = -90 - absOffset * 40;
-            scale = Math.max(0.68, 1 - absOffset * 0.12);
-            opacity = Math.max(0.2, 1 - absOffset * 0.35);
+            // Right Flank (Pushed back, rotated, visibly smaller)
+            translateX = offset * 210 + 100;
+            rotateY = -36;
+            translateZ = -140 - (absOffset - 1) * 60;
+            scale = Math.max(0.55, 0.76 - (absOffset - 1) * 0.14);
+            opacity = Math.max(0.15, 0.48 - (absOffset - 1) * 0.25);
           }
 
           const zIndex = Math.round(30 - absOffset * 10);
