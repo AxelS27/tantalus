@@ -9,6 +9,12 @@ const LOCAL_GROUP_NAMES: Record<ThumbnailGroup, string> = {
   certificates: 'certificates',
 };
 
+const DIRECT_THUMBNAIL_GROUPS: Record<string, ThumbnailGroup> = {
+  career: 'career-trace',
+  tantalize: 'tantalize',
+  certificates: 'certificates',
+};
+
 interface ThumbnailMatch {
   group: ThumbnailGroup;
   localDirectory: string;
@@ -21,15 +27,18 @@ function matchThumbnail(source: string | undefined): ThumbnailMatch | null {
 
   try {
     const pathname = new URL(source, 'https://local.invalid').pathname;
-    const group = THUMBNAIL_GROUPS.find((candidate) =>
-      pathname.includes(`/images/${candidate}/`),
+    const directDirectory = Object.keys(DIRECT_THUMBNAIL_GROUPS).find((directory) =>
+      pathname.includes(`/images/thumbnails/${directory}/`),
     );
+    const group = directDirectory
+      ? DIRECT_THUMBNAIL_GROUPS[directDirectory]
+      : THUMBNAIL_GROUPS.find((candidate) => pathname.includes(`/images/${candidate}/`));
     const filename = pathname.split('/').pop();
 
     if (group && filename?.endsWith('.webp')) {
       return {
         group,
-        localDirectory: LOCAL_GROUP_NAMES[group],
+        localDirectory: directDirectory || LOCAL_GROUP_NAMES[group],
         filename,
         stem: filename.slice(0, -5),
       };

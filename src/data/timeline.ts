@@ -1,3 +1,5 @@
+import { getAssetUrl } from '../lib/assets';
+
 export interface TimelineItem {
   id: string;
   year: string;
@@ -16,7 +18,7 @@ export const timelineData: TimelineItem[] = [
     company: 'Apple Developer Academy @Tangerang',
     description:
       'Accepted into the prestigious Apple Developer Academy 2027 Cohort. Intensive 10-month journey mastering iOS app architecture, Swift, SwiftUI, spatial computing, and human-centered design.',
-    image: 'https://media.liemaxels.com/images/career-trace/apple-academy.webp',
+    image: getAssetUrl('/images/thumbnails/career/apple-academy.webp'),
     isUpcoming: true,
   },
   {
@@ -26,7 +28,7 @@ export const timelineData: TimelineItem[] = [
     company: 'BINUS University @Kemanggisan',
     description:
       'Continuing CS degree through a cross-campus mobility program in Jakarta. Specializing in Intelligent Systems with a deep focus on Natural Language Processing, Computer Vision, and Deep Learning.',
-    image: 'https://media.liemaxels.com/images/career-trace/binus-anggrek.webp',
+    image: getAssetUrl('/images/thumbnails/career/binus-anggrek.webp'),
   },
   {
     id: 'coding-educator',
@@ -35,7 +37,7 @@ export const timelineData: TimelineItem[] = [
     company: 'Freelance @Online',
     description:
       'Providing 1-on-1 online programming mentorship as an independent educator. Mentoring students in algorithmic logic, data structures, and interactive full-stack projects.',
-    image: 'https://media.liemaxels.com/images/career-trace/online-tutoring.webp',
+    image: getAssetUrl('/images/thumbnails/career/online-tutoring.webp'),
   },
   {
     id: 'kode-kiddo',
@@ -44,7 +46,7 @@ export const timelineData: TimelineItem[] = [
     company: 'KODE KIDDO @Madiun',
     description:
       'Taught coding classes for young minds, facilitating foundational programming concepts, algorithmic thinking, and problem-solving through interactive software creations.',
-    image: 'https://media.liemaxels.com/images/career-trace/madiun-office.webp',
+    image: getAssetUrl('/images/thumbnails/career/madiun-office.webp'),
   },
   {
     id: 'binus-malang',
@@ -53,6 +55,6 @@ export const timelineData: TimelineItem[] = [
     company: 'BINUS University @Malang',
     description:
       'Built a rigorous academic foundation in algorithms, software engineering, database management, and mathematical foundations of computing at Binus Malang.',
-    image: 'https://media.liemaxels.com/images/career-trace/binus-malang.webp',
+    image: getAssetUrl('/images/thumbnails/career/binus-malang.webp'),
   },
 ];

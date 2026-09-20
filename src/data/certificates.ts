@@ -20,7 +20,7 @@ export const certificatesData: CertificateItem[] = [
     issuerBadgeColor: 'bg-[#D97706]/15 text-[#B45309] dark:text-[#FCD34D] border-[#D97706]/30',
     issueDate: 'SEP 2026',
     credentialUrl: 'https://drive.google.com/file/d/1W441eL0WyWvlMBlyDY0ElU-Djaq_gsvq/view',
-    image: getAssetUrl('/images/certificates/ai-career-readiness.webp'),
+    image: getAssetUrl('/images/thumbnails/certificates/ai-career-readiness.webp'),
     description:
       'Applied artificial intelligence competence, digital stewardship, and machine learning industrial readiness.',
   },
@@ -31,7 +31,7 @@ export const certificatesData: CertificateItem[] = [
     issuerBadgeColor: 'bg-[#0078D4]/15 text-[#0078D4] dark:text-[#60A5FA] border-[#0078D4]/30',
     issueDate: 'FEB 2026',
     credentialUrl: 'https://drive.google.com/file/d/1EBukOExRhI2w0Lir1uJlHs5avyDDEgUV/view?usp=drive_link',
-    image: getAssetUrl('/images/certificates/microsoft-eleveate-ai-training.webp'),
+    image: getAssetUrl('/images/thumbnails/certificates/microsoft-eleveate-ai-training.webp'),
     description:
       'Artificial intelligence workloads, cognitive vision & NLP services, and responsible AI principles in cloud environments.',
   },
@@ -42,7 +42,7 @@ export const certificatesData: CertificateItem[] = [
     issuerBadgeColor: 'bg-[#B91C1C]/15 text-[#B91C1C] dark:text-[#F87171] border-[#B91C1C]/30',
     issueDate: 'DEC 2025',
     credentialUrl: 'https://drive.google.com/file/d/1GdgwtUW11Zn-PcgFVgBObksK-sERQpDQ/view?usp=sharing',
-    image: getAssetUrl('/images/certificates/dean-list-2025.webp'),
+    image: getAssetUrl('/images/thumbnails/certificates/dean-list-2025.webp'),
     description:
       'Academic honor awarded for exceptional scholastic performance, research dedication, and highest GPA honors.',
   },
@@ -53,7 +53,7 @@ export const certificatesData: CertificateItem[] = [
     issuerBadgeColor: 'bg-[#0056D2]/15 text-[#0056D2] dark:text-[#5B96F7] border-[#0056D2]/30',
     issueDate: 'AUG 2025',
     credentialUrl: 'https://drive.google.com/file/d/1dJoY8GTQCdgxZApqdUdXIyGXEuTSBmWL/view',
-    image: getAssetUrl('/images/certificates/lnt-c-programming.webp'),
+    image: getAssetUrl('/images/thumbnails/certificates/lnt-c-programming.webp'),
     description:
       'Low-level systems programming, manual pointer arithmetic, dynamic memory allocation, and algorithmic problem solving.',
   },
@@ -64,7 +64,7 @@ export const certificatesData: CertificateItem[] = [
     issuerBadgeColor: 'bg-[#76B900]/15 text-[#4D7C0F] dark:text-[#84CC16] border-[#76B900]/30',
     issueDate: 'OCT 2024',
     credentialUrl: 'https://learn.nvidia.com/certificates?id=wnSF-zEPRmuMGkEWrq1h4A',
-    image: getAssetUrl('/images/certificates/fundamental-of-deeplearning.webp'),
+    image: getAssetUrl('/images/thumbnails/certificates/fundamental-of-deeplearning.webp'),
     description:
       'Foundational deep learning network design, computer vision feature representations, and transfer learning workflows.',
   },
