@@ -9,11 +9,16 @@ import {
 import { certificatesData, type CertificateItem } from '../data/certificates';
 
 export interface CertificatesCoverflowProps {
+  isActive?: boolean;
   onReachTop?: () => void;
   onReachRight?: () => void;
 }
 
-export function CertificatesCoverflow({ onReachTop, onReachRight }: CertificatesCoverflowProps) {
+export function CertificatesCoverflow({
+  isActive = true,
+  onReachTop,
+  onReachRight,
+}: CertificatesCoverflowProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(0);
   const [virtualIndex, setVirtualIndex] = useState(0);
@@ -133,13 +138,15 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
 
   // Keyboard arrow navigation
   useEffect(() => {
+    if (!isActive) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') handlePrev();
       if (e.key === 'ArrowRight') handleNext();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handlePrev, handleNext]);
+  }, [isActive, handlePrev, handleNext]);
 
   // Click handler: opens official credential link if center, or rotates to center if flank
   const handleCardClick = (cert: CertificateItem, index: number, isCenter: boolean) => {
@@ -152,6 +159,8 @@ export function CertificatesCoverflow({ onReachTop, onReachRight }: Certificates
       setVirtualIndex(index);
     }
   };
+
+  if (!isActive) return null;
 
   return (
     <div

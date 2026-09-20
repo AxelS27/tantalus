@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { type PortfolioSettings, getSavedSettings } from './lib/settings';
 import { getAssetUrl } from './lib/assets';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import CanvasSectionSkeleton from './components/skeletons/CanvasSectionSkeleton';
-import { prefetchSection } from './lib/prefetch';
+import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
 
 // Lazy-loaded code-split section chunks
 const TimelineRoller = lazy(() =>
@@ -45,7 +45,11 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<NavItem>(getTabFromHash);
   const [settings, setSettings] = useState<PortfolioSettings>(getSavedSettings);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [transitionFrom, setTransitionFrom] = useState<NavItem | null>(null);
+  const [transitionTarget, setTransitionTarget] = useState<NavItem | null>(null);
+  const activeTabRef = useRef(activeTab);
   const isTransitioningRef = useRef(false);
+  const preparationFrameRef = useRef<number | null>(null);
 
   // Sync settings and HTML dark class
   const handleUpdateSettings = (patch: Partial<PortfolioSettings>) => {
@@ -85,8 +89,12 @@ export default function App() {
   }, [activeTab]);
 
   // Sync tab change with URL Hash without page reload
-  const handleTabChange = (newTab: NavItem) => {
+  const commitTabChange = useCallback((newTab: NavItem, syncHistory = true) => {
+    activeTabRef.current = newTab;
     setActiveTab(newTab);
+
+    if (!syncHistory) return;
+
     const targetHash = newTab === 'home' ? '' : `#${newTab}`;
     if (window.location.hash !== targetHash) {
       window.history.replaceState(
@@ -95,20 +103,35 @@ export default function App() {
         targetHash || window.location.pathname + window.location.search
       );
     }
-  };
+  }, []);
 
-  // Safe global section switch with cooldown and neighbor prefetching
-  const triggerSectionChange = (newTab: NavItem) => {
-    if (isTransitioningRef.current) return;
+  // Wheel navigation pre-paints the destination for two frames. Direct navigation
+  // can interrupt an in-flight glide and commits immediately for responsive controls.
+  const triggerSectionChange = useCallback((
+    newTab: NavItem,
+    syncHistory = true,
+    immediate = false,
+  ) => {
+    if (newTab === activeTabRef.current) return;
+    if (isTransitioningRef.current && !immediate) return;
+
+    if (preparationFrameRef.current !== null) {
+      window.cancelAnimationFrame(preparationFrameRef.current);
+      preparationFrameRef.current = null;
+    }
+
+    const fromTab = activeTabRef.current;
     isTransitioningRef.current = true;
     setIsNavigating(true);
-    handleTabChange(newTab);
-    setTimeout(() => {
-      isTransitioningRef.current = false;
-      setIsNavigating(false);
-    }, 1600);
+    setTransitionFrom(fromTab);
+    setTransitionTarget(newTab);
 
-    // Intent-aware section chunk prefetching
+    prefetchSectionBackground(newTab);
+    if (newTab !== 'home' && newTab !== 'connect') {
+      prefetchSection(newTab);
+    }
+
+    // Warm the next likely destination while the current transition is still cheap.
     if (newTab === 'home') {
       prefetchSection('timeline');
       prefetchSection('archive');
@@ -118,10 +141,37 @@ export default function App() {
       prefetchSection('archive');
       prefetchSection('certificates');
     } else if (newTab === 'archive') {
-      prefetchSection('certificates');
       prefetchSection('projects');
+      prefetchSection('certificates');
     }
-  };
+
+    if (immediate) {
+      commitTabChange(newTab, syncHistory);
+      return;
+    }
+
+    preparationFrameRef.current = window.requestAnimationFrame(() => {
+      preparationFrameRef.current = window.requestAnimationFrame(() => {
+        preparationFrameRef.current = null;
+        commitTabChange(newTab, syncHistory);
+      });
+    });
+  }, [commitTabChange]);
+
+  const handleCameraAnimationComplete = useCallback(() => {
+    if (!isTransitioningRef.current || activeTabRef.current !== transitionTarget) return;
+
+    isTransitioningRef.current = false;
+    setIsNavigating(false);
+    setTransitionFrom(null);
+    setTransitionTarget(null);
+  }, [transitionTarget]);
+
+  useEffect(() => () => {
+    if (preparationFrameRef.current !== null) {
+      window.cancelAnimationFrame(preparationFrameRef.current);
+    }
+  }, []);
 
   // Idle background prefetch on initial mount
   useEffect(() => {
@@ -137,12 +187,12 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const tab = getTabFromHash();
-      setActiveTab(tab);
+      triggerSectionChange(tab, false, true);
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [triggerSectionChange]);
 
   // Global mouse wheel listener for section-to-section navigation
   const handleGlobalWheel = (e: React.WheelEvent) => {
@@ -191,6 +241,10 @@ export default function App() {
   };
 
   const coords = getCameraCoordinates();
+  const isSectionRendered = (tab: NavItem) =>
+    tab === activeTab || tab === transitionFrom || tab === transitionTarget;
+  const isBackgroundLive = (tab: NavItem) =>
+    settings.ambientParallax && isSectionRendered(tab);
 
   // Reusable mask style for seamless atmospheric edge feathering without transparent gap
   const seamlessMaskStyle = {
@@ -207,7 +261,10 @@ export default function App() {
         className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
       >
         {/* Floating Centered Apple Frosted Glass Navbar */}
-        <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
+        <Navbar
+          activeTab={activeTab}
+          onTabChange={(tab) => triggerSectionChange(tab, true, true)}
+        />
 
         {/* 2D Spatial Canvas World with GPU Off-Thread Transform Acceleration */}
         <motion.div
@@ -220,26 +277,16 @@ export default function App() {
             duration: settings.reducedMotion ? 0.25 : 1.6,
             ease: settings.reducedMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
           }}
+          onAnimationComplete={handleCameraAnimationComplete}
           className="absolute inset-0 w-full h-full bg-[#161412] transform-gpu will-change-transform"
         >
           {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
           <div className="absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
-            <motion.div
+            <div
               style={seamlessMaskStyle}
-              className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
-              animate={{
-                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
-              }}
-              transition={
-                settings.ambientParallax
-                  ? {
-                      duration: 22,
-                      repeat: Infinity,
-                      repeatType: 'mirror',
-                      ease: 'easeInOut',
-                    }
-                  : { duration: 0.3 }
-              }
+              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                isBackgroundLive('home') ? 'ambient-canvas-background--live' : ''
+              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
                 src={getAssetUrl('/images/tantalize/home.webp')}
@@ -248,7 +295,7 @@ export default function App() {
                 decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
               />
-            </motion.div>
+            </div>
 
             {/* Upper-Left Editorial Identity */}
             <div className="absolute top-[25%] sm:top-[27%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 sm:space-y-2.5 max-w-5xl">
@@ -313,35 +360,26 @@ export default function App() {
           {/* ================= 2. TIMELINE SECTION (East: +100vw, 0) ================= */}
           <div className="absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
             {/* Background Image with Ultra-Subtle Vignette */}
-            <motion.div
+            <div
               style={seamlessMaskStyle}
-              className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
-              animate={{
-                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
-              }}
-              transition={
-                settings.ambientParallax
-                  ? {
-                      duration: 22,
-                      repeat: Infinity,
-                      repeatType: 'mirror',
-                      ease: 'easeInOut',
-                    }
-                  : { duration: 0.3 }
-              }
+              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                isBackgroundLive('timeline') ? 'ambient-canvas-background--live' : ''
+              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
                 src={getAssetUrl('/images/tantalize/timeline.webp')}
                 alt="Timeline Background"
+                loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/16 via-transparent to-black/10 pointer-events-none" />
-            </motion.div>
+            </div>
 
             {/* Vertical Cylindrical Roller Wheel Component (Code-Split with Suspense) */}
             <Suspense fallback={<CanvasSectionSkeleton />}>
               <TimelineRoller
+                isActive={isSectionRendered('timeline')}
                 onReachEnd={() => triggerSectionChange('projects')}
                 onReachStart={() => triggerSectionChange('home')}
               />
@@ -351,35 +389,26 @@ export default function App() {
           {/* ================= 3. PROJECTS SECTION (South: 0, +100vh) ================= */}
           <div className="absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
             {/* Background Image with Subtle Vignette */}
-            <motion.div
+            <div
               style={seamlessMaskStyle}
-              className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
-              animate={{
-                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
-              }}
-              transition={
-                settings.ambientParallax
-                  ? {
-                      duration: 22,
-                      repeat: Infinity,
-                      repeatType: 'mirror',
-                      ease: 'easeInOut',
-                    }
-                  : { duration: 0.3 }
-              }
+              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                isBackgroundLive('projects') ? 'ambient-canvas-background--live' : ''
+              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
                 src={getAssetUrl('/images/tantalize/projects.webp')}
                 alt="Projects Background"
+                loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
-            </motion.div>
+            </div>
 
             {/* 3D Cube Projects Grid (Code-Split with Suspense) */}
             <Suspense fallback={<CanvasSectionSkeleton />}>
               <ProjectsGrid
+                isActive={isSectionRendered('projects')}
                 onReachEnd={() => triggerSectionChange('archive')}
                 onReachStart={() => triggerSectionChange('timeline')}
               />
@@ -388,35 +417,26 @@ export default function App() {
 
           {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
           <div className="absolute left-[-100vw] top-0 w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
-            <motion.div
+            <div
               style={seamlessMaskStyle}
-              className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
-              animate={{
-                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
-              }}
-              transition={
-                settings.ambientParallax
-                  ? {
-                      duration: 22,
-                      repeat: Infinity,
-                      repeatType: 'mirror',
-                      ease: 'easeInOut',
-                    }
-                  : { duration: 0.3 }
-              }
+              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                isBackgroundLive('archive') ? 'ambient-canvas-background--live' : ''
+              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
                 src={getAssetUrl('/images/tantalize/archives.webp')}
                 alt="Archive Background"
+                loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
-            </motion.div>
+            </div>
 
             {/* macOS Launchpad / App Hub (Code-Split with Suspense) */}
             <Suspense fallback={<CanvasSectionSkeleton />}>
               <ArchiveHub
+                isActive={isSectionRendered('archive')}
                 settings={settings}
                 onUpdateSettings={handleUpdateSettings}
                 onAppSelect={(appId) => {
@@ -433,64 +453,45 @@ export default function App() {
 
           {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
           <div className="absolute left-[100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
-            <motion.div
+            <div
               style={seamlessMaskStyle}
-              className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
-              animate={{
-                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
-              }}
-              transition={
-                settings.ambientParallax
-                  ? {
-                      duration: 22,
-                      repeat: Infinity,
-                      repeatType: 'mirror',
-                      ease: 'easeInOut',
-                    }
-                  : { duration: 0.3 }
-              }
+              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                isBackgroundLive('connect') ? 'ambient-canvas-background--live' : ''
+              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
                 src={getAssetUrl('/images/tantalize/connect.webp')}
                 alt="Connect Background"
+                loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
-            </motion.div>
+            </div>
           </div>
 
           {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
           <div className="absolute left-[-100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
-            <motion.div
+            <div
               style={seamlessMaskStyle}
-              className="absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)]"
-              animate={{
-                scale: settings.ambientParallax && !isNavigating ? [1.02, 1.05, 1.02] : 1,
-              }}
-              transition={
-                settings.ambientParallax
-                  ? {
-                      duration: 22,
-                      repeat: Infinity,
-                      repeatType: 'mirror',
-                      ease: 'easeInOut',
-                    }
-                  : { duration: 0.3 }
-              }
+              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                isBackgroundLive('certificates') ? 'ambient-canvas-background--live' : ''
+              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
                 src={getAssetUrl('/images/tantalize/certificates.webp')}
                 alt="Certificates Background"
+                loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover object-center pointer-events-none"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
-            </motion.div>
+            </div>
 
             {/* Interactive 3D Spatial Coverflow Carousel (Code-Split with Suspense) */}
             <Suspense fallback={<CanvasSectionSkeleton />}>
               <CertificatesCoverflow
+                isActive={isSectionRendered('certificates')}
                 onReachTop={() => triggerSectionChange('archive')}
                 onReachRight={() => triggerSectionChange('projects')}
               />

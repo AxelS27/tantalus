@@ -14,11 +14,12 @@ import {
 export type { ProjectCardItem };
 
 interface ProjectsGridProps {
+  isActive?: boolean;
   onReachEnd?: () => void;
   onReachStart?: () => void;
 }
 
-export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
+export function ProjectsGrid({ isActive = true, onReachEnd, onReachStart }: ProjectsGridProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [rotationY, setRotationY] = useState(0);
   const [rotationX, setRotationX] = useState(0);
@@ -32,7 +33,7 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
   const [radius, setRadius] = useState<number>(384);
 
   useEffect(() => {
-    if (!stageRef.current) return;
+    if (!isActive || !stageRef.current) return;
     const updateRadius = () => {
       if (stageRef.current) {
         setRadius(stageRef.current.offsetWidth / 2);
@@ -42,7 +43,7 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
     const ro = new ResizeObserver(updateRadius);
     ro.observe(stageRef.current);
     return () => ro.disconnect();
-  }, []);
+  }, [isActive]);
 
   const handleNext = useCallback(() => {
     if (currentPage >= projectPages.length - 1) {
@@ -142,6 +143,8 @@ export function ProjectsGrid({ onReachEnd, onReachStart }: ProjectsGridProps) {
       lastWheelTimeRef.current = now;
     }
   };
+
+  if (!isActive) return null;
 
   return (
     <div

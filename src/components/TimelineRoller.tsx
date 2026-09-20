@@ -8,11 +8,12 @@ import ImageWithSkeleton from './common/ImageWithSkeleton';
 export type { TimelineItem };
 
 interface TimelineRollerProps {
+  isActive?: boolean;
   onReachEnd?: () => void;
   onReachStart?: () => void;
 }
 
-export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps) {
+export function TimelineRoller({ isActive = true, onReachEnd, onReachStart }: TimelineRollerProps) {
   // Initialize on Apple Developer Academy (index 0)
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(0);
@@ -129,6 +130,8 @@ export function TimelineRoller({ onReachEnd, onReachStart }: TimelineRollerProps
       lastWheelTimeRef.current = now;
     }
   };
+
+  if (!isActive) return null;
 
   return (
     <div

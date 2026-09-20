@@ -1,3 +1,5 @@
+import { getAssetUrl } from './assets';
+
 /**
  * Smart Canvas Section & Route Prefetching Engine
  * Mirroring D:/Coding/Portofolio architecture
@@ -16,6 +18,8 @@ export type PrefetchSectionKey =
   | 'archive'
   | 'certificates';
 
+export type CanvasBackgroundKey = PrefetchSectionKey | 'home' | 'connect';
+
 const sectionLoaders: Record<PrefetchSectionKey, () => Promise<unknown>> = {
   timeline: () => import('../components/TimelineRoller'),
   projects: () => import('../components/ProjectsGrid'),
@@ -24,7 +28,30 @@ const sectionLoaders: Record<PrefetchSectionKey, () => Promise<unknown>> = {
 };
 
 const prefetchedSections = new Set<string>();
+const prefetchedBackgrounds = new Set<CanvasBackgroundKey>();
 const hoverTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+const backgroundPaths: Record<CanvasBackgroundKey, string> = {
+  home: '/images/tantalize/home.webp',
+  timeline: '/images/tantalize/timeline.webp',
+  projects: '/images/tantalize/projects.webp',
+  archive: '/images/tantalize/archives.webp',
+  certificates: '/images/tantalize/certificates.webp',
+  connect: '/images/tantalize/connect.webp',
+};
+
+/** Starts fetching and decoding a canvas background before the camera needs it. */
+export function prefetchSectionBackground(key: CanvasBackgroundKey): void {
+  if (typeof window === 'undefined' || prefetchedBackgrounds.has(key) || shouldSkipPrefetch()) return;
+
+  prefetchedBackgrounds.add(key);
+  const image = new Image();
+  image.decoding = 'async';
+  image.src = getAssetUrl(backgroundPaths[key]);
+  image.decode?.().catch(() => {
+    prefetchedBackgrounds.delete(key);
+  });
+}
 
 /**
  * Checks if the user's browser/network prefers reduced data usage
@@ -45,9 +72,10 @@ function shouldSkipPrefetch(): boolean {
  * Safely prefetches a section chunk in the background
  */
 export function prefetchSection(key: PrefetchSectionKey): void {
-  if (prefetchedSections.has(key)) return;
   if (shouldSkipPrefetch()) return;
 
+  prefetchSectionBackground(key);
+  if (prefetchedSections.has(key)) return;
   prefetchedSections.add(key);
 
   const loader = sectionLoaders[key];

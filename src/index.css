@@ -39,6 +39,30 @@ body {
   scrollbar-width: none;
 }
 
+@keyframes canvas-ambient-drift {
+  0%,
+  100% {
+    transform: scale(1.02);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.ambient-canvas-background {
+  transform: scale(1.02);
+  transform-origin: center;
+  backface-visibility: hidden;
+}
+
+.ambient-canvas-background--live {
+  animation: canvas-ambient-drift 22s ease-in-out infinite;
+}
+
+.ambient-canvas-background--paused {
+  animation-play-state: paused;
+}
+
 @keyframes skeleton-shimmer {
   0% {
     transform: translateX(-100%);

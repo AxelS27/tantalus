@@ -92,6 +92,7 @@ export type { PortfolioSettings };
 export { DEFAULT_SETTINGS, getSavedSettings };
 
 interface ArchiveHubProps {
+  isActive?: boolean;
   onReachStart?: () => void;
   onAppSelect?: (appId: ArchiveAppId) => void;
   settings?: PortfolioSettings;
@@ -99,6 +100,7 @@ interface ArchiveHubProps {
 }
 
 export function ArchiveHub({
+  isActive = true,
   onReachStart,
   onAppSelect,
   settings: externalSettings,
@@ -141,9 +143,14 @@ export function ArchiveHub({
     url: string;
   } | null>(null);
   const [isLoadingGithub, setIsLoadingGithub] = useState(false);
+  const hasRequestedGithubRef = useRef(false);
 
   useEffect(() => {
+    if (!isActive || hasRequestedGithubRef.current) return;
+
+    hasRequestedGithubRef.current = true;
     let isMounted = true;
+    let requestSettled = false;
     setIsLoadingGithub(true);
     fetch('https://api.github.com/repos/AxelS27/tantalus/commits?per_page=1')
       .then((res) => {
@@ -178,13 +185,15 @@ export function ArchiveHub({
         });
       })
       .finally(() => {
+        requestSettled = true;
         if (isMounted) setIsLoadingGithub(false);
       });
 
     return () => {
       isMounted = false;
+      if (!requestSettled) hasRequestedGithubRef.current = false;
     };
-  }, []);
+  }, [isActive]);
 
   // Settings Modal State (Local popover, zero routing)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -217,6 +226,8 @@ export function ArchiveHub({
 
   // Sync suction coordinate on resize and scroll
   useEffect(() => {
+    if (!isActive) return;
+
     updateSuctionPosition();
     window.addEventListener('resize', updateSuctionPosition);
     const container = containerRef.current;
@@ -229,10 +240,12 @@ export function ArchiveHub({
         container.removeEventListener('scroll', updateSuctionPosition);
       }
     };
-  }, []);
+  }, [isActive]);
 
   // Check if hash has settings or keyboard shortcut Cmd+,
   useEffect(() => {
+    if (!isActive) return;
+
     if (typeof window !== 'undefined' && window.location.hash.includes('settings')) {
       updateSuctionPosition();
       setIsSettingsOpen(true);
@@ -251,7 +264,7 @@ export function ArchiveHub({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSettingsOpen]);
+  }, [isActive, isSettingsOpen]);
 
   const handleAppClick = (app: ArchiveAppItem) => {
     // Settings opens as a local macOS System Settings window without routing!
@@ -306,6 +319,8 @@ export function ArchiveHub({
       }
     }
   };
+
+  if (!isActive) return null;
 
   return (
     <div
