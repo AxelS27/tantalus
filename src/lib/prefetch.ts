@@ -1,3 +1,5 @@
+import { getAssetUrl } from './assets';
+
 /**
  * Smart Canvas Section & Route Prefetching Engine
  * Mirroring D:/Coding/Portofolio architecture
@@ -30,12 +32,12 @@ const prefetchedBackgrounds = new Set<CanvasBackgroundKey>();
 const hoverTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 const backgroundPaths: Record<CanvasBackgroundKey, string> = {
-  home: '/images/backgrounds/home.webp',
-  timeline: '/images/backgrounds/timeline.webp',
-  projects: '/images/backgrounds/projects.webp',
-  archive: '/images/backgrounds/archives.webp',
-  certificates: '/images/backgrounds/certificates.webp',
-  connect: '/images/backgrounds/connect.webp',
+  home: '/images/tantalize/home.webp',
+  timeline: '/images/tantalize/timeline.webp',
+  projects: '/images/tantalize/projects.webp',
+  archive: '/images/tantalize/archives.webp',
+  certificates: '/images/tantalize/certificates.webp',
+  connect: '/images/tantalize/connect.webp',
 };
 
 /** Starts fetching and decoding a canvas background before the camera needs it. */
@@ -44,7 +46,7 @@ export function prefetchSectionBackground(key: CanvasBackgroundKey): void {
 
   prefetchedBackgrounds.add(key);
   const image = new Image();
-  const source = backgroundPaths[key];
+  const source = getAssetUrl(backgroundPaths[key]);
   const stem = source.slice(0, -5);
   image.decoding = 'async';
   image.srcset = `${stem}-960.webp 960w, ${stem}-1280.webp 1280w, ${source} 1672w`;

@@ -279,6 +279,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                         <ImageWithSkeleton
                           src={project.image}
                           alt={project.title}
+                          optimizeSource={false}
                           wrapperClassName="w-full h-full"
                           className="w-full h-full object-cover object-center pointer-events-none select-none"
                           skeletonClassName="bg-white/10 dark:bg-black/40"

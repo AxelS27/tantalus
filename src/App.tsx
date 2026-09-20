@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react'
 import { motion, useReducedMotion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { type PortfolioSettings, getSavedSettings } from './lib/settings';
+import { getAssetUrl } from './lib/assets';
 import { getRenderQuality } from './lib/deviceQuality';
 import {
   markNavigationStart,
@@ -341,8 +342,8 @@ export default function App() {
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src="/images/backgrounds/home.webp"
-                srcSet="/images/backgrounds/home-960.webp 960w, /images/backgrounds/home-1280.webp 1280w, /images/backgrounds/home.webp 1672w"
+                src={getAssetUrl('/images/tantalize/home.webp')}
+                srcSet={`${getAssetUrl('/images/tantalize/home-960.webp')} 960w, ${getAssetUrl('/images/tantalize/home-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/home.webp')} 1672w`}
                 sizes="106vw"
                 alt="Home Background"
                 fetchPriority="high"
@@ -420,8 +421,8 @@ export default function App() {
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src="/images/backgrounds/timeline.webp"
-                srcSet="/images/backgrounds/timeline-960.webp 960w, /images/backgrounds/timeline-1280.webp 1280w, /images/backgrounds/timeline.webp 1672w"
+                src={getAssetUrl('/images/tantalize/timeline.webp')}
+                srcSet={`${getAssetUrl('/images/tantalize/timeline-960.webp')} 960w, ${getAssetUrl('/images/tantalize/timeline-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/timeline.webp')} 1672w`}
                 sizes="106vw"
                 alt="Timeline Background"
                 loading="lazy"
@@ -452,8 +453,8 @@ export default function App() {
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src="/images/backgrounds/projects.webp"
-                srcSet="/images/backgrounds/projects-960.webp 960w, /images/backgrounds/projects-1280.webp 1280w, /images/backgrounds/projects.webp 1672w"
+                src={getAssetUrl('/images/tantalize/projects.webp')}
+                srcSet={`${getAssetUrl('/images/tantalize/projects-960.webp')} 960w, ${getAssetUrl('/images/tantalize/projects-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/projects.webp')} 1672w`}
                 sizes="106vw"
                 alt="Projects Background"
                 loading="lazy"
@@ -483,8 +484,8 @@ export default function App() {
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src="/images/backgrounds/archives.webp"
-                srcSet="/images/backgrounds/archives-960.webp 960w, /images/backgrounds/archives-1280.webp 1280w, /images/backgrounds/archives.webp 1671w"
+                src={getAssetUrl('/images/tantalize/archives.webp')}
+                srcSet={`${getAssetUrl('/images/tantalize/archives-960.webp')} 960w, ${getAssetUrl('/images/tantalize/archives-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/archives.webp')} 1671w`}
                 sizes="106vw"
                 alt="Archive Background"
                 loading="lazy"
@@ -516,8 +517,8 @@ export default function App() {
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src="/images/backgrounds/connect.webp"
-                srcSet="/images/backgrounds/connect-960.webp 960w, /images/backgrounds/connect-1280.webp 1280w, /images/backgrounds/connect.webp 1672w"
+                src={getAssetUrl('/images/tantalize/connect.webp')}
+                srcSet={`${getAssetUrl('/images/tantalize/connect-960.webp')} 960w, ${getAssetUrl('/images/tantalize/connect-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/connect.webp')} 1672w`}
                 sizes="106vw"
                 alt="Connect Background"
                 loading="lazy"
@@ -536,8 +537,8 @@ export default function App() {
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src="/images/backgrounds/certificates.webp"
-                srcSet="/images/backgrounds/certificates-960.webp 960w, /images/backgrounds/certificates-1280.webp 1280w, /images/backgrounds/certificates.webp 1672w"
+                src={getAssetUrl('/images/tantalize/certificates.webp')}
+                srcSet={`${getAssetUrl('/images/tantalize/certificates-960.webp')} 960w, ${getAssetUrl('/images/tantalize/certificates-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/certificates.webp')} 1672w`}
                 sizes="106vw"
                 alt="Certificates Background"
                 loading="lazy"

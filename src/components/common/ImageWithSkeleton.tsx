@@ -9,6 +9,7 @@ export interface ImageWithSkeletonProps extends React.ImgHTMLAttributes<HTMLImag
   skeletonVariant?: 'rectangular' | 'circular' | 'rounded' | 'text';
   fallbackIcon?: React.ReactNode;
   fallbackText?: string;
+  optimizeSource?: boolean;
 }
 
 export default function ImageWithSkeleton({
@@ -20,6 +21,7 @@ export default function ImageWithSkeleton({
   skeletonVariant = 'rectangular',
   fallbackIcon,
   fallbackText,
+  optimizeSource = true,
   loading = 'lazy',
   decoding = 'async',
   referrerPolicy = 'no-referrer',
@@ -33,8 +35,8 @@ export default function ImageWithSkeleton({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
-  const resolvedSrc = getThumbnailUrl(src);
-  const resolvedSrcSet = srcSet || getThumbnailSrcSet(src);
+  const resolvedSrc = optimizeSource ? getThumbnailUrl(src) : src;
+  const resolvedSrcSet = srcSet || (optimizeSource ? getThumbnailSrcSet(src) : undefined);
 
   // Check if image is already cached/complete on mount or when src changes
   useEffect(() => {
