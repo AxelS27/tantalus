@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAssetUrl } from '../lib/assets';
@@ -19,7 +19,11 @@ interface ProjectsGridProps {
   onReachStart?: () => void;
 }
 
-export function ProjectsGrid({ isActive = true, onReachEnd, onReachStart }: ProjectsGridProps) {
+export const ProjectsGrid = memo(function ProjectsGrid({
+  isActive = true,
+  onReachEnd,
+  onReachStart,
+}: ProjectsGridProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [rotationY, setRotationY] = useState(0);
   const [rotationX, setRotationX] = useState(0);
@@ -27,10 +31,16 @@ export function ProjectsGrid({ isActive = true, onReachEnd, onReachStart }: Proj
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, rotY: 0, rotX: 0 });
   const hasDraggedRef = useRef(false);
+  const pendingRotationRef = useRef({ y: 0, x: 0 });
+  const dragFrameRef = useRef<number | null>(null);
 
   const lastWheelTimeRef = useRef<number>(0);
   const stageRef = useRef<HTMLDivElement>(null);
   const [radius, setRadius] = useState<number>(384);
+
+  useEffect(() => () => {
+    if (dragFrameRef.current !== null) cancelAnimationFrame(dragFrameRef.current);
+  }, []);
 
   useEffect(() => {
     if (!isActive || !stageRef.current) return;
@@ -81,6 +91,7 @@ export function ProjectsGrid({ isActive = true, onReachEnd, onReachStart }: Proj
       rotY: rotationY,
       rotX: rotationX,
     };
+    pendingRotationRef.current = { y: rotationY, x: rotationX };
     try {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     } catch {
@@ -101,8 +112,14 @@ export function ProjectsGrid({ isActive = true, onReachEnd, onReachStart }: Proj
     // Bounded subtle tilt on X axis
     const nextRotX = Math.max(-20, Math.min(20, dragStartRef.current.rotX - dy * 0.18));
 
-    setRotationY(nextRotY);
-    setRotationX(nextRotX);
+    pendingRotationRef.current = { y: nextRotY, x: nextRotX };
+    if (dragFrameRef.current !== null) return;
+
+    dragFrameRef.current = requestAnimationFrame(() => {
+      dragFrameRef.current = null;
+      setRotationY(pendingRotationRef.current.y);
+      setRotationX(pendingRotationRef.current.x);
+    });
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -116,8 +133,13 @@ export function ProjectsGrid({ isActive = true, onReachEnd, onReachStart }: Proj
       // fallback
     }
 
-    // Snap smoothly to nearest 90-degree face
-    const snappedY = Math.round(rotationY / 90) * 90;
+    if (dragFrameRef.current !== null) {
+      cancelAnimationFrame(dragFrameRef.current);
+      dragFrameRef.current = null;
+    }
+
+    // Snap using the latest pointer position, even between rendered frames.
+    const snappedY = Math.round(pendingRotationRef.current.y / 90) * 90;
     setRotationY(snappedY);
     setRotationX(0);
 
@@ -198,7 +220,14 @@ export function ProjectsGrid({ isActive = true, onReachEnd, onReachStart }: Proj
           >
             {cubeFaces.map((face) => {
               const facingStep = ((-Math.round(rotationY / 90)) % 4 + 4) % 4;
+              const clockwiseDistance = (face.faceIdx - facingStep + 4) % 4;
+              const counterClockwiseDistance = (facingStep - face.faceIdx + 4) % 4;
+              const faceDistance = Math.min(clockwiseDistance, counterClockwiseDistance);
               const isFaceActive = facingStep === face.faceIdx;
+
+              // The opposite face cannot be seen. Omitting it removes 12 cards,
+              // image wrappers, blur layers, and Motion instances from the DOM.
+              if (faceDistance === 2) return null;
 
               return (
                 <div
@@ -271,4 +300,4 @@ export function ProjectsGrid({ isActive = true, onReachEnd, onReachStart }: Proj
       </div>
     </div>
   );
-}
+});

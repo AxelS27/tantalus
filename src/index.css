@@ -63,6 +63,17 @@ body {
   animation-play-state: paused;
 }
 
+/* Blur readback is expensive while its entire ancestor is translating. The
+   translucent surfaces remain intact and full blur returns after the glide. */
+.canvas-world--moving [class*="backdrop-blur"] {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.canvas-world--moving .skeleton-shimmer::after {
+  animation-play-state: paused;
+}
+
 @keyframes skeleton-shimmer {
   0% {
     transform: translateX(-100%);
@@ -90,4 +101,11 @@ body {
     transparent 100%
   );
   animation: skeleton-shimmer 1.8s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-canvas-background--live,
+  .skeleton-shimmer::after {
+    animation: none;
+  }
 }

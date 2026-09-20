@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
 import {
   ChevronLeft,
@@ -14,7 +14,7 @@ export interface CertificatesCoverflowProps {
   onReachRight?: () => void;
 }
 
-export function CertificatesCoverflow({
+export const CertificatesCoverflow = memo(function CertificatesCoverflow({
   isActive = true,
   onReachTop,
   onReachRight,
@@ -27,6 +27,8 @@ export function CertificatesCoverflow({
   const dragStartXRef = useRef(0);
   const dragStartIndexRef = useRef(0);
   const hasDraggedRef = useRef(false);
+  const pendingVirtualIndexRef = useRef(0);
+  const dragFrameRef = useRef<number | null>(null);
   const lastWheelTimeRef = useRef<number>(0);
 
   const handleNext = useCallback(() => {
@@ -59,6 +61,7 @@ export function CertificatesCoverflow({
     hasDraggedRef.current = false;
     dragStartXRef.current = e.clientX;
     dragStartIndexRef.current = virtualIndex;
+    pendingVirtualIndexRef.current = virtualIndex;
 
     try {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -86,7 +89,13 @@ export function CertificatesCoverflow({
       boundedIndex = maxIdx + (rawIndex - maxIdx) * 0.25;
     }
 
-    setVirtualIndex(boundedIndex);
+    pendingVirtualIndexRef.current = boundedIndex;
+    if (dragFrameRef.current !== null) return;
+
+    dragFrameRef.current = requestAnimationFrame(() => {
+      dragFrameRef.current = null;
+      setVirtualIndex(pendingVirtualIndexRef.current);
+    });
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -98,8 +107,16 @@ export function CertificatesCoverflow({
       (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
     } catch {}
 
-    // Snap smoothly to nearest item with weighted mechanical inertia
-    const targetIndex = Math.max(0, Math.min(certificatesData.length - 1, Math.round(virtualIndex)));
+    if (dragFrameRef.current !== null) {
+      cancelAnimationFrame(dragFrameRef.current);
+      dragFrameRef.current = null;
+    }
+
+    // Snap to the latest pointer position, even between rendered frames.
+    const targetIndex = Math.max(
+      0,
+      Math.min(certificatesData.length - 1, Math.round(pendingVirtualIndexRef.current)),
+    );
     selectedIndexRef.current = targetIndex;
     setSelectedIndex(targetIndex);
     setVirtualIndex(targetIndex);
@@ -135,6 +152,10 @@ export function CertificatesCoverflow({
       lastWheelTimeRef.current = now;
     }
   };
+
+  useEffect(() => () => {
+    if (dragFrameRef.current !== null) cancelAnimationFrame(dragFrameRef.current);
+  }, []);
 
   // Keyboard arrow navigation
   useEffect(() => {
@@ -327,4 +348,4 @@ export function CertificatesCoverflow({
       </div>
     </div>
   );
-}
+});

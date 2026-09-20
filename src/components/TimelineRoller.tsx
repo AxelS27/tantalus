@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ChevronUp, ChevronDown, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { getAssetUrl } from '../lib/assets';
@@ -13,7 +13,11 @@ interface TimelineRollerProps {
   onReachStart?: () => void;
 }
 
-export function TimelineRoller({ isActive = true, onReachEnd, onReachStart }: TimelineRollerProps) {
+export const TimelineRoller = memo(function TimelineRoller({
+  isActive = true,
+  onReachEnd,
+  onReachStart,
+}: TimelineRollerProps) {
   // Initialize on Apple Developer Academy (index 0)
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(0);
@@ -23,9 +27,15 @@ export function TimelineRoller({ isActive = true, onReachEnd, onReachStart }: Ti
   const dragStartYRef = useRef(0);
   const dragStartIndexRef = useRef(0);
   const hasDraggedRef = useRef(false);
+  const pendingVirtualIndexRef = useRef(0);
+  const dragFrameRef = useRef<number | null>(null);
   const lastWheelTimeRef = useRef<number>(0);
 
   const activeItem = timelineData[selectedIndex] || timelineData[0];
+
+  useEffect(() => () => {
+    if (dragFrameRef.current !== null) cancelAnimationFrame(dragFrameRef.current);
+  }, []);
 
   const handleNext = useCallback(() => {
     if (selectedIndex >= timelineData.length - 1) {
@@ -57,6 +67,7 @@ export function TimelineRoller({ isActive = true, onReachEnd, onReachStart }: Ti
     hasDraggedRef.current = false;
     dragStartYRef.current = e.clientY;
     dragStartIndexRef.current = virtualIndex;
+    pendingVirtualIndexRef.current = virtualIndex;
 
     try {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -86,14 +97,21 @@ export function TimelineRoller({ isActive = true, onReachEnd, onReachStart }: Ti
       boundedIndex = maxIdx + (rawIndex - maxIdx) * 0.25;
     }
 
-    setVirtualIndex(boundedIndex);
+    pendingVirtualIndexRef.current = boundedIndex;
+    if (dragFrameRef.current !== null) return;
 
-    // Update left detail text & active selection in real time while still holding & dragging
-    const nearestIndex = Math.max(0, Math.min(maxIdx, Math.round(boundedIndex)));
-    if (nearestIndex !== selectedIndexRef.current) {
-      selectedIndexRef.current = nearestIndex;
-      setSelectedIndex(nearestIndex);
-    }
+    dragFrameRef.current = requestAnimationFrame(() => {
+      dragFrameRef.current = null;
+      const nextIndex = pendingVirtualIndexRef.current;
+      setVirtualIndex(nextIndex);
+
+      // Keep details synchronized while limiting React updates to one per frame.
+      const nearestIndex = Math.max(0, Math.min(maxIdx, Math.round(nextIndex)));
+      if (nearestIndex !== selectedIndexRef.current) {
+        selectedIndexRef.current = nearestIndex;
+        setSelectedIndex(nearestIndex);
+      }
+    });
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -107,8 +125,16 @@ export function TimelineRoller({ isActive = true, onReachEnd, onReachStart }: Ti
       // fallback
     }
 
-    // Snap smoothly to nearest item
-    const targetIndex = Math.max(0, Math.min(timelineData.length - 1, Math.round(virtualIndex)));
+    if (dragFrameRef.current !== null) {
+      cancelAnimationFrame(dragFrameRef.current);
+      dragFrameRef.current = null;
+    }
+
+    // Snap smoothly to the latest pointer position, even between rendered frames.
+    const targetIndex = Math.max(
+      0,
+      Math.min(timelineData.length - 1, Math.round(pendingVirtualIndexRef.current)),
+    );
     selectedIndexRef.current = targetIndex;
     setSelectedIndex(targetIndex);
     setVirtualIndex(targetIndex);
@@ -365,4 +391,4 @@ export function TimelineRoller({ isActive = true, onReachEnd, onReachStart }: Ti
       </div>
     </div>
   );
-}
+});

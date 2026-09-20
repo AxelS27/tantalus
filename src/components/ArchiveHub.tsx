@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { memo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -99,7 +99,7 @@ interface ArchiveHubProps {
   onUpdateSettings?: (newSettings: Partial<PortfolioSettings>) => void;
 }
 
-export function ArchiveHub({
+export const ArchiveHub = memo(function ArchiveHub({
   isActive = true,
   onReachStart,
   onAppSelect,
@@ -885,4 +885,4 @@ export function ArchiveHub({
         )}
     </div>
   );
-}
+});

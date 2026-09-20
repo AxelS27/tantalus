@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { type PortfolioSettings, getSavedSettings } from './lib/settings';
 import { getAssetUrl } from './lib/assets';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import CanvasSectionSkeleton from './components/skeletons/CanvasSectionSkeleton';
+import type { ArchiveAppId } from './components/ArchiveHub';
 import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
 
 // Lazy-loaded code-split section chunks
@@ -44,7 +45,10 @@ const getTabFromHash = (): NavItem => {
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavItem>(getTabFromHash);
   const [settings, setSettings] = useState<PortfolioSettings>(getSavedSettings);
+  const prefersReducedMotion = useReducedMotion();
+  const shouldReduceMotion = settings.reducedMotion || prefersReducedMotion;
   const [isNavigating, setIsNavigating] = useState(false);
+  const [visitedTabs, setVisitedTabs] = useState<Set<NavItem>>(() => new Set([activeTab]));
   const [transitionFrom, setTransitionFrom] = useState<NavItem | null>(null);
   const [transitionTarget, setTransitionTarget] = useState<NavItem | null>(null);
   const activeTabRef = useRef(activeTab);
@@ -52,7 +56,7 @@ export default function App() {
   const preparationFrameRef = useRef<number | null>(null);
 
   // Sync settings and HTML dark class
-  const handleUpdateSettings = (patch: Partial<PortfolioSettings>) => {
+  const handleUpdateSettings = useCallback((patch: Partial<PortfolioSettings>) => {
     setSettings((prev) => {
       const updated = { ...prev, ...patch };
       if (typeof window !== 'undefined') {
@@ -65,7 +69,7 @@ export default function App() {
       }
       return updated;
     });
-  };
+  }, []);
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
@@ -122,6 +126,12 @@ export default function App() {
 
     const fromTab = activeTabRef.current;
     isTransitioningRef.current = true;
+    setVisitedTabs((visited) => {
+      if (visited.has(newTab)) return visited;
+      const next = new Set(visited);
+      next.add(newTab);
+      return next;
+    });
     setIsNavigating(true);
     setTransitionFrom(fromTab);
     setTransitionTarget(newTab);
@@ -166,6 +176,42 @@ export default function App() {
     setTransitionFrom(null);
     setTransitionTarget(null);
   }, [transitionTarget]);
+
+  const handleTimelineEnd = useCallback(
+    () => triggerSectionChange('projects'),
+    [triggerSectionChange],
+  );
+  const handleTimelineStart = useCallback(
+    () => triggerSectionChange('home'),
+    [triggerSectionChange],
+  );
+  const handleProjectsEnd = useCallback(
+    () => triggerSectionChange('archive'),
+    [triggerSectionChange],
+  );
+  const handleProjectsStart = useCallback(
+    () => triggerSectionChange('timeline'),
+    [triggerSectionChange],
+  );
+  const handleArchiveStart = useCallback(
+    () => triggerSectionChange('projects'),
+    [triggerSectionChange],
+  );
+  const handleArchiveAppSelect = useCallback((appId: ArchiveAppId) => {
+    if (appId === 'certificates') {
+      triggerSectionChange('certificates');
+    } else if (appId === 'connect') {
+      triggerSectionChange('connect');
+    }
+  }, [triggerSectionChange]);
+  const handleCertificatesTop = useCallback(
+    () => triggerSectionChange('archive'),
+    [triggerSectionChange],
+  );
+  const handleCertificatesRight = useCallback(
+    () => triggerSectionChange('projects'),
+    [triggerSectionChange],
+  );
 
   useEffect(() => () => {
     if (preparationFrameRef.current !== null) {
@@ -244,7 +290,7 @@ export default function App() {
   const isSectionRendered = (tab: NavItem) =>
     tab === activeTab || tab === transitionFrom || tab === transitionTarget;
   const isBackgroundLive = (tab: NavItem) =>
-    settings.ambientParallax && isSectionRendered(tab);
+    settings.ambientParallax && !shouldReduceMotion && isSectionRendered(tab);
 
   // Reusable mask style for seamless atmospheric edge feathering without transparent gap
   const seamlessMaskStyle = {
@@ -274,11 +320,13 @@ export default function App() {
             y: coords.y,
           }}
           transition={{
-            duration: settings.reducedMotion ? 0.25 : 1.6,
-            ease: settings.reducedMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
+            duration: shouldReduceMotion ? 0.25 : 1.6,
+            ease: shouldReduceMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
           }}
           onAnimationComplete={handleCameraAnimationComplete}
-          className="absolute inset-0 w-full h-full bg-[#161412] transform-gpu will-change-transform"
+          className={`absolute inset-0 w-full h-full bg-[#161412] transform-gpu ${
+            isNavigating ? 'canvas-world--moving will-change-transform' : ''
+          }`}
         >
           {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
           <div className="absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
@@ -377,13 +425,15 @@ export default function App() {
             </div>
 
             {/* Vertical Cylindrical Roller Wheel Component (Code-Split with Suspense) */}
-            <Suspense fallback={<CanvasSectionSkeleton />}>
-              <TimelineRoller
-                isActive={isSectionRendered('timeline')}
-                onReachEnd={() => triggerSectionChange('projects')}
-                onReachStart={() => triggerSectionChange('home')}
-              />
-            </Suspense>
+            {visitedTabs.has('timeline') && (
+              <Suspense fallback={<CanvasSectionSkeleton />}>
+                <TimelineRoller
+                  isActive={isSectionRendered('timeline')}
+                  onReachEnd={handleTimelineEnd}
+                  onReachStart={handleTimelineStart}
+                />
+              </Suspense>
+            )}
           </div>
 
           {/* ================= 3. PROJECTS SECTION (South: 0, +100vh) ================= */}
@@ -406,13 +456,15 @@ export default function App() {
             </div>
 
             {/* 3D Cube Projects Grid (Code-Split with Suspense) */}
-            <Suspense fallback={<CanvasSectionSkeleton />}>
-              <ProjectsGrid
-                isActive={isSectionRendered('projects')}
-                onReachEnd={() => triggerSectionChange('archive')}
-                onReachStart={() => triggerSectionChange('timeline')}
-              />
-            </Suspense>
+            {visitedTabs.has('projects') && (
+              <Suspense fallback={<CanvasSectionSkeleton />}>
+                <ProjectsGrid
+                  isActive={isSectionRendered('projects')}
+                  onReachEnd={handleProjectsEnd}
+                  onReachStart={handleProjectsStart}
+                />
+              </Suspense>
+            )}
           </div>
 
           {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
@@ -434,21 +486,17 @@ export default function App() {
             </div>
 
             {/* macOS Launchpad / App Hub (Code-Split with Suspense) */}
-            <Suspense fallback={<CanvasSectionSkeleton />}>
-              <ArchiveHub
-                isActive={isSectionRendered('archive')}
-                settings={settings}
-                onUpdateSettings={handleUpdateSettings}
-                onAppSelect={(appId) => {
-                  if (appId === 'certificates') {
-                    triggerSectionChange('certificates');
-                  } else if (appId === 'connect') {
-                    triggerSectionChange('connect');
-                  }
-                }}
-                onReachStart={() => triggerSectionChange('projects')}
-              />
-            </Suspense>
+            {visitedTabs.has('archive') && (
+              <Suspense fallback={<CanvasSectionSkeleton />}>
+                <ArchiveHub
+                  isActive={isSectionRendered('archive')}
+                  settings={settings}
+                  onUpdateSettings={handleUpdateSettings}
+                  onAppSelect={handleArchiveAppSelect}
+                  onReachStart={handleArchiveStart}
+                />
+              </Suspense>
+            )}
           </div>
 
           {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
@@ -489,13 +537,15 @@ export default function App() {
             </div>
 
             {/* Interactive 3D Spatial Coverflow Carousel (Code-Split with Suspense) */}
-            <Suspense fallback={<CanvasSectionSkeleton />}>
-              <CertificatesCoverflow
-                isActive={isSectionRendered('certificates')}
-                onReachTop={() => triggerSectionChange('archive')}
-                onReachRight={() => triggerSectionChange('projects')}
-              />
-            </Suspense>
+            {visitedTabs.has('certificates') && (
+              <Suspense fallback={<CanvasSectionSkeleton />}>
+                <CertificatesCoverflow
+                  isActive={isSectionRendered('certificates')}
+                  onReachTop={handleCertificatesTop}
+                  onReachRight={handleCertificatesRight}
+                />
+              </Suspense>
+            )}
           </div>
 
         </motion.div>
