@@ -58,6 +58,7 @@ export function prefetchSectionBackground(key: CanvasBackgroundKey): void {
  */
 function shouldSkipPrefetch(): boolean {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') return true;
+  if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return true;
 
   const conn = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
   if (conn) {

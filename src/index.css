@@ -49,6 +49,10 @@ body {
   }
 }
 
+.spatial-section {
+  contain: layout paint;
+}
+
 .ambient-canvas-background {
   transform: scale(1.02);
   transform-origin: center;

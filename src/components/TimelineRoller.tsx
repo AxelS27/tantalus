@@ -1,5 +1,11 @@
-import { memo, useState, useRef, useCallback, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { memo, useState, useRef, useCallback } from 'react';
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useTransform,
+  type MotionValue,
+} from 'motion/react';
 import { ChevronUp, ChevronDown, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { getAssetUrl } from '../lib/assets';
 import { timelineData, type TimelineItem } from '../data/timeline';
@@ -13,6 +19,104 @@ interface TimelineRollerProps {
   onReachStart?: () => void;
 }
 
+interface TimelineCardProps {
+  item: TimelineItem;
+  index: number;
+  position: MotionValue<number>;
+  selectedIndex: number;
+  isDragging: boolean;
+  onSelect: (index: number) => void;
+}
+
+const TimelineCard = memo(function TimelineCard({
+  item,
+  index,
+  position,
+  selectedIndex,
+  isDragging,
+  onSelect,
+}: TimelineCardProps) {
+  const y = useTransform(position, (current) => (index - current) * 118);
+  const scale = useTransform(position, (current) =>
+    Math.max(0.68, 1 - Math.abs(index - current) * 0.14),
+  );
+  const opacity = useTransform(position, (current) => {
+    const distance = Math.abs(index - current);
+    return distance <= 1
+      ? Math.max(0, 1 - distance * 0.45)
+      : Math.max(0, 0.55 - (distance - 1) * 0.3);
+  });
+  const rotateX = useTransform(position, (current) =>
+    Math.max(-25, Math.min(25, (index - current) * -9)),
+  );
+  const zIndex = useTransform(position, (current) =>
+    Math.round(30 - Math.min(25, Math.abs(index - current) * 10)),
+  );
+
+  const offset = index - selectedIndex;
+  const isCenter = offset === 0;
+  const isInteractive = Math.abs(offset) <= 2;
+
+  return (
+    <motion.div
+      onClick={() => isInteractive && onSelect(index)}
+      style={{
+        y,
+        scale,
+        opacity,
+        rotateX,
+        zIndex,
+        transformStyle: 'preserve-3d',
+        pointerEvents: isInteractive ? 'auto' : 'none',
+      }}
+      className={`absolute w-full p-2.5 sm:p-3 rounded-2xl transition-colors duration-300 cursor-pointer ${
+        isCenter
+          ? 'bg-white/[0.18] dark:bg-black/55 backdrop-blur-2xl border border-white/40 dark:border-white/20'
+          : 'bg-black/20 dark:bg-black/45 backdrop-blur-md border border-white/10 dark:border-white/5 hover:opacity-75'
+      } ${isDragging ? 'select-none' : ''}`}
+    >
+      <div className="flex items-center gap-3.5">
+        <div
+          className={`relative overflow-hidden rounded-xl border border-white/25 flex-shrink-0 transition-all duration-300 ${
+            isCenter ? 'w-26 h-18 sm:w-30 sm:h-20' : 'w-18 h-12 sm:w-22 sm:h-15'
+          }`}
+        >
+          <ImageWithSkeleton
+            src={item.image}
+            alt={item.company}
+            wrapperClassName="w-full h-full"
+            className="w-full h-full object-cover object-center pointer-events-none select-none"
+            skeletonClassName="bg-white/10 dark:bg-black/40"
+          />
+        </div>
+
+        <div className="flex-1 min-w-0 text-left space-y-0.5">
+          <p
+            className="text-[11px] sm:text-xs font-serif italic text-[#FFD88A] truncate font-medium"
+            style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}
+          >
+            {item.year}
+          </p>
+          <h3
+            className={`font-serif italic text-white font-normal truncate ${
+              isCenter ? 'text-sm sm:text-base font-medium' : 'text-xs'
+            }`}
+            style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}
+          >
+            {item.role}
+          </h3>
+          <p
+            className="text-[11px] sm:text-xs font-serif italic text-stone-200/90 truncate"
+            style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}
+          >
+            {item.company}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
 export const TimelineRoller = memo(function TimelineRoller({
   isActive = true,
   onReachEnd,
@@ -21,21 +125,25 @@ export const TimelineRoller = memo(function TimelineRoller({
   // Initialize on Apple Developer Academy (index 0)
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(0);
-  const [virtualIndex, setVirtualIndex] = useState(0);
+  const position = useMotionValue(0);
   const [isDragging, setIsDragging] = useState(false);
   const isDraggingRef = useRef(false);
   const dragStartYRef = useRef(0);
   const dragStartIndexRef = useRef(0);
   const hasDraggedRef = useRef(false);
-  const pendingVirtualIndexRef = useRef(0);
-  const dragFrameRef = useRef<number | null>(null);
   const lastWheelTimeRef = useRef<number>(0);
 
   const activeItem = timelineData[selectedIndex] || timelineData[0];
 
-  useEffect(() => () => {
-    if (dragFrameRef.current !== null) cancelAnimationFrame(dragFrameRef.current);
-  }, []);
+  const animateToIndex = useCallback((index: number) => {
+    position.stop();
+    animate(position, index, {
+      type: 'spring',
+      stiffness: 130,
+      damping: 24,
+      mass: 1.25,
+    });
+  }, [position]);
 
   const handleNext = useCallback(() => {
     if (selectedIndex >= timelineData.length - 1) {
@@ -44,9 +152,9 @@ export const TimelineRoller = memo(function TimelineRoller({
       const next = selectedIndex + 1;
       selectedIndexRef.current = next;
       setSelectedIndex(next);
-      setVirtualIndex(next);
+      animateToIndex(next);
     }
-  }, [selectedIndex, onReachEnd]);
+  }, [selectedIndex, onReachEnd, animateToIndex]);
 
   const handlePrev = useCallback(() => {
     if (selectedIndex <= 0) {
@@ -55,19 +163,19 @@ export const TimelineRoller = memo(function TimelineRoller({
       const prev = selectedIndex - 1;
       selectedIndexRef.current = prev;
       setSelectedIndex(prev);
-      setVirtualIndex(prev);
+      animateToIndex(prev);
     }
-  }, [selectedIndex, onReachStart]);
+  }, [selectedIndex, onReachStart, animateToIndex]);
 
   // Pointer drag controls for holding & rolling freely
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
     isDraggingRef.current = true;
+    position.stop();
     setIsDragging(true);
     hasDraggedRef.current = false;
     dragStartYRef.current = e.clientY;
-    dragStartIndexRef.current = virtualIndex;
-    pendingVirtualIndexRef.current = virtualIndex;
+    dragStartIndexRef.current = position.get();
 
     try {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -97,21 +205,14 @@ export const TimelineRoller = memo(function TimelineRoller({
       boundedIndex = maxIdx + (rawIndex - maxIdx) * 0.25;
     }
 
-    pendingVirtualIndexRef.current = boundedIndex;
-    if (dragFrameRef.current !== null) return;
+    position.set(boundedIndex);
 
-    dragFrameRef.current = requestAnimationFrame(() => {
-      dragFrameRef.current = null;
-      const nextIndex = pendingVirtualIndexRef.current;
-      setVirtualIndex(nextIndex);
-
-      // Keep details synchronized while limiting React updates to one per frame.
-      const nearestIndex = Math.max(0, Math.min(maxIdx, Math.round(nextIndex)));
-      if (nearestIndex !== selectedIndexRef.current) {
-        selectedIndexRef.current = nearestIndex;
-        setSelectedIndex(nearestIndex);
-      }
-    });
+    // React only updates when the selected item changes. Card transforms bypass React.
+    const nearestIndex = Math.max(0, Math.min(maxIdx, Math.round(boundedIndex)));
+    if (nearestIndex !== selectedIndexRef.current) {
+      selectedIndexRef.current = nearestIndex;
+      setSelectedIndex(nearestIndex);
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -125,20 +226,21 @@ export const TimelineRoller = memo(function TimelineRoller({
       // fallback
     }
 
-    if (dragFrameRef.current !== null) {
-      cancelAnimationFrame(dragFrameRef.current);
-      dragFrameRef.current = null;
-    }
-
-    // Snap smoothly to the latest pointer position, even between rendered frames.
     const targetIndex = Math.max(
       0,
-      Math.min(timelineData.length - 1, Math.round(pendingVirtualIndexRef.current)),
+      Math.min(timelineData.length - 1, Math.round(position.get())),
     );
     selectedIndexRef.current = targetIndex;
     setSelectedIndex(targetIndex);
-    setVirtualIndex(targetIndex);
+    animateToIndex(targetIndex);
   };
+
+  const handleSelect = useCallback((nextIndex: number) => {
+    if (hasDraggedRef.current) return;
+    selectedIndexRef.current = nextIndex;
+    setSelectedIndex(nextIndex);
+    animateToIndex(nextIndex);
+  }, [animateToIndex]);
 
   // Weighted wheel listener with deliberate mechanical interval
   const handleWheel = (e: React.WheelEvent) => {
@@ -266,112 +368,17 @@ export const TimelineRoller = memo(function TimelineRoller({
               isDragging ? 'cursor-grabbing' : 'cursor-grab'
             }`}
           >
-            {timelineData.map((item, index) => {
-              const currentPos = isDragging ? virtualIndex : selectedIndex;
-              const offset = index - currentPos;
-              const absOffset = Math.abs(offset);
-              const isCenter = absOffset < 0.5;
-
-              // Gentle cylindrical wheel calculations
-              const translateY = offset * 118;
-              const scale = Math.max(0.68, 1 - absOffset * 0.14);
-              const opacity =
-                absOffset <= 1
-                  ? Math.max(0, 1 - absOffset * 0.45)
-                  : Math.max(0, 0.55 - (absOffset - 1) * 0.3);
-              const rotateX = Math.max(-25, Math.min(25, offset * -9));
-              const zIndex = Math.round(30 - Math.min(25, absOffset * 10));
-              const isInteractive = absOffset <= 2.2;
-
-              return (
-                <motion.div
-                  key={item.id}
-                  onClick={() => {
-                    if (hasDraggedRef.current) return;
-                    if (isInteractive) {
-                      selectedIndexRef.current = index;
-                      setSelectedIndex(index);
-                      setVirtualIndex(index);
-                    }
-                  }}
-                  animate={{
-                    y: translateY,
-                    scale,
-                    opacity,
-                    rotateX,
-                  }}
-                  transition={
-                    isDragging
-                      ? { type: 'tween', duration: 0 }
-                      : {
-                          type: 'spring',
-                          stiffness: 130,
-                          damping: 24,
-                          mass: 1.25,
-                        }
-                  }
-                  style={{
-                    zIndex,
-                    transformStyle: 'preserve-3d',
-                    pointerEvents: isInteractive ? 'auto' : 'none',
-                  }}
-                  className={`absolute w-full p-2.5 sm:p-3 rounded-2xl transition-colors duration-300 cursor-pointer ${
-                    isCenter
-                      ? 'bg-white/[0.18] dark:bg-black/55 backdrop-blur-2xl border border-white/40 dark:border-white/20'
-                      : 'bg-black/20 dark:bg-black/45 backdrop-blur-md border border-white/10 dark:border-white/5 hover:opacity-75'
-                  }`}
-                >
-                  <div className="flex items-center gap-3.5">
-                    {/* Media Thumbnail with Skeleton Loader */}
-                    <div
-                      className={`relative overflow-hidden rounded-xl border border-white/25 flex-shrink-0 transition-all duration-300 ${
-                        isCenter
-                          ? 'w-26 h-18 sm:w-30 sm:h-20'
-                          : 'w-18 h-12 sm:w-22 sm:h-15'
-                      }`}
-                    >
-                      <ImageWithSkeleton
-                        src={item.image}
-                        alt={item.company}
-                        wrapperClassName="w-full h-full"
-                        className="w-full h-full object-cover object-center pointer-events-none select-none"
-                        skeletonClassName="bg-white/10 dark:bg-black/40"
-                      />
-                    </div>
-
-                    {/* Compact Card Typography */}
-                    <div className="flex-1 min-w-0 text-left space-y-0.5">
-                      <p
-                        className="text-[11px] sm:text-xs font-serif italic text-[#FFD88A] truncate font-medium"
-                        style={{
-                          textShadow: '0 1px 4px rgba(0,0,0,0.95)',
-                        }}
-                      >
-                        {item.year}
-                      </p>
-                      <h3
-                        className={`font-serif italic text-white font-normal truncate ${
-                          isCenter ? 'text-sm sm:text-base font-medium' : 'text-xs'
-                        }`}
-                        style={{
-                          textShadow: '0 1px 4px rgba(0,0,0,0.95)',
-                        }}
-                      >
-                        {item.role}
-                      </h3>
-                      <p
-                        className="text-[11px] sm:text-xs font-serif italic text-stone-200/90 truncate"
-                        style={{
-                          textShadow: '0 1px 4px rgba(0,0,0,0.95)',
-                        }}
-                      >
-                        {item.company}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {timelineData.map((item, index) => (
+              <TimelineCard
+                key={item.id}
+                item={item}
+                index={index}
+                position={position}
+                selectedIndex={selectedIndex}
+                isDragging={isDragging}
+                onSelect={handleSelect}
+              />
+            ))}
           </div>
 
           {/* Scroll Down Button Indicator (Only visible when not at bottom) */}

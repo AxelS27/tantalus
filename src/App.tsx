@@ -329,7 +329,7 @@ export default function App() {
           }`}
         >
           {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
-          <div className="absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
+          <div className="spatial-section absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
             <div
               style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
@@ -406,7 +406,7 @@ export default function App() {
           </div>
 
           {/* ================= 2. TIMELINE SECTION (East: +100vw, 0) ================= */}
-          <div className="absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+          <div className="spatial-section absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
             {/* Background Image with Ultra-Subtle Vignette */}
             <div
               style={seamlessMaskStyle}
@@ -437,7 +437,7 @@ export default function App() {
           </div>
 
           {/* ================= 3. PROJECTS SECTION (South: 0, +100vh) ================= */}
-          <div className="absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+          <div className="spatial-section absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
             {/* Background Image with Subtle Vignette */}
             <div
               style={seamlessMaskStyle}
@@ -468,7 +468,7 @@ export default function App() {
           </div>
 
           {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
-          <div className="absolute left-[-100vw] top-0 w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
+          <div className="spatial-section absolute left-[-100vw] top-0 w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
             <div
               style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
@@ -500,7 +500,7 @@ export default function App() {
           </div>
 
           {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
-          <div className="absolute left-[100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
+          <div className="spatial-section absolute left-[100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
             <div
               style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
@@ -519,7 +519,7 @@ export default function App() {
           </div>
 
           {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
-          <div className="absolute left-[-100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
+          <div className="spatial-section absolute left-[-100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
             <div
               style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${

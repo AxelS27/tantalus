@@ -1,5 +1,5 @@
 import { memo, useState, useRef, useCallback, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { animate, motion, useMotionValue } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAssetUrl } from '../lib/assets';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
@@ -25,22 +25,22 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   onReachStart,
 }: ProjectsGridProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [rotationY, setRotationY] = useState(0);
-  const [rotationX, setRotationX] = useState(0);
+  const [facingStep, setFacingStep] = useState(0);
+  const [visibleFaceIndexes, setVisibleFaceIndexes] = useState<number[]>([0]);
+  const rotationY = useMotionValue(0);
+  const rotationX = useMotionValue(0);
+  const rotationYRef = useRef(0);
+  const rotationXRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, rotY: 0, rotX: 0 });
   const hasDraggedRef = useRef(false);
   const pendingRotationRef = useRef({ y: 0, x: 0 });
-  const dragFrameRef = useRef<number | null>(null);
+  const animationSequenceRef = useRef(0);
 
   const lastWheelTimeRef = useRef<number>(0);
   const stageRef = useRef<HTMLDivElement>(null);
   const [radius, setRadius] = useState<number>(384);
-
-  useEffect(() => () => {
-    if (dragFrameRef.current !== null) cancelAnimationFrame(dragFrameRef.current);
-  }, []);
 
   useEffect(() => {
     if (!isActive || !stageRef.current) return;
@@ -55,43 +55,74 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     return () => ro.disconnect();
   }, [isActive]);
 
+  const settleToFace = useCallback((targetY: number) => {
+    const sequence = ++animationSequenceRef.current;
+    rotationY.stop();
+    rotationX.stop();
+    const currentFace = ((-Math.round(rotationY.get() / 90)) % 4 + 4) % 4;
+    const targetFace = ((-Math.round(targetY / 90)) % 4 + 4) % 4;
+    setVisibleFaceIndexes((faces) =>
+      faces.includes(targetFace) && faces.includes(currentFace)
+        ? faces
+        : [currentFace, targetFace],
+    );
+    setFacingStep(targetFace);
+    setCurrentPage(targetFace % 2);
+    rotationYRef.current = targetY;
+    rotationXRef.current = 0;
+
+    const yAnimation = animate(rotationY, targetY, {
+      duration: 0.85,
+      ease: [0.22, 1, 0.36, 1],
+    });
+    animate(rotationX, 0, {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1],
+    });
+    yAnimation.then(() => {
+      if (animationSequenceRef.current === sequence) {
+        setVisibleFaceIndexes([targetFace]);
+      }
+    });
+  }, [rotationX, rotationY]);
+
   const handleNext = useCallback(() => {
     if (currentPage >= projectPages.length - 1) {
       onReachEnd?.();
     } else {
-      const nextY = Math.round(rotationY / 90) * 90 - 90;
-      setRotationY(nextY);
-      setRotationX(0);
-      const facingStep = ((-Math.round(nextY / 90)) % 4 + 4) % 4;
-      setCurrentPage(facingStep % 2);
+      const nextY = Math.round(rotationYRef.current / 90) * 90 - 90;
+      settleToFace(nextY);
     }
-  }, [currentPage, rotationY, onReachEnd]);
+  }, [currentPage, onReachEnd, settleToFace]);
 
   const handlePrev = useCallback(() => {
     if (currentPage <= 0) {
       onReachStart?.();
     } else {
-      const prevY = Math.round(rotationY / 90) * 90 + 90;
-      setRotationY(prevY);
-      setRotationX(0);
-      const facingStep = ((-Math.round(prevY / 90)) % 4 + 4) % 4;
-      setCurrentPage(facingStep % 2);
+      const prevY = Math.round(rotationYRef.current / 90) * 90 + 90;
+      settleToFace(prevY);
     }
-  }, [currentPage, rotationY, onReachStart]);
+  }, [currentPage, onReachStart, settleToFace]);
 
   // Pointer drag controls for holding & rotating freely
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
     isDraggingRef.current = true;
+    animationSequenceRef.current += 1;
+    rotationY.stop();
+    rotationX.stop();
     setIsDragging(true);
     hasDraggedRef.current = false;
     dragStartRef.current = {
       x: e.clientX,
       y: e.clientY,
-      rotY: rotationY,
-      rotX: rotationX,
+      rotY: rotationY.get(),
+      rotX: rotationX.get(),
     };
-    pendingRotationRef.current = { y: rotationY, x: rotationX };
+    pendingRotationRef.current = {
+      y: rotationY.get(),
+      x: rotationX.get(),
+    };
     try {
       (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     } catch {
@@ -113,13 +144,23 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     const nextRotX = Math.max(-20, Math.min(20, dragStartRef.current.rotX - dy * 0.18));
 
     pendingRotationRef.current = { y: nextRotY, x: nextRotX };
-    if (dragFrameRef.current !== null) return;
+    rotationYRef.current = nextRotY;
+    rotationXRef.current = nextRotX;
+    rotationY.set(nextRotY);
+    rotationX.set(nextRotX);
 
-    dragFrameRef.current = requestAnimationFrame(() => {
-      dragFrameRef.current = null;
-      setRotationY(pendingRotationRef.current.y);
-      setRotationX(pendingRotationRef.current.x);
-    });
+    const continuousFace = -nextRotY / 90;
+    const lowerFace = ((Math.floor(continuousFace) % 4) + 4) % 4;
+    const upperFace = ((Math.ceil(continuousFace) % 4) + 4) % 4;
+    const nextFaces = lowerFace === upperFace ? [lowerFace] : [lowerFace, upperFace];
+    setVisibleFaceIndexes((faces) =>
+      faces.length === nextFaces.length && faces.every((face, index) => face === nextFaces[index])
+        ? faces
+        : nextFaces,
+    );
+
+    const nearestFace = ((Math.round(continuousFace) % 4) + 4) % 4;
+    setFacingStep((current) => current === nearestFace ? current : nearestFace);
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -133,18 +174,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       // fallback
     }
 
-    if (dragFrameRef.current !== null) {
-      cancelAnimationFrame(dragFrameRef.current);
-      dragFrameRef.current = null;
-    }
-
-    // Snap using the latest pointer position, even between rendered frames.
+    // Snap using the latest pointer position.
     const snappedY = Math.round(pendingRotationRef.current.y / 90) * 90;
-    setRotationY(snappedY);
-    setRotationX(0);
-
-    const facingStep = ((-Math.round(snappedY / 90)) % 4 + 4) % 4;
-    setCurrentPage(facingStep % 2);
+    settleToFace(snappedY);
   };
 
   // Mousewheel listener for rotating Cube & Section Handoff
@@ -203,31 +235,17 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         >
           {/* Rotating 3D Cube Rig */}
           <motion.div
-            animate={{
+            style={{
               rotateY: rotationY,
               rotateX: rotationX,
               z: -radius,
-            }}
-            transition={
-              isDragging
-                ? { type: 'tween', duration: 0 }
-                : { duration: 0.85, ease: [0.22, 1, 0.36, 1] }
-            }
-            style={{
               transformStyle: 'preserve-3d',
             }}
             className="relative w-full h-full"
           >
             {cubeFaces.map((face) => {
-              const facingStep = ((-Math.round(rotationY / 90)) % 4 + 4) % 4;
-              const clockwiseDistance = (face.faceIdx - facingStep + 4) % 4;
-              const counterClockwiseDistance = (facingStep - face.faceIdx + 4) % 4;
-              const faceDistance = Math.min(clockwiseDistance, counterClockwiseDistance);
+              if (!visibleFaceIndexes.includes(face.faceIdx)) return null;
               const isFaceActive = facingStep === face.faceIdx;
-
-              // The opposite face cannot be seen. Omitting it removes 12 cards,
-              // image wrappers, blur layers, and Motion instances from the DOM.
-              if (faceDistance === 2) return null;
 
               return (
                 <div
