@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ImageOff } from 'lucide-react';
 import Skeleton from './Skeleton';
+import { getThumbnailSrcSet, getThumbnailUrl } from '../../lib/thumbnails';
 
 export interface ImageWithSkeletonProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   wrapperClassName?: string;
@@ -22,6 +23,8 @@ export default function ImageWithSkeleton({
   loading = 'lazy',
   decoding = 'async',
   referrerPolicy = 'no-referrer',
+  srcSet,
+  sizes,
   onLoad,
   onError,
   style,
@@ -30,6 +33,8 @@ export default function ImageWithSkeleton({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const resolvedSrc = getThumbnailUrl(src);
+  const resolvedSrcSet = srcSet || getThumbnailSrcSet(src);
 
   // Check if image is already cached/complete on mount or when src changes
   useEffect(() => {
@@ -39,7 +44,7 @@ export default function ImageWithSkeleton({
     if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
       setIsLoaded(true);
     }
-  }, [src]);
+  }, [resolvedSrc]);
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     setIsLoaded(true);
@@ -76,7 +81,9 @@ export default function ImageWithSkeleton({
         /* Actual Image with smooth fade-in */
         <img
           ref={imgRef}
-          src={src}
+          src={resolvedSrc}
+          srcSet={resolvedSrcSet}
+          sizes={sizes || '(max-width: 640px) 140px, 200px'}
           alt={alt}
           loading={loading}
           decoding={decoding}

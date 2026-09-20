@@ -148,6 +148,17 @@ export const ArchiveHub = memo(function ArchiveHub({
   useEffect(() => {
     if (!isActive || hasRequestedGithubRef.current) return;
 
+    try {
+      const cached = sessionStorage.getItem('tantalize_latest_commit');
+      if (cached) {
+        setGithubInfo(JSON.parse(cached));
+        hasRequestedGithubRef.current = true;
+        return;
+      }
+    } catch {
+      // Fetch normally when storage is unavailable or invalid.
+    }
+
     hasRequestedGithubRef.current = true;
     let isMounted = true;
     let requestSettled = false;
@@ -168,21 +179,29 @@ export const ArchiveHub = memo(function ArchiveHub({
               year: 'numeric',
             })
           : 'Sep 18, 2026';
-        setGithubInfo({
+        const info = {
           date: formattedDate,
           sha: commit.sha ? commit.sha.slice(0, 7) : '6394653',
           message: commit.commit?.message?.split('\n')[0] || 'feat: add interactive 3D cube projects grid',
           url: commit.html_url || 'https://github.com/AxelS27/tantalus',
-        });
+        };
+        setGithubInfo(info);
+        try {
+          sessionStorage.setItem('tantalize_latest_commit', JSON.stringify(info));
+        } catch {}
       })
       .catch(() => {
         if (!isMounted) return;
-        setGithubInfo({
+        const fallbackInfo = {
           date: 'Sep 18, 2026',
           sha: '6394653',
           message: 'feat: add interactive 3D cube projects grid, frosted glass cards, and timeline enhancements',
           url: 'https://github.com/AxelS27/tantalus',
-        });
+        };
+        setGithubInfo(fallbackInfo);
+        try {
+          sessionStorage.setItem('tantalize_latest_commit', JSON.stringify(fallbackInfo));
+        } catch {}
       })
       .finally(() => {
         requestSettled = true;

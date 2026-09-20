@@ -2,7 +2,12 @@ import { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react'
 import { motion, useReducedMotion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { type PortfolioSettings, getSavedSettings } from './lib/settings';
-import { getAssetUrl } from './lib/assets';
+import { getRenderQuality } from './lib/deviceQuality';
+import {
+  markNavigationStart,
+  measureNavigation,
+  startPerformanceMonitoring,
+} from './lib/performanceMonitor';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import CanvasSectionSkeleton from './components/skeletons/CanvasSectionSkeleton';
 import type { ArchiveAppId } from './components/ArchiveHub';
@@ -45,6 +50,7 @@ const getTabFromHash = (): NavItem => {
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavItem>(getTabFromHash);
   const [settings, setSettings] = useState<PortfolioSettings>(getSavedSettings);
+  const [renderQuality] = useState(getRenderQuality);
   const prefersReducedMotion = useReducedMotion();
   const shouldReduceMotion = settings.reducedMotion || prefersReducedMotion;
   const [isNavigating, setIsNavigating] = useState(false);
@@ -126,6 +132,7 @@ export default function App() {
 
     const fromTab = activeTabRef.current;
     isTransitioningRef.current = true;
+    markNavigationStart();
     setVisitedTabs((visited) => {
       if (visited.has(newTab)) return visited;
       const next = new Set(visited);
@@ -172,6 +179,7 @@ export default function App() {
     if (!isTransitioningRef.current || activeTabRef.current !== transitionTarget) return;
 
     isTransitioningRef.current = false;
+    measureNavigation();
     setIsNavigating(false);
     setTransitionFrom(null);
     setTransitionTarget(null);
@@ -212,6 +220,8 @@ export default function App() {
     () => triggerSectionChange('projects'),
     [triggerSectionChange],
   );
+
+  useEffect(() => startPerformanceMonitoring(), []);
 
   useEffect(() => () => {
     if (preparationFrameRef.current !== null) {
@@ -290,15 +300,10 @@ export default function App() {
   const isSectionRendered = (tab: NavItem) =>
     tab === activeTab || tab === transitionFrom || tab === transitionTarget;
   const isBackgroundLive = (tab: NavItem) =>
-    settings.ambientParallax && !shouldReduceMotion && isSectionRendered(tab);
-
-  // Reusable mask style for seamless atmospheric edge feathering without transparent gap
-  const seamlessMaskStyle = {
-    maskImage: 'radial-gradient(ellipse 99% 98% at 50% 50%, black 80%, rgba(0,0,0,0.96) 94%, transparent 100%)',
-    WebkitMaskImage: 'radial-gradient(ellipse 99% 98% at 50% 50%, black 80%, rgba(0,0,0,0.96) 94%, transparent 100%)',
-    backfaceVisibility: 'hidden' as const,
-    WebkitBackfaceVisibility: 'hidden' as const,
-  };
+    settings.ambientParallax &&
+    renderQuality !== 'reduced' &&
+    !shouldReduceMotion &&
+    isSectionRendered(tab);
 
   return (
     <ErrorBoundary>
@@ -324,20 +329,21 @@ export default function App() {
             ease: shouldReduceMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
           }}
           onAnimationComplete={handleCameraAnimationComplete}
-          className={`absolute inset-0 w-full h-full bg-[#161412] transform-gpu ${
+          className={`canvas-quality-${renderQuality} absolute inset-0 w-full h-full bg-[#161412] transform-gpu ${
             isNavigating ? 'canvas-world--moving will-change-transform' : ''
           }`}
         >
           {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
           <div className="spatial-section absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
             <div
-              style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
                 isBackgroundLive('home') ? 'ambient-canvas-background--live' : ''
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src={getAssetUrl('/images/tantalize/home.webp')}
+                src="/images/backgrounds/home.webp"
+                srcSet="/images/backgrounds/home-960.webp 960w, /images/backgrounds/home-1280.webp 1280w, /images/backgrounds/home.webp 1672w"
+                sizes="106vw"
                 alt="Home Background"
                 fetchPriority="high"
                 decoding="async"
@@ -409,13 +415,14 @@ export default function App() {
           <div className="spatial-section absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
             {/* Background Image with Ultra-Subtle Vignette */}
             <div
-              style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
                 isBackgroundLive('timeline') ? 'ambient-canvas-background--live' : ''
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src={getAssetUrl('/images/tantalize/timeline.webp')}
+                src="/images/backgrounds/timeline.webp"
+                srcSet="/images/backgrounds/timeline-960.webp 960w, /images/backgrounds/timeline-1280.webp 1280w, /images/backgrounds/timeline.webp 1672w"
+                sizes="106vw"
                 alt="Timeline Background"
                 loading="lazy"
                 decoding="async"
@@ -440,13 +447,14 @@ export default function App() {
           <div className="spatial-section absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
             {/* Background Image with Subtle Vignette */}
             <div
-              style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
                 isBackgroundLive('projects') ? 'ambient-canvas-background--live' : ''
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src={getAssetUrl('/images/tantalize/projects.webp')}
+                src="/images/backgrounds/projects.webp"
+                srcSet="/images/backgrounds/projects-960.webp 960w, /images/backgrounds/projects-1280.webp 1280w, /images/backgrounds/projects.webp 1672w"
+                sizes="106vw"
                 alt="Projects Background"
                 loading="lazy"
                 decoding="async"
@@ -470,13 +478,14 @@ export default function App() {
           {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
           <div className="spatial-section absolute left-[-100vw] top-0 w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
             <div
-              style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
                 isBackgroundLive('archive') ? 'ambient-canvas-background--live' : ''
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src={getAssetUrl('/images/tantalize/archives.webp')}
+                src="/images/backgrounds/archives.webp"
+                srcSet="/images/backgrounds/archives-960.webp 960w, /images/backgrounds/archives-1280.webp 1280w, /images/backgrounds/archives.webp 1671w"
+                sizes="106vw"
                 alt="Archive Background"
                 loading="lazy"
                 decoding="async"
@@ -502,13 +511,14 @@ export default function App() {
           {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
           <div className="spatial-section absolute left-[100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
             <div
-              style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
                 isBackgroundLive('connect') ? 'ambient-canvas-background--live' : ''
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src={getAssetUrl('/images/tantalize/connect.webp')}
+                src="/images/backgrounds/connect.webp"
+                srcSet="/images/backgrounds/connect-960.webp 960w, /images/backgrounds/connect-1280.webp 1280w, /images/backgrounds/connect.webp 1672w"
+                sizes="106vw"
                 alt="Connect Background"
                 loading="lazy"
                 decoding="async"
@@ -521,13 +531,14 @@ export default function App() {
           {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
           <div className="spatial-section absolute left-[-100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
             <div
-              style={seamlessMaskStyle}
               className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
                 isBackgroundLive('certificates') ? 'ambient-canvas-background--live' : ''
               } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
             >
               <img
-                src={getAssetUrl('/images/tantalize/certificates.webp')}
+                src="/images/backgrounds/certificates.webp"
+                srcSet="/images/backgrounds/certificates-960.webp 960w, /images/backgrounds/certificates-1280.webp 1280w, /images/backgrounds/certificates.webp 1672w"
+                sizes="106vw"
                 alt="Certificates Background"
                 loading="lazy"
                 decoding="async"

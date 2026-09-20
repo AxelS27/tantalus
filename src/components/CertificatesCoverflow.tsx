@@ -13,6 +13,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { certificatesData, type CertificateItem } from '../data/certificates';
+import { getThumbnailSrcSet, getThumbnailUrl } from '../lib/thumbnails';
 
 export interface CertificatesCoverflowProps {
   isActive?: boolean;
@@ -84,12 +85,14 @@ const CertificateCard = memo(function CertificateCard({
         className={`w-full h-full rounded-2xl flex flex-col justify-between p-3.5 sm:p-4.5 border transition-all duration-300 ${
           isCenter
             ? 'bg-[#FAF8F5]/85 dark:bg-[#161412]/85 backdrop-blur-2xl border-white/80 dark:border-white/25 shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,0.9),0_24px_50px_-10px_rgba(0,0,0,0.35)] group-hover:border-amber-700/60 dark:group-hover:border-amber-400/50 group-hover:shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,1),0_28px_60px_-10px_rgba(0,0,0,0.45)]'
-            : 'bg-[#FAF8F5]/60 dark:bg-[#161412]/60 backdrop-blur-xl border-white/50 dark:border-white/15 shadow-[0_12px_32px_rgba(0,0,0,0.2)] hover:border-white/80'
+            : 'bg-[#FAF8F5]/65 dark:bg-[#161412]/65 backdrop-blur-sm border-white/50 dark:border-white/15 shadow-[0_12px_32px_rgba(0,0,0,0.2)] hover:border-white/80'
         }`}
       >
         <div className="relative w-full h-40 sm:h-48 md:h-52 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-2 flex-shrink-0">
           <img
-            src={cert.image}
+            src={getThumbnailUrl(cert.image)}
+            srcSet={getThumbnailSrcSet(cert.image)}
+            sizes="(max-width: 640px) 280px, (max-width: 768px) 350px, 400px"
             alt={cert.title}
             loading="lazy"
             decoding="async"

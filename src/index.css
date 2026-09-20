@@ -56,6 +56,8 @@ body {
 .ambient-canvas-background {
   transform: scale(1.02);
   transform-origin: center;
+  mask-image: radial-gradient(ellipse 99% 98% at 50% 50%, black 80%, rgba(0, 0, 0, 0.96) 94%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 99% 98% at 50% 50%, black 80%, rgba(0, 0, 0, 0.96) 94%, transparent 100%);
   backface-visibility: hidden;
 }
 
@@ -65,6 +67,15 @@ body {
 
 .ambient-canvas-background--paused {
   animation-play-state: paused;
+}
+
+/* Scale section glass cost to the device without changing layout or content. */
+.canvas-quality-balanced [class*="backdrop-blur"] {
+  --tw-backdrop-blur: blur(12px);
+}
+
+.canvas-quality-reduced [class*="backdrop-blur"] {
+  --tw-backdrop-blur: blur(4px);
 }
 
 /* Blur readback is expensive while its entire ancestor is translating. The

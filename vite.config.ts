@@ -18,14 +18,5 @@ export default defineConfig({
     target: 'esnext',
     cssCodeSplit: true,
     chunkSizeWarningLimit: 800,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-core': ['react', 'react-dom'],
-          'motion-vendor': ['motion'],
-          'lucide-vendor': ['lucide-react'],
-        },
-      },
-    },
   },
 });
