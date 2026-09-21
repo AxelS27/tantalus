@@ -302,8 +302,8 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           {/* Right Side (6 cols on desktop): Fluid Typographic Ledger, Actions & Technologies */}
           <div className="lg:col-span-6 space-y-5 pt-0.5">
             
-            {/* Direct Metadata List (Optimized Sweet Spot) */}
-            <div className="border-b border-white/15 pb-4.5 space-y-2.5">
+            {/* Direct Metadata List */}
+            <div className="space-y-2.5">
               {project.role && (
                 <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
                   <span className="text-stone-300 font-sans text-xs sm:text-sm font-medium">Role:</span>
@@ -325,14 +325,13 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
             </div>
 
             {/* Split Section: Action Links on Left & Technologies on Right (Parallel) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start pt-2">
               
               {/* Left Sub-Column: Action Buttons */}
               <div className="space-y-2">
-                <div className="flex items-center gap-1.5 text-[11px] font-sans font-semibold uppercase tracking-wider text-stone-300 mb-1">
-                  <ExternalLink className="w-3 h-3 text-[#FFD88A]" />
-                  <span>Links & Resources</span>
-                </div>
+                <span className="text-[11px] font-sans font-semibold uppercase tracking-wider text-stone-400 block mb-1">
+                  Links & Resources
+                </span>
 
                 {project.demoUrl && (
                   <a
@@ -413,10 +412,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               {/* Right Sub-Column: Technologies */}
               {project.tags && project.tags.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-1.5 text-[11px] font-sans font-semibold uppercase tracking-wider text-stone-300 mb-1">
-                    <Tag className="w-3 h-3 text-[#FFD88A]" />
-                    <span>Technologies</span>
-                  </div>
+                  <span className="text-[11px] font-sans font-semibold uppercase tracking-widest text-stone-400 block mb-1">
+                    Technologies
+                  </span>
                   <div className="flex flex-wrap gap-1.5">
                     {project.tags.map((tag, idx) => (
                       <span
