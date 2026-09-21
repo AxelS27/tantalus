@@ -167,337 +167,337 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
         <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-black/60 dark:bg-black/70 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 dark:border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
         
-        {/* ================= 1. WIDE FLUID HERO SECTION ================= */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          
-          {/* Left Side (6 cols on desktop): Meta Ledger, Links & Tags */}
-          <div className="lg:col-span-6 space-y-6 pt-1">
+          {/* ================= 1. WIDE FLUID HERO SECTION (Visual Left + Meta/Actions Right) ================= */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
-            {/* Editorial Metadata Ledger */}
-            <div className="border-b border-white/20 pb-4 space-y-3 text-xs sm:text-sm font-serif italic">
-              {project.role && (
-                <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                  <span className="text-stone-300 font-light">Role</span>
-                  <span className="text-[#FFD88A] font-medium">{project.role}</span>
-                </div>
-              )}
-              {project.client && (
-                <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                  <span className="text-stone-300 font-light">Client</span>
-                  <span className="text-stone-200 font-light">{project.client}</span>
-                </div>
-              )}
-              {project.year && (
-                <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                  <span className="text-stone-300 font-light">Year</span>
-                  <span className="font-mono text-xs font-semibold text-[#FFD88A]">{project.year}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Fluid Action Links */}
-            <div className="space-y-2.5 pt-0.5">
-              {project.demoUrl && (
-                <a
-                  href={project.demoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-2 text-sm sm:text-base font-serif italic text-[#FFD88A] hover:text-[#FFEAB5] transition-colors no-underline"
-                  style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}
-                >
-                  <span className="underline underline-offset-4 decoration-[#FFD88A]/60 font-medium">
-                    {project.demoLabel || 'Live Demo'}
-                  </span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200 text-[#FFD88A]" />
-                </a>
-              )}
-
-              {/* Auxiliary Resource Links */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm font-serif italic text-stone-200" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                {project.githubUrl && (
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+            {/* Left Side (6 cols on desktop): Compact & Proportionate Visual Stage */}
+            <div className="lg:col-span-6">
+              {allMedia.length > 0 && (
+                <div className="space-y-2.5">
+                  {/* Main Visual Frame */}
+                  <div
+                    onClick={() => openLightbox(activeMediaIndex)}
+                    className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/40 backdrop-blur-xl border border-white/25 group cursor-pointer shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-white/40 transition-colors duration-300"
                   >
-                    <Github className="w-3.5 h-3.5 text-[#FFD88A]" />
-                    <span className="underline underline-offset-4 decoration-white/30">GitHub</span>
-                  </a>
-                )}
+                    {/* Ambient Blur Backdrop */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                      <img
+                        src={getAssetUrl(allMedia[activeMediaIndex])}
+                        alt=""
+                        className="w-full h-full object-cover blur-3xl opacity-30 scale-125 transition-all duration-700"
+                      />
+                    </div>
 
-                {project.presentationUrl && (
-                  <a
-                    href={project.presentationUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
-                  >
-                    <Presentation className="w-3.5 h-3.5 text-[#FFD88A]" />
-                    <span className="underline underline-offset-4 decoration-white/30">{project.presentationLabel || 'Presentation'}</span>
-                  </a>
-                )}
+                    {/* Active Media Image */}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeMediaIndex}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="w-full h-full relative z-10 flex items-center justify-center p-2.5 sm:p-4"
+                      >
+                        <ImageWithSkeleton
+                          src={getAssetUrl(allMedia[activeMediaIndex])}
+                          alt={`${project.title} Preview ${activeMediaIndex + 1}`}
+                          optimizeSource={false}
+                          wrapperClassName="w-full h-full flex items-center justify-center"
+                          className="max-h-full max-w-full object-contain object-center rounded-lg select-none group-hover:scale-[1.01] transition-transform duration-500 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                          loading="eager"
+                          decoding="async"
+                        />
+                      </motion.div>
+                    </AnimatePresence>
 
-                {project.videoUrl && (
-                  <a
-                    href={project.videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
-                  >
-                    <Play className="w-3.5 h-3.5 text-[#FFD88A]" />
-                    <span className="underline underline-offset-4 decoration-white/30">{project.videoLabel || 'Video Demo'}</span>
-                  </a>
-                )}
+                    {/* Left/Right Floating Glide Arrows */}
+                    {allMedia.length > 1 && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length);
+                          }}
+                          title="Previous Image"
+                          className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-xl border border-white/30 text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMediaIndex((prev) => (prev + 1) % allMedia.length);
+                          }}
+                          title="Next Image"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-xl border border-white/30 text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
 
-                {project.posterUrl && (
-                  <a
-                    href={project.posterUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
-                  >
-                    <ImageIcon className="w-3.5 h-3.5 text-[#FFD88A]" />
-                    <span className="underline underline-offset-4 decoration-white/30">{project.posterLabel || 'Poster'}</span>
-                  </a>
-                )}
-              </div>
-            </div>
-
-            {/* Fluid Technology Tags */}
-            {project.tags && project.tags.length > 0 && (
-              <div className="pt-1">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#E8C582] block mb-1">
-                  Technologies
-                </span>
-                <p className="font-serif italic text-xs sm:text-sm text-stone-200/90 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                  {project.tags.join('  •  ')}
-                </p>
-              </div>
-            )}
-
-          </div>
-
-          {/* Right Side (6 cols on desktop): Compact & Proportionate Visual Stage */}
-          <div className="lg:col-span-6">
-            {allMedia.length > 0 && (
-              <div className="space-y-2.5">
-                {/* Main Visual Frame */}
-                <div
-                  onClick={() => openLightbox(activeMediaIndex)}
-                  className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/40 backdrop-blur-xl border border-white/25 group cursor-pointer shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-white/40 transition-colors duration-300"
-                >
-                  {/* Ambient Blur Backdrop */}
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <img
-                      src={getAssetUrl(allMedia[activeMediaIndex])}
-                      alt=""
-                      className="w-full h-full object-cover blur-3xl opacity-30 scale-125 transition-all duration-700"
-                    />
+                    {/* Minimal Expand Pill */}
+                    <div className="absolute bottom-2.5 right-2.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-xl border border-white/25 text-white text-[11px] font-serif italic shadow-md">
+                        <Maximize2 className="w-3 h-3 text-[#FFD88A]" />
+                        <span>Expand</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Active Media Image */}
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeMediaIndex}
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      className="w-full h-full relative z-10 flex items-center justify-center p-2.5 sm:p-4"
-                    >
-                      <ImageWithSkeleton
-                        src={getAssetUrl(allMedia[activeMediaIndex])}
-                        alt={`${project.title} Preview ${activeMediaIndex + 1}`}
-                        optimizeSource={false}
-                        wrapperClassName="w-full h-full flex items-center justify-center"
-                        className="max-h-full max-w-full object-contain object-center rounded-lg select-none group-hover:scale-[1.01] transition-transform duration-500 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
-                        loading="eager"
-                        decoding="async"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-
-                  {/* Left/Right Floating Glide Arrows */}
+                  {/* Media Stage Controls & Progress Indicator */}
                   {allMedia.length > 1 && (
-                    <>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length);
-                        }}
-                        title="Previous Image"
-                        className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-xl border border-white/30 text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveMediaIndex((prev) => (prev + 1) % allMedia.length);
-                        }}
-                        title="Next Image"
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/85 backdrop-blur-xl border border-white/30 text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </>
+                    <div className="flex items-center justify-between px-2 pt-2.5 text-xs font-serif italic text-stone-300 select-none">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[#FFD88A] font-mono text-xs font-semibold">
+                          {String(activeMediaIndex + 1).padStart(2, '0')}
+                        </span>
+                        <span className="text-stone-500 font-mono text-xs">/</span>
+                        <span className="text-stone-400 font-mono text-xs">
+                          {String(allMedia.length).padStart(2, '0')}
+                        </span>
+                        <span className="text-stone-400 text-xs ml-1">Images</span>
+                      </div>
+
+                      {/* Golden Indicator Dots */}
+                      <div className="flex items-center gap-1.5">
+                        {allMedia.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setActiveMediaIndex(idx)}
+                            className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                              idx === activeMediaIndex
+                                ? 'w-6 bg-[#FFD88A] shadow-sm'
+                                : 'w-1.5 bg-white/25 hover:bg-white/50'
+                            }`}
+                            title={`Image ${idx + 1}`}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Mini Arrow Controls */}
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length)}
+                          className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                          title="Previous Image"
+                        >
+                          <ChevronLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setActiveMediaIndex((prev) => (prev + 1) % allMedia.length)}
+                          className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                          title="Next Image"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Right Side (6 cols on desktop): Meta Ledger, Links & Tags */}
+            <div className="lg:col-span-6 space-y-6 pt-1">
+              
+              {/* Editorial Metadata Ledger */}
+              <div className="border-b border-white/20 pb-4 space-y-3 text-xs sm:text-sm font-serif italic">
+                {project.role && (
+                  <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                    <span className="text-stone-300 font-light">Role</span>
+                    <span className="text-[#FFD88A] font-medium">{project.role}</span>
+                  </div>
+                )}
+                {project.client && (
+                  <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                    <span className="text-stone-300 font-light">Client</span>
+                    <span className="text-stone-200 font-light">{project.client}</span>
+                  </div>
+                )}
+                {project.year && (
+                  <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                    <span className="text-stone-300 font-light">Year</span>
+                    <span className="font-mono text-xs font-semibold text-[#FFD88A]">{project.year}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Fluid Action Links */}
+              <div className="space-y-2.5 pt-0.5">
+                {project.demoUrl && (
+                  <a
+                    href={project.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-2 text-sm sm:text-base font-serif italic text-[#FFD88A] hover:text-[#FFEAB5] transition-colors no-underline"
+                    style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}
+                  >
+                    <span className="underline underline-offset-4 decoration-[#FFD88A]/60 font-medium">
+                      {project.demoLabel || 'Live Demo'}
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200 text-[#FFD88A]" />
+                  </a>
+                )}
+
+                {/* Auxiliary Resource Links */}
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm font-serif italic text-stone-200" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+                    >
+                      <Github className="w-3.5 h-3.5 text-[#FFD88A]" />
+                      <span className="underline underline-offset-4 decoration-white/30">GitHub</span>
+                    </a>
                   )}
 
-                  {/* Minimal Expand Pill */}
-                  <div className="absolute bottom-2.5 right-2.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-xl border border-white/25 text-white text-[11px] font-serif italic shadow-md">
-                      <Maximize2 className="w-3 h-3 text-[#FFD88A]" />
-                      <span>Expand</span>
-                    </div>
-                  </div>
+                  {project.presentationUrl && (
+                    <a
+                      href={project.presentationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+                    >
+                      <Presentation className="w-3.5 h-3.5 text-[#FFD88A]" />
+                      <span className="underline underline-offset-4 decoration-white/30">{project.presentationLabel || 'Presentation'}</span>
+                    </a>
+                  )}
+
+                  {project.videoUrl && (
+                    <a
+                      href={project.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+                    >
+                      <Play className="w-3.5 h-3.5 text-[#FFD88A]" />
+                      <span className="underline underline-offset-4 decoration-white/30">{project.videoLabel || 'Video Demo'}</span>
+                    </a>
+                  )}
+
+                  {project.posterUrl && (
+                    <a
+                      href={project.posterUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+                    >
+                      <ImageIcon className="w-3.5 h-3.5 text-[#FFD88A]" />
+                      <span className="underline underline-offset-4 decoration-white/30">{project.posterLabel || 'Poster'}</span>
+                    </a>
+                  )}
                 </div>
-
-                {/* Media Stage Controls & Progress Indicator */}
-                {allMedia.length > 1 && (
-                  <div className="flex items-center justify-between px-2 pt-2.5 text-xs font-serif italic text-stone-300 select-none">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[#FFD88A] font-mono text-xs font-semibold">
-                        {String(activeMediaIndex + 1).padStart(2, '0')}
-                      </span>
-                      <span className="text-stone-500 font-mono text-xs">/</span>
-                      <span className="text-stone-400 font-mono text-xs">
-                        {String(allMedia.length).padStart(2, '0')}
-                      </span>
-                      <span className="text-stone-400 text-xs ml-1">Images</span>
-                    </div>
-
-                    {/* Golden Indicator Dots */}
-                    <div className="flex items-center gap-1.5">
-                      {allMedia.map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setActiveMediaIndex(idx)}
-                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                            idx === activeMediaIndex
-                              ? 'w-6 bg-[#FFD88A] shadow-sm'
-                              : 'w-1.5 bg-white/25 hover:bg-white/50'
-                          }`}
-                          title={`Image ${idx + 1}`}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Mini Arrow Controls */}
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length)}
-                        className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                        title="Previous Image"
-                      >
-                        <ChevronLeft className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => setActiveMediaIndex((prev) => (prev + 1) % allMedia.length)}
-                        className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                        title="Next Image"
-                      >
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
-            )}
-          </div>
 
-        </section>
+              {/* Fluid Technology Tags */}
+              {project.tags && project.tags.length > 0 && (
+                <div className="pt-1">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#E8C582] block mb-1">
+                    Technologies
+                  </span>
+                  <p className="font-serif italic text-xs sm:text-sm text-stone-200/90 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                    {project.tags.join('  •  ')}
+                  </p>
+                </div>
+              )}
 
-        {/* ================= 2. ESSAY TREATISE ================= */}
-        {project.content && project.content.length > 0 && (
-          <section className="pt-10 border-t border-white/20 max-w-4xl">
-            <h2
-              className="font-serif italic text-2xl sm:text-3xl text-white font-light mb-6"
-              style={{ textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
-            >
-              About the Project
-            </h2>
-
-            {/* Seamless Cohesive Article Flow */}
-            <div
-              className="space-y-5 sm:space-y-6 text-base sm:text-lg text-stone-100/95 leading-[1.85] font-serif italic font-light"
-              style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}
-            >
-              {project.content.map((paragraph, idx) => (
-                <p key={idx}>
-                  {paragraph}
-                </p>
-              ))}
             </div>
+
           </section>
-        )}
 
-        {/* ================= 3. CONTINUUM OF WORKS (Typographic Bottom Links) ================= */}
-        <nav className="pt-8 border-t border-white/20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12">
-            {/* Previous Work */}
-            {prevProject ? (
-              <a
-                href={`/projects/${prevProject.id}`}
-                onClick={(e) => {
-                  if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
-                    e.preventDefault();
-                    onSelectProject(prevProject.id);
-                  }
-                }}
-                className="group flex items-center gap-4 cursor-pointer no-underline text-inherit"
+          {/* ================= 2. ESSAY TREATISE ================= */}
+          {project.content && project.content.length > 0 && (
+            <section className="pt-10 border-t border-white/20 max-w-4xl">
+              <h2
+                className="font-serif italic text-2xl sm:text-3xl text-white font-light mb-6"
+                style={{ textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
               >
-                <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/40 border border-white/25 shrink-0 shadow-md">
-                  <img
-                    src={getAssetUrl(prevProject.thumbnail)}
-                    alt={prevProject.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span className="font-serif italic text-xs text-stone-300 flex items-center gap-1 group-hover:text-[#FFD88A] transition-colors" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform text-[#FFD88A]" />
-                    <span>Previous Project ({prevProject.year})</span>
-                  </span>
-                  <h4 className="font-serif italic text-base sm:text-lg text-white truncate font-light pt-0.5 group-hover:underline" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}>
-                    {prevProject.title}
-                  </h4>
-                </div>
-              </a>
-            ) : <div />}
+                About the Project
+              </h2>
 
-            {/* Next Work */}
-            {nextProject && (
-              <a
-                href={`/projects/${nextProject.id}`}
-                onClick={(e) => {
-                  if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
-                    e.preventDefault();
-                    onSelectProject(nextProject.id);
-                  }
-                }}
-                className="group flex items-center justify-end gap-4 cursor-pointer no-underline text-inherit text-right"
+              {/* Seamless Cohesive Article Flow */}
+              <div
+                className="space-y-5 sm:space-y-6 text-base sm:text-lg text-stone-100/95 leading-[1.85] font-serif italic font-light"
+                style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}
               >
-                <div className="min-w-0 flex-1">
-                  <span className="font-serif italic text-xs text-stone-300 flex items-center justify-end gap-1 group-hover:text-[#FFD88A] transition-colors" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <span>Next Project ({nextProject.year})</span>
-                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-[#FFD88A]" />
-                  </span>
-                  <h4 className="font-serif italic text-base sm:text-lg text-white truncate font-light pt-0.5 group-hover:underline" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}>
-                    {nextProject.title}
-                  </h4>
-                </div>
-                <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/40 border border-white/25 shrink-0 order-first sm:order-last shadow-md">
-                  <img
-                    src={getAssetUrl(nextProject.thumbnail)}
-                    alt={nextProject.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              </a>
-            )}
-          </div>
-        </nav>
+                {project.content.map((paragraph, idx) => (
+                  <p key={idx}>
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ================= 3. CONTINUUM OF WORKS (Typographic Bottom Links) ================= */}
+          <nav className="pt-8 border-t border-white/20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12">
+              {/* Previous Work */}
+              {prevProject ? (
+                <a
+                  href={`/projects/${prevProject.id}`}
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      onSelectProject(prevProject.id);
+                    }
+                  }}
+                  className="group flex items-center gap-4 cursor-pointer no-underline text-inherit"
+                >
+                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/40 border border-white/25 shrink-0 shadow-md">
+                    <img
+                      src={getAssetUrl(prevProject.thumbnail)}
+                      alt={prevProject.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="font-serif italic text-xs text-stone-300 flex items-center gap-1 group-hover:text-[#FFD88A] transition-colors" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                      <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform text-[#FFD88A]" />
+                      <span>Previous Project ({prevProject.year})</span>
+                    </span>
+                    <h4 className="font-serif italic text-base sm:text-lg text-white truncate font-light pt-0.5 group-hover:underline" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}>
+                      {prevProject.title}
+                    </h4>
+                  </div>
+                </a>
+              ) : <div />}
+
+              {/* Next Work */}
+              {nextProject && (
+                <a
+                  href={`/projects/${nextProject.id}`}
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      onSelectProject(nextProject.id);
+                    }
+                  }}
+                  className="group flex items-center justify-end gap-4 cursor-pointer no-underline text-inherit text-right"
+                >
+                  <div className="min-w-0 flex-1">
+                    <span className="font-serif italic text-xs text-stone-300 flex items-center justify-end gap-1 group-hover:text-[#FFD88A] transition-colors" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                      <span>Next Project ({nextProject.year})</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-[#FFD88A]" />
+                    </span>
+                    <h4 className="font-serif italic text-base sm:text-lg text-white truncate font-light pt-0.5 group-hover:underline" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}>
+                      {nextProject.title}
+                    </h4>
+                  </div>
+                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/40 border border-white/25 shrink-0 order-first sm:order-last shadow-md">
+                    <img
+                      src={getAssetUrl(nextProject.thumbnail)}
+                      alt={nextProject.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                </a>
+              )}
+            </div>
+          </nav>
 
         </article>
       </div>
