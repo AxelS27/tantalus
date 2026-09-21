@@ -13,6 +13,7 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 import CanvasSectionSkeleton from './components/skeletons/CanvasSectionSkeleton';
 import type { ArchiveAppId } from './components/ArchiveHub';
 import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
+import { getProjectById } from './data/projects';
 
 // Lazy-loaded code-split section chunks
 const TimelineRoller = lazy(() =>
@@ -27,35 +28,63 @@ const ArchiveHub = lazy(() =>
 const CertificatesCoverflow = lazy(() =>
   import('./components/CertificatesCoverflow').then((m) => ({ default: m.CertificatesCoverflow }))
 );
+const ProjectDetailPage = lazy(() =>
+  import('./pages/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage }))
+);
 
 const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'archive', 'certificates', 'connect'];
 
-const getTabFromHash = (): NavItem => {
-  if (typeof window === 'undefined') return 'home';
+interface RouteInfo {
+  tab: NavItem;
+  projectId: string | null;
+}
+
+const getRouteInfo = (): RouteInfo => {
+  if (typeof window === 'undefined') return { tab: 'home', projectId: null };
+
   const hash = window.location.hash.replace('#', '').toLowerCase();
+  const pathname = window.location.pathname.toLowerCase();
+
+  // Check project detail route from hash: e.g. #projects/railroad-cv or #project/railroad-cv
+  if (hash.startsWith('projects/') || hash.startsWith('project/')) {
+    const segments = hash.split('/');
+    const projectId = segments.slice(1).join('/');
+    return { tab: 'projects', projectId: projectId || null };
+  }
+
+  // Check project detail route from pathname: e.g. /projects/railroad-cv
+  if (pathname.startsWith('/projects/') || pathname.startsWith('/project/')) {
+    const segments = pathname.split('/').filter(Boolean);
+    if (segments.length >= 2) {
+      return { tab: 'projects', projectId: segments[1] };
+    }
+  }
+
   if (hash === 'certificates' || hash === 'certificate' || hash === 'archive/certificates') {
-    return 'certificates';
+    return { tab: 'certificates', projectId: null };
   }
   if (hash === 'connect' || hash === 'archive/connect') {
-    return 'connect';
+    return { tab: 'connect', projectId: null };
   }
   if (hash.startsWith('archive') || hash.includes('settings')) {
-    return 'archive';
+    return { tab: 'archive', projectId: null };
   }
   if (validTabs.includes(hash as NavItem)) {
-    return hash as NavItem;
+    return { tab: hash as NavItem, projectId: null };
   }
-  return 'home';
+  return { tab: 'home', projectId: null };
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<NavItem>(getTabFromHash);
+  const [routeInfo, setRouteInfo] = useState<RouteInfo>(getRouteInfo);
+  const activeTab = routeInfo.tab;
+  const activeProjectId = routeInfo.projectId;
   const [settings, setSettings] = useState<PortfolioSettings>(getSavedSettings);
   const [renderQuality] = useState(getRenderQuality);
   const prefersReducedMotion = useReducedMotion();
   const shouldReduceMotion = settings.reducedMotion || prefersReducedMotion;
   const [isNavigating, setIsNavigating] = useState(false);
-  const [visitedTabs, setVisitedTabs] = useState<Set<NavItem>>(() => new Set([activeTab]));
+  const [visitedTabs, setVisitedTabs] = useState<Set<NavItem>>(() => new Set([activeTab, 'projects']));
   const [transitionFrom, setTransitionFrom] = useState<NavItem | null>(null);
   const [transitionTarget, setTransitionTarget] = useState<NavItem | null>(null);
   const activeTabRef = useRef(activeTab);
@@ -84,8 +113,14 @@ export default function App() {
     }
   }, [settings.theme]);
 
-  // Dynamic Web Title matching active navbar section
+  // Dynamic Web Title matching active navbar section or project detail
   useEffect(() => {
+    if (activeProjectId) {
+      const project = getProjectById(activeProjectId);
+      document.title = project ? `AxelS27 - ${project.title}` : 'AxelS27 - Project Detail';
+      return;
+    }
+
     const titleMap: Record<NavItem, string> = {
       home: 'AxelS27 - Home',
       timeline: 'AxelS27 - Timeline',
@@ -97,12 +132,12 @@ export default function App() {
     if (typeof document !== 'undefined') {
       document.title = titleMap[activeTab] || 'AxelS27 - Home';
     }
-  }, [activeTab]);
+  }, [activeTab, activeProjectId]);
 
   // Sync tab change with URL Hash without page reload
   const commitTabChange = useCallback((newTab: NavItem, syncHistory = true) => {
     activeTabRef.current = newTab;
-    setActiveTab(newTab);
+    setRouteInfo({ tab: newTab, projectId: null });
 
     if (!syncHistory) return;
 
@@ -113,6 +148,21 @@ export default function App() {
         '',
         targetHash || window.location.pathname + window.location.search
       );
+    }
+  }, []);
+
+  const handleSelectProject = useCallback((projectId: string) => {
+    setRouteInfo({ tab: 'projects', projectId });
+    const targetHash = `#projects/${projectId}`;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState(null, '', targetHash);
+    }
+  }, []);
+
+  const handleBackToProjects = useCallback(() => {
+    setRouteInfo({ tab: 'projects', projectId: null });
+    if (window.location.hash !== '#projects') {
+      window.history.pushState(null, '', '#projects');
     }
   }, []);
 
@@ -242,13 +292,20 @@ export default function App() {
 
   // Listen to browser Back/Forward or direct hash changes
   useEffect(() => {
-    const handleHashChange = () => {
-      const tab = getTabFromHash();
-      triggerSectionChange(tab, false, true);
+    const handleRouteSync = () => {
+      const nextRoute = getRouteInfo();
+      setRouteInfo(nextRoute);
+      if (!nextRoute.projectId && nextRoute.tab !== activeTabRef.current) {
+        triggerSectionChange(nextRoute.tab, false, true);
+      }
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('hashchange', handleRouteSync);
+    window.addEventListener('popstate', handleRouteSync);
+    return () => {
+      window.removeEventListener('hashchange', handleRouteSync);
+      window.removeEventListener('popstate', handleRouteSync);
+    };
   }, [triggerSectionChange]);
 
   // Global mouse wheel listener for section-to-section navigation
@@ -308,260 +365,271 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div
-        onWheel={handleGlobalWheel}
-        className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
-      >
-        {/* Floating Centered Apple Frosted Glass Navbar */}
-        <Navbar
-          activeTab={activeTab}
-          onTabChange={(tab) => triggerSectionChange(tab, true, true)}
-        />
-
-        {/* 2D Spatial Canvas World with GPU Off-Thread Transform Acceleration */}
-        <motion.div
-          initial={{ x: coords.x, y: coords.y }}
-          animate={{
-            x: coords.x,
-            y: coords.y,
-          }}
-          transition={{
-            duration: shouldReduceMotion ? 0.25 : 1.6,
-            ease: shouldReduceMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
-          }}
-          onAnimationComplete={handleCameraAnimationComplete}
-          className={`canvas-quality-${renderQuality} absolute inset-0 w-full h-full bg-[#161412] transform-gpu ${
-            isNavigating ? 'canvas-world--moving will-change-transform' : ''
-          }`}
+      {activeProjectId ? (
+        <Suspense fallback={<CanvasSectionSkeleton />}>
+          <ProjectDetailPage
+            projectId={activeProjectId}
+            onBack={handleBackToProjects}
+            onSelectProject={handleSelectProject}
+          />
+        </Suspense>
+      ) : (
+        <div
+          onWheel={handleGlobalWheel}
+          className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
         >
-          {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
-          <div className="spatial-section absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
-            <div
-              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
-                isBackgroundLive('home') ? 'ambient-canvas-background--live' : ''
-              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
-            >
-              <img
-                src={getAssetUrl('/images/tantalize/home.webp')}
-                srcSet={`${getAssetUrl('/images/tantalize/home-960.webp')} 960w, ${getAssetUrl('/images/tantalize/home-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/home.webp')} 1672w`}
-                sizes="106vw"
-                alt="Home Background"
-                fetchPriority="high"
-                decoding="async"
-                className="w-full h-full object-cover object-center pointer-events-none"
-              />
-            </div>
+          {/* Floating Centered Apple Frosted Glass Navbar */}
+          <Navbar
+            activeTab={activeTab}
+            onTabChange={(tab) => triggerSectionChange(tab, true, true)}
+          />
 
-            {/* Upper-Left Editorial Identity */}
-            <div className="absolute top-[25%] sm:top-[27%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 sm:space-y-2.5 max-w-5xl">
-              {/* Line 1: Name */}
-              <h1
-                className="font-serif italic text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white tracking-tight font-light leading-none whitespace-nowrap"
-                style={{
-                  textShadow: '0 2px 12px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.65)',
-                }}
-              >
-                Farrell Axel Suwandi
-              </h1>
-
-              {/* Line 2: Role (Antique Gold) */}
-              <p
-                className="font-serif italic text-lg sm:text-xl md:text-2xl lg:text-3xl text-[#E8C582] tracking-wide font-normal whitespace-nowrap"
-                style={{
-                  textShadow: '0 2px 10px rgba(0,0,0,0.85), 0 4px 20px rgba(0,0,0,0.65)',
-                }}
-              >
-                AI Researcher & Software Engineer
-              </p>
-
-              {/* Line 3: Age & Location */}
+          {/* 2D Spatial Canvas World with GPU Off-Thread Transform Acceleration */}
+          <motion.div
+            initial={{ x: coords.x, y: coords.y }}
+            animate={{
+              x: coords.x,
+              y: coords.y,
+            }}
+            transition={{
+              duration: shouldReduceMotion ? 0.25 : 1.6,
+              ease: shouldReduceMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
+            }}
+            onAnimationComplete={handleCameraAnimationComplete}
+            className={`canvas-quality-${renderQuality} absolute inset-0 w-full h-full bg-[#161412] transform-gpu ${
+              isNavigating ? 'canvas-world--moving will-change-transform' : ''
+            }`}
+          >
+            {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
+            <div className="spatial-section absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
               <div
-                className="flex items-center gap-2.5 sm:gap-3 font-serif italic text-sm sm:text-base md:text-lg lg:text-xl text-stone-100/90 tracking-wide font-light whitespace-nowrap"
-                style={{
-                  textShadow: '0 1px 8px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.6)',
-                }}
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('home') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <span>20 years old</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#E8C582] shadow-[0_0_6px_rgba(0,0,0,0.8)]" />
-                <span>Jakarta</span>
+                <img
+                  src={getAssetUrl('/images/tantalize/home.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/home-960.webp')} 960w, ${getAssetUrl('/images/tantalize/home-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/home.webp')} 1672w`}
+                  sizes="106vw"
+                  alt="Home Background"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
+                />
               </div>
 
-              {/* Line 4: Passions */}
-              <p
-                className="font-serif italic text-sm sm:text-base md:text-lg lg:text-xl text-stone-100/85 tracking-wide font-light whitespace-nowrap pt-0.5"
-                style={{
-                  textShadow: '0 1px 8px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.6)',
-                }}
-              >
-                love to playing piano, coding, and watching movies
-              </p>
-            </div>
+              {/* Upper-Left Editorial Identity */}
+              <div className="absolute top-[25%] sm:top-[27%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 sm:space-y-2.5 max-w-5xl">
+                {/* Line 1: Name */}
+                <h1
+                  className="font-serif italic text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white tracking-tight font-light leading-none whitespace-nowrap"
+                  style={{
+                    textShadow: '0 2px 12px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.65)',
+                  }}
+                >
+                  Farrell Axel Suwandi
+                </h1>
 
-            {/* Colossal Diagonal Archival Watermark (Full-Screen Stamp) */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-15 overflow-hidden">
-              <div
-                className="-rotate-12 transform-gpu text-center flex flex-col items-center justify-center"
-                style={{
-                  WebkitTextStroke: '2px rgba(255, 255, 255, 0.22)',
-                }}
-              >
-                <span className="font-serif italic font-black text-[13vw] sm:text-[14vw] md:text-[15vw] leading-none tracking-[0.06em] text-white/10 dark:text-white/[0.07] uppercase select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.45)] whitespace-nowrap">
-                  NOT DONE YET
-                </span>
+                {/* Line 2: Role (Antique Gold) */}
+                <p
+                  className="font-serif italic text-lg sm:text-xl md:text-2xl lg:text-3xl text-[#E8C582] tracking-wide font-normal whitespace-nowrap"
+                  style={{
+                    textShadow: '0 2px 10px rgba(0,0,0,0.85), 0 4px 20px rgba(0,0,0,0.65)',
+                  }}
+                >
+                  AI Researcher & Software Engineer
+                </p>
+
+                {/* Line 3: Age & Location */}
+                <div
+                  className="flex items-center gap-2.5 sm:gap-3 font-serif italic text-sm sm:text-base md:text-lg lg:text-xl text-stone-100/90 tracking-wide font-light whitespace-nowrap"
+                  style={{
+                    textShadow: '0 1px 8px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.6)',
+                  }}
+                >
+                  <span>20 years old</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E8C582] shadow-[0_0_6px_rgba(0,0,0,0.8)]" />
+                  <span>Jakarta</span>
+                </div>
+
+                {/* Line 4: Passions */}
+                <p
+                  className="font-serif italic text-sm sm:text-base md:text-lg lg:text-xl text-stone-100/85 tracking-wide font-light whitespace-nowrap pt-0.5"
+                  style={{
+                    textShadow: '0 1px 8px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.6)',
+                  }}
+                >
+                  love to playing piano, coding, and watching movies
+                </p>
+              </div>
+
+              {/* Colossal Diagonal Archival Watermark (Full-Screen Stamp) */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-15 overflow-hidden">
+                <div
+                  className="-rotate-12 transform-gpu text-center flex flex-col items-center justify-center"
+                  style={{
+                    WebkitTextStroke: '2px rgba(255, 255, 255, 0.22)',
+                  }}
+                >
+                  <span className="font-serif italic font-black text-[13vw] sm:text-[14vw] md:text-[15vw] leading-none tracking-[0.06em] text-white/10 dark:text-white/[0.07] uppercase select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.45)] whitespace-nowrap">
+                    NOT DONE YET
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* ================= 2. TIMELINE SECTION (East: +100vw, 0) ================= */}
-          <div className="spatial-section absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
-            {/* Background Image with Ultra-Subtle Vignette */}
-            <div
-              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
-                isBackgroundLive('timeline') ? 'ambient-canvas-background--live' : ''
-              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
-            >
-              <img
-                src={getAssetUrl('/images/tantalize/timeline.webp')}
-                srcSet={`${getAssetUrl('/images/tantalize/timeline-960.webp')} 960w, ${getAssetUrl('/images/tantalize/timeline-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/timeline.webp')} 1672w`}
-                sizes="106vw"
-                alt="Timeline Background"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover object-center pointer-events-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/16 via-transparent to-black/10 pointer-events-none" />
-            </div>
-
-            {/* Vertical Cylindrical Roller Wheel Component (Code-Split with Suspense) */}
-            {visitedTabs.has('timeline') && (
-              <Suspense fallback={<CanvasSectionSkeleton />}>
-                <TimelineRoller
-                  isActive={isSectionRendered('timeline')}
-                  onReachEnd={handleTimelineEnd}
-                  onReachStart={handleTimelineStart}
+            {/* ================= 2. TIMELINE SECTION (East: +100vw, 0) ================= */}
+            <div className="spatial-section absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+              {/* Background Image with Ultra-Subtle Vignette */}
+              <div
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('timeline') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
+              >
+                <img
+                  src={getAssetUrl('/images/tantalize/timeline.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/timeline-960.webp')} 960w, ${getAssetUrl('/images/tantalize/timeline-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/timeline.webp')} 1672w`}
+                  sizes="106vw"
+                  alt="Timeline Background"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
                 />
-              </Suspense>
-            )}
-          </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/16 via-transparent to-black/10 pointer-events-none" />
+              </div>
 
-          {/* ================= 3. PROJECTS SECTION (South: 0, +100vh) ================= */}
-          <div className="spatial-section absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
-            {/* Background Image with Subtle Vignette */}
-            <div
-              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
-                isBackgroundLive('projects') ? 'ambient-canvas-background--live' : ''
-              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
-            >
-              <img
-                src={getAssetUrl('/images/tantalize/projects.webp')}
-                srcSet={`${getAssetUrl('/images/tantalize/projects-960.webp')} 960w, ${getAssetUrl('/images/tantalize/projects-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/projects.webp')} 1672w`}
-                sizes="106vw"
-                alt="Projects Background"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover object-center pointer-events-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
+              {/* Vertical Cylindrical Roller Wheel Component (Code-Split with Suspense) */}
+              {visitedTabs.has('timeline') && (
+                <Suspense fallback={<CanvasSectionSkeleton />}>
+                  <TimelineRoller
+                    isActive={isSectionRendered('timeline')}
+                    onReachEnd={handleTimelineEnd}
+                    onReachStart={handleTimelineStart}
+                  />
+                </Suspense>
+              )}
             </div>
 
-            {/* 3D Cube Projects Grid (Code-Split with Suspense) */}
-            {visitedTabs.has('projects') && (
-              <Suspense fallback={<CanvasSectionSkeleton />}>
-                <ProjectsGrid
-                  isActive={isSectionRendered('projects')}
-                  onReachEnd={handleProjectsEnd}
-                  onReachStart={handleProjectsStart}
+            {/* ================= 3. PROJECTS SECTION (South: 0, +100vh) ================= */}
+            <div className="spatial-section absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+              {/* Background Image with Subtle Vignette */}
+              <div
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('projects') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
+              >
+                <img
+                  src={getAssetUrl('/images/tantalize/projects.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/projects-960.webp')} 960w, ${getAssetUrl('/images/tantalize/projects-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/projects.webp')} 1672w`}
+                  sizes="106vw"
+                  alt="Projects Background"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
                 />
-              </Suspense>
-            )}
-          </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
+              </div>
 
-          {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
-          <div className="spatial-section absolute left-[-100vw] top-0 w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
-            <div
-              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
-                isBackgroundLive('archive') ? 'ambient-canvas-background--live' : ''
-              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
-            >
-              <img
-                src={getAssetUrl('/images/tantalize/archives.webp')}
-                srcSet={`${getAssetUrl('/images/tantalize/archives-960.webp')} 960w, ${getAssetUrl('/images/tantalize/archives-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/archives.webp')} 1671w`}
-                sizes="106vw"
-                alt="Archive Background"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover object-center pointer-events-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
+              {/* 3D Cube Projects Grid (Code-Split with Suspense) */}
+              {visitedTabs.has('projects') && (
+                <Suspense fallback={<CanvasSectionSkeleton />}>
+                  <ProjectsGrid
+                    isActive={isSectionRendered('projects')}
+                    onReachEnd={handleProjectsEnd}
+                    onReachStart={handleProjectsStart}
+                    onSelectProject={handleSelectProject}
+                  />
+                </Suspense>
+              )}
             </div>
 
-            {/* macOS Launchpad / App Hub (Code-Split with Suspense) */}
-            {visitedTabs.has('archive') && (
-              <Suspense fallback={<CanvasSectionSkeleton />}>
-                <ArchiveHub
-                  isActive={isSectionRendered('archive')}
-                  settings={settings}
-                  onUpdateSettings={handleUpdateSettings}
-                  onAppSelect={handleArchiveAppSelect}
-                  onReachStart={handleArchiveStart}
+            {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
+            <div className="spatial-section absolute left-[-100vw] top-0 w-screen h-screen overflow-hidden z-10">
+              <div
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('archive') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
+              >
+                <img
+                  src={getAssetUrl('/images/tantalize/archives.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/archives-960.webp')} 960w, ${getAssetUrl('/images/tantalize/archives-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/archives.webp')} 1671w`}
+                  sizes="106vw"
+                  alt="Archive Background"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
                 />
-              </Suspense>
-            )}
-          </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
+              </div>
 
-          {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
-          <div className="spatial-section absolute left-[100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
-            <div
-              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
-                isBackgroundLive('connect') ? 'ambient-canvas-background--live' : ''
-              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
-            >
-              <img
-                src={getAssetUrl('/images/tantalize/connect.webp')}
-                srcSet={`${getAssetUrl('/images/tantalize/connect-960.webp')} 960w, ${getAssetUrl('/images/tantalize/connect-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/connect.webp')} 1672w`}
-                sizes="106vw"
-                alt="Connect Background"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover object-center pointer-events-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
-            </div>
-          </div>
-
-          {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
-          <div className="spatial-section absolute left-[-100vw] top-[100vh] w-screen h-[calc(100vh+2px)] overflow-hidden z-10">
-            <div
-              className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
-                isBackgroundLive('certificates') ? 'ambient-canvas-background--live' : ''
-              } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
-            >
-              <img
-                src={getAssetUrl('/images/tantalize/certificates.webp')}
-                srcSet={`${getAssetUrl('/images/tantalize/certificates-960.webp')} 960w, ${getAssetUrl('/images/tantalize/certificates-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/certificates.webp')} 1672w`}
-                sizes="106vw"
-                alt="Certificates Background"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover object-center pointer-events-none"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
+              {/* macOS Launchpad / App Hub (Code-Split with Suspense) */}
+              {visitedTabs.has('archive') && (
+                <Suspense fallback={<CanvasSectionSkeleton />}>
+                  <ArchiveHub
+                    isActive={isSectionRendered('archive')}
+                    settings={settings}
+                    onUpdateSettings={handleUpdateSettings}
+                    onAppSelect={handleArchiveAppSelect}
+                    onReachStart={handleArchiveStart}
+                  />
+                </Suspense>
+              )}
             </div>
 
-            {/* Interactive 3D Spatial Coverflow Carousel (Code-Split with Suspense) */}
-            {visitedTabs.has('certificates') && (
-              <Suspense fallback={<CanvasSectionSkeleton />}>
-                <CertificatesCoverflow
-                  isActive={isSectionRendered('certificates')}
-                  onReachTop={handleCertificatesTop}
-                  onReachRight={handleCertificatesRight}
+            {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
+            <div className="spatial-section absolute left-[100vw] top-[100vh] w-screen h-screen overflow-hidden z-10">
+              <div
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('connect') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
+              >
+                <img
+                  src={getAssetUrl('/images/tantalize/connect.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/connect-960.webp')} 960w, ${getAssetUrl('/images/tantalize/connect-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/connect.webp')} 1672w`}
+                  sizes="106vw"
+                  alt="Connect Background"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
                 />
-              </Suspense>
-            )}
-          </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
+              </div>
+            </div>
 
-        </motion.div>
-      </div>
+            {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
+            <div className="spatial-section absolute left-[-100vw] top-[100vh] w-screen h-screen overflow-hidden z-10">
+              <div
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('certificates') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
+              >
+                <img
+                  src={getAssetUrl('/images/tantalize/certificates.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/certificates-960.webp')} 960w, ${getAssetUrl('/images/tantalize/certificates-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/certificates.webp')} 1672w`}
+                  sizes="106vw"
+                  alt="Certificates Background"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
+              </div>
+
+              {/* Interactive 3D Spatial Coverflow Carousel (Code-Split with Suspense) */}
+              {visitedTabs.has('certificates') && (
+                <Suspense fallback={<CanvasSectionSkeleton />}>
+                  <CertificatesCoverflow
+                    isActive={isSectionRendered('certificates')}
+                    onReachTop={handleCertificatesTop}
+                    onReachRight={handleCertificatesRight}
+                  />
+                </Suspense>
+              )}
+            </div>
+
+          </motion.div>
+        </div>
+      )}
     </ErrorBoundary>
   );
 }

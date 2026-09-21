@@ -10,12 +10,14 @@ interface ProjectsGridProps {
   isActive?: boolean;
   onReachEnd?: () => void;
   onReachStart?: () => void;
+  onSelectProject?: (projectId: string) => void;
 }
 
 export const ProjectsGrid = memo(function ProjectsGrid({
   isActive = true,
   onReachEnd,
   onReachStart,
+  onSelectProject,
 }: ProjectsGridProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [facingStep, setFacingStep] = useState(0);
@@ -100,6 +102,15 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       settleToFace(prevY);
     }
   }, [currentPage, onReachStart, settleToFace]);
+
+  const handleCardClick = useCallback((projectId: string) => {
+    if (hasDraggedRef.current) return;
+    if (onSelectProject) {
+      onSelectProject(projectId);
+    } else {
+      window.location.hash = `#projects/${projectId}`;
+    }
+  }, [onSelectProject]);
 
   // Pointer drag controls for holding & rotating freely
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -271,6 +282,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                   {face.items.map((project) => (
                     <motion.div
                       key={`${face.faceIdx}-${project.id}`}
+                      onClick={() => !isDragging && isFaceActive && handleCardClick(project.id)}
                       whileHover={{
                         scale: !isDragging && isFaceActive ? 1.09 : 1,
                         y: !isDragging && isFaceActive ? -5 : 0,
