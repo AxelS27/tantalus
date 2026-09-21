@@ -11,6 +11,10 @@ import {
   Play,
   Image as ImageIcon,
   Maximize2,
+  User,
+  Briefcase,
+  Calendar,
+  Tag,
   X,
 } from 'lucide-react';
 import { getProjectById, getAllProjects } from '../data/projects';
@@ -167,7 +171,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
         <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-black/60 dark:bg-black/70 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 dark:border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
         
-          {/* ================= 1. WIDE FLUID HERO SECTION (Visual Left + Meta/Actions Right) ================= */}
+          {/* ================= 1. WIDE FLUID HERO SECTION (Visual Left + Specs/Actions Right) ================= */}
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
             {/* Left Side (6 cols on desktop): Compact & Proportionate Visual Stage */}
@@ -298,59 +302,78 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               )}
             </div>
 
-            {/* Right Side (6 cols on desktop): Meta Ledger, Links & Tags */}
-            <div className="lg:col-span-6 space-y-6 pt-1">
+            {/* Right Side (6 cols on desktop): Structured Specs, Action Buttons & Technologies */}
+            <div className="lg:col-span-6 space-y-5 pt-0.5">
               
-              {/* Editorial Metadata Ledger */}
-              <div className="border-b border-white/20 pb-4 space-y-3 text-xs sm:text-sm font-serif italic">
+              {/* Metadata Specs Grid with Crisp Authentic Icons */}
+              <div className="p-3.5 rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/15 space-y-2.5">
                 {project.role && (
-                  <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <span className="text-stone-300 font-light">Role</span>
-                    <span className="text-[#FFD88A] font-medium">{project.role}</span>
+                  <div className="flex items-center gap-3 text-xs sm:text-sm">
+                    <div className="w-6.5 h-6.5 rounded-lg bg-amber-500/20 border border-amber-400/30 flex items-center justify-center shrink-0">
+                      <User className="w-3.5 h-3.5 text-[#FFD88A]" />
+                    </div>
+                    <div className="flex-1 flex items-baseline justify-between">
+                      <span className="text-stone-400 font-sans text-xs">Role</span>
+                      <span className="text-[#FFD88A] font-sans font-medium text-right">{project.role}</span>
+                    </div>
                   </div>
                 )}
+
                 {project.client && (
-                  <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <span className="text-stone-300 font-light">Client</span>
-                    <span className="text-stone-200 font-light">{project.client}</span>
+                  <div className="flex items-center gap-3 text-xs sm:text-sm border-t border-white/10 pt-2">
+                    <div className="w-6.5 h-6.5 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center shrink-0">
+                      <Briefcase className="w-3.5 h-3.5 text-blue-300" />
+                    </div>
+                    <div className="flex-1 flex items-baseline justify-between">
+                      <span className="text-stone-400 font-sans text-xs">Client</span>
+                      <span className="text-stone-200 font-sans font-normal text-right">{project.client}</span>
+                    </div>
                   </div>
                 )}
+
                 {project.year && (
-                  <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <span className="text-stone-300 font-light">Year</span>
-                    <span className="font-mono text-xs font-semibold text-[#FFD88A]">{project.year}</span>
+                  <div className="flex items-center gap-3 text-xs sm:text-sm border-t border-white/10 pt-2">
+                    <div className="w-6.5 h-6.5 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0">
+                      <Calendar className="w-3.5 h-3.5 text-emerald-300" />
+                    </div>
+                    <div className="flex-1 flex items-baseline justify-between">
+                      <span className="text-stone-400 font-sans text-xs">Timeline</span>
+                      <span className="font-mono text-xs font-semibold text-emerald-300">{project.year}</span>
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Fluid Action Links */}
-              <div className="space-y-2.5 pt-0.5">
+              {/* Clearly Clickable Action Buttons with Original Authentic Brand Colors */}
+              <div className="space-y-2">
                 {project.demoUrl && (
                   <a
                     href={project.demoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-2 text-sm sm:text-base font-serif italic text-[#FFD88A] hover:text-[#FFEAB5] transition-colors no-underline"
-                    style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}
+                    className="group flex items-center justify-between px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-stone-950 font-sans font-bold text-xs sm:text-sm tracking-wide shadow-[0_4px_16px_rgba(217,119,6,0.35)] hover:shadow-[0_6px_22px_rgba(217,119,6,0.5)] hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
                   >
-                    <span className="underline underline-offset-4 decoration-[#FFD88A]/60 font-medium">
-                      {project.demoLabel || 'Live Demo'}
-                    </span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200 text-[#FFD88A]" />
+                    <div className="flex items-center gap-2">
+                      <ExternalLink className="w-4 h-4 text-stone-950" />
+                      <span>{project.demoLabel || 'Launch Live Project / Paper'}</span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-stone-950 group-hover:translate-x-1 transition-transform" />
                   </a>
                 )}
 
-                {/* Auxiliary Resource Links */}
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm font-serif italic text-stone-200" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {project.githubUrl && (
                     <a
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#24292e] hover:bg-[#2f363d] border border-white/20 text-white text-xs font-sans font-semibold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer no-underline"
                     >
-                      <Github className="w-3.5 h-3.5 text-[#FFD88A]" />
-                      <span className="underline underline-offset-4 decoration-white/30">GitHub</span>
+                      <div className="flex items-center gap-2.5">
+                        <Github className="w-4 h-4 text-white" />
+                        <span>GitHub</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100" />
                     </a>
                   )}
 
@@ -359,10 +382,13 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.presentationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#00c4cc]/20 hover:bg-[#00c4cc]/30 border border-[#00c4cc]/50 text-[#5fe3e8] text-xs font-sans font-semibold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer no-underline"
                     >
-                      <Presentation className="w-3.5 h-3.5 text-[#FFD88A]" />
-                      <span className="underline underline-offset-4 decoration-white/30">{project.presentationLabel || 'Presentation'}</span>
+                      <div className="flex items-center gap-2.5">
+                        <Presentation className="w-4 h-4 text-[#00c4cc]" />
+                        <span className="truncate">{project.presentationLabel || 'Presentation'}</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
                     </a>
                   )}
 
@@ -371,10 +397,13 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#ff0000]/20 hover:bg-[#ff0000]/30 border border-[#ff0000]/50 text-[#ff7070] text-xs font-sans font-semibold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer no-underline"
                     >
-                      <Play className="w-3.5 h-3.5 text-[#FFD88A]" />
-                      <span className="underline underline-offset-4 decoration-white/30">{project.videoLabel || 'Video Demo'}</span>
+                      <div className="flex items-center gap-2.5">
+                        <Play className="w-4 h-4 text-[#ff0000] fill-[#ff0000]" />
+                        <span>{project.videoLabel || 'Video Demo'}</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
                     </a>
                   )}
 
@@ -383,24 +412,35 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.posterUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 hover:text-[#FFD88A] transition-colors no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/50 text-indigo-300 text-xs font-sans font-semibold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer no-underline"
                     >
-                      <ImageIcon className="w-3.5 h-3.5 text-[#FFD88A]" />
-                      <span className="underline underline-offset-4 decoration-white/30">{project.posterLabel || 'Poster'}</span>
+                      <div className="flex items-center gap-2.5">
+                        <ImageIcon className="w-4 h-4 text-indigo-400" />
+                        <span>{project.posterLabel || 'Poster'}</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
                     </a>
                   )}
                 </div>
               </div>
 
-              {/* Fluid Technology Tags */}
+              {/* Technologies Badges */}
               {project.tags && project.tags.length > 0 && (
-                <div className="pt-1">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#E8C582] block mb-1">
-                    Technologies
-                  </span>
-                  <p className="font-serif italic text-xs sm:text-sm text-stone-200/90 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    {project.tags.join('  •  ')}
-                  </p>
+                <div className="space-y-1.5 pt-0.5">
+                  <div className="flex items-center gap-1.5 text-[11px] font-sans font-semibold uppercase tracking-wider text-stone-300">
+                    <Tag className="w-3 h-3 text-[#FFD88A]" />
+                    <span>Technologies</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {project.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2.5 py-0.5 rounded-lg text-xs font-mono font-medium bg-white/10 hover:bg-white/15 border border-white/20 text-stone-100 shadow-sm transition-colors"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
 
