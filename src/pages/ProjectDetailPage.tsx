@@ -170,21 +170,11 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         {/* ================= 1. WIDE FLUID HERO SECTION ================= */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
-          {/* Left Side (6 cols on desktop): Title, Meta Ledger, Links & Tags */}
+          {/* Left Side (6 cols on desktop): Meta Ledger, Links & Tags */}
           <div className="lg:col-span-6 space-y-6 pt-1">
             
-            {/* Monumental Classical Title */}
-            <h1
-              className="font-serif italic text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-light tracking-tight text-white leading-[1.15]"
-              style={{
-                textShadow: '0 2px 14px rgba(0,0,0,0.9), 0 6px 30px rgba(0,0,0,0.7)',
-              }}
-            >
-              {project.title}
-            </h1>
-
             {/* Editorial Metadata Ledger */}
-            <div className="border-t border-b border-white/20 py-3 space-y-2 text-xs sm:text-sm font-serif italic">
+            <div className="border-b border-white/20 pb-4 space-y-3 text-xs sm:text-sm font-serif italic">
               {project.role && (
                 <div className="flex items-baseline justify-between text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
                   <span className="text-stone-300 font-light">Role</span>
