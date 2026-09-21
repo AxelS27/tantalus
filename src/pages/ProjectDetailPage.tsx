@@ -369,33 +369,53 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   </div>
                 </div>
 
-                {/* Compact Filmstrip Rail */}
+                {/* Media Stage Controls & Progress Indicator */}
                 {allMedia.length > 1 && (
-                  <div
-                    ref={filmstripRef}
-                    className="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto pt-1 px-1 no-scrollbar select-none"
-                  >
-                    {allMedia.map((mediaUrl, idx) => {
-                      const isSelected = idx === activeMediaIndex;
-                      return (
+                  <div className="flex items-center justify-between px-2 pt-2.5 text-xs font-serif italic text-stone-300 select-none">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#FFD88A] font-mono text-xs font-semibold">
+                        {String(activeMediaIndex + 1).padStart(2, '0')}
+                      </span>
+                      <span className="text-stone-500 font-mono text-xs">/</span>
+                      <span className="text-stone-400 font-mono text-xs">
+                        {String(allMedia.length).padStart(2, '0')}
+                      </span>
+                      <span className="text-stone-400 text-xs ml-1">Images</span>
+                    </div>
+
+                    {/* Golden Indicator Dots */}
+                    <div className="flex items-center gap-1.5">
+                      {allMedia.map((_, idx) => (
                         <button
                           key={idx}
                           onClick={() => setActiveMediaIndex(idx)}
-                          className={`relative shrink-0 w-12 sm:w-14 md:w-16 h-8 sm:h-9 md:h-10 rounded-md overflow-hidden border transition-all duration-300 cursor-pointer ${
-                            isSelected
-                              ? 'ring-2 ring-[#FFD88A] scale-105 opacity-100 shadow-sm border-transparent'
-                              : 'opacity-40 hover:opacity-85 hover:scale-100 border-white/20'
+                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                            idx === activeMediaIndex
+                              ? 'w-6 bg-[#FFD88A] shadow-sm'
+                              : 'w-1.5 bg-white/25 hover:bg-white/50'
                           }`}
-                        >
-                          <img
-                            src={getAssetUrl(mediaUrl)}
-                            alt={`Thumbnail ${idx + 1}`}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                        </button>
-                      );
-                    })}
+                          title={`Image ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Mini Arrow Controls */}
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length)}
+                        className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                        title="Previous Image"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setActiveMediaIndex((prev) => (prev + 1) % allMedia.length)}
+                        className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                        title="Next Image"
+                      >
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
