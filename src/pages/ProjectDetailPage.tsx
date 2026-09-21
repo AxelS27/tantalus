@@ -256,11 +256,14 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     )}
                   </div>
 
-                  {/* Media Stage Controls & Progress Indicator (Dots Left, Counter Right) */}
+                  {/* Media Stage Controls & Progress Indicator (Centered Dots) */}
                   {allMedia.length > 1 && (
-                    <div className="flex items-center justify-between px-2 pt-2.5 text-xs text-stone-300 font-sans select-none">
-                      {/* Golden Indicator Dots (Left) */}
-                      <div className="flex items-center gap-1.5">
+                    <div className="relative flex items-center justify-between px-2 pt-2.5 text-xs text-stone-300 font-sans select-none">
+                      {/* Left Balanced Spacer */}
+                      <div className="w-16 hidden sm:block pointer-events-none" />
+
+                      {/* Golden Indicator Dots (Dead Center) */}
+                      <div className="flex items-center justify-center gap-1.5 flex-1 sm:flex-none">
                         {allMedia.map((_, idx) => (
                           <button
                             key={idx}
@@ -276,7 +279,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       </div>
 
                       {/* Image Counter (Right) */}
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <span className="text-[#FFD88A] font-mono text-xs font-semibold">
                           {String(activeMediaIndex + 1).padStart(2, '0')}
                         </span>
@@ -284,7 +287,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                         <span className="text-stone-400 font-mono text-xs">
                           {String(allMedia.length).padStart(2, '0')}
                         </span>
-                        <span className="text-stone-400 text-xs ml-1">Images</span>
+                        <span className="text-stone-400 text-xs ml-0.5">Images</span>
                       </div>
                     </div>
                   )}
