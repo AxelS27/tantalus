@@ -153,16 +153,17 @@ export default function App() {
 
   const handleSelectProject = useCallback((projectId: string) => {
     setRouteInfo({ tab: 'projects', projectId });
-    const targetHash = `#projects/${projectId}`;
-    if (window.location.hash !== targetHash) {
-      window.history.pushState(null, '', targetHash);
+    const targetUrl = `/projects/${projectId}`;
+    if (window.location.pathname !== targetUrl) {
+      window.history.pushState(null, '', targetUrl);
     }
   }, []);
 
   const handleBackToProjects = useCallback(() => {
     setRouteInfo({ tab: 'projects', projectId: null });
-    if (window.location.hash !== '#projects') {
-      window.history.pushState(null, '', '#projects');
+    const targetUrl = '/#projects';
+    if (window.location.pathname !== '/' || window.location.hash !== '#projects') {
+      window.history.pushState(null, '', targetUrl);
     }
   }, []);
 

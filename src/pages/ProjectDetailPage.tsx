@@ -130,13 +130,19 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
       {/* Floating Top Navigation Pill */}
       <header className="fixed top-6 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-12 md:px-16 pointer-events-none max-w-7xl mx-auto">
-        <button
-          onClick={onBack}
-          className="pointer-events-auto group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/75 dark:bg-[#1c1a18]/80 hover:bg-white dark:hover:bg-[#1c1a18] backdrop-blur-2xl backdrop-saturate-[180%] border border-white/80 dark:border-white/15 text-stone-900 dark:text-stone-100 font-serif italic text-sm tracking-wide shadow-[0_8px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+        <a
+          href="/#projects"
+          onClick={(e) => {
+            if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+              e.preventDefault();
+              onBack();
+            }
+          }}
+          className="pointer-events-auto group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/75 dark:bg-[#1c1a18]/80 hover:bg-white dark:hover:bg-[#1c1a18] backdrop-blur-2xl backdrop-saturate-[180%] border border-white/80 dark:border-white/15 text-stone-900 dark:text-stone-100 font-serif italic text-sm tracking-wide shadow-[0_8px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer no-underline"
         >
           <ArrowLeft className="w-4 h-4 text-amber-700 dark:text-[#E8C582] group-hover:-translate-x-1 transition-transform" />
           <span>Return to Canvas</span>
-        </button>
+        </a>
 
         <div className="pointer-events-auto hidden sm:inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/50 dark:bg-black/40 backdrop-blur-xl border border-white/60 dark:border-white/10 text-xs font-serif italic text-stone-600 dark:text-stone-300 shadow-sm">
           <Compass className="w-3.5 h-3.5 text-amber-700 dark:text-[#E8C582]" />
@@ -459,20 +465,32 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
             <span className="font-serif italic text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400">
               Continuum of Works
             </span>
-            <button
-              onClick={onBack}
-              className="text-xs font-serif italic text-amber-800 dark:text-[#E8C582] hover:underline cursor-pointer"
+            <a
+              href="/#projects"
+              onClick={(e) => {
+                if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                  e.preventDefault();
+                  onBack();
+                }
+              }}
+              className="text-xs font-serif italic text-amber-800 dark:text-[#E8C582] hover:underline cursor-pointer no-underline"
             >
               Back to Canvas Hub
-            </button>
+            </a>
           </div>
 
           <div className={`grid gap-5 sm:gap-6 ${prevProject && nextProject ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
             {/* Previous Work */}
             {prevProject && (
-              <div
-                onClick={() => onSelectProject(prevProject.id)}
-                className="group p-5 rounded-3xl bg-white/60 dark:bg-[#161412]/80 hover:bg-white/95 dark:hover:bg-[#161412]/95 backdrop-blur-xl border border-stone-200/80 dark:border-white/15 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 transition-all duration-300 flex items-center gap-4 cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1"
+              <a
+                href={`/projects/${prevProject.id}`}
+                onClick={(e) => {
+                  if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                    e.preventDefault();
+                    onSelectProject(prevProject.id);
+                  }
+                }}
+                className="group p-5 rounded-3xl bg-white/60 dark:bg-[#161412]/80 hover:bg-white/95 dark:hover:bg-[#161412]/95 backdrop-blur-xl border border-stone-200/80 dark:border-white/15 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 transition-all duration-300 flex items-center gap-4 cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 no-underline text-inherit"
               >
                 <div className="w-18 h-14 sm:w-22 sm:h-16 rounded-xl overflow-hidden bg-black/10 dark:bg-black/40 border border-stone-200 dark:border-white/10 shrink-0">
                   <img
@@ -490,14 +508,20 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     {prevProject.title}
                   </h4>
                 </div>
-              </div>
+              </a>
             )}
 
             {/* Next Work */}
             {nextProject && (
-              <div
-                onClick={() => onSelectProject(nextProject.id)}
-                className="group p-5 rounded-3xl bg-white/60 dark:bg-[#161412]/80 hover:bg-white/95 dark:hover:bg-[#161412]/95 backdrop-blur-xl border border-stone-200/80 dark:border-white/15 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 transition-all duration-300 flex items-center gap-4 cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1"
+              <a
+                href={`/projects/${nextProject.id}`}
+                onClick={(e) => {
+                  if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                    e.preventDefault();
+                    onSelectProject(nextProject.id);
+                  }
+                }}
+                className="group p-5 rounded-3xl bg-white/60 dark:bg-[#161412]/80 hover:bg-white/95 dark:hover:bg-[#161412]/95 backdrop-blur-xl border border-stone-200/80 dark:border-white/15 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 transition-all duration-300 flex items-center gap-4 cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 no-underline text-inherit"
               >
                 <div className="min-w-0 flex-1 text-right sm:text-left">
                   <span className="font-serif italic text-xs text-amber-800 dark:text-[#E8C582] flex items-center justify-end sm:justify-start gap-1">
@@ -515,7 +539,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-              </div>
+              </a>
             )}
           </div>
         </nav>
