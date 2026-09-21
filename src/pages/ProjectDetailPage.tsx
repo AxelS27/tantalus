@@ -60,7 +60,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const filmstripRef = useRef<HTMLDivElement>(null);
 
-  // Scroll container to top immediately on project change
+  // Scroll container to top immediately on project change and pre-warm all gallery images
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
@@ -70,7 +70,20 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
       scrollContainer.scrollTop = 0;
     }
     setActiveMediaIndex(0);
-  }, [projectId]);
+
+    // Eagerly pre-load and decode all gallery images in advance
+    if (typeof window !== 'undefined' && allMedia.length > 0) {
+      allMedia.forEach((mediaPath) => {
+        const url = getAssetUrl(mediaPath);
+        if (url) {
+          const img = new Image();
+          img.decoding = 'async';
+          img.src = url;
+          img.decode?.().catch(() => {});
+        }
+      });
+    }
+  }, [projectId, allMedia]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -241,14 +254,6 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                         </button>
                       </>
                     )}
-
-                    {/* Minimal Expand Pill */}
-                    <div className="absolute bottom-2.5 right-2.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-xl border border-white/25 text-white text-[11px] font-sans font-medium shadow-md">
-                        <Maximize2 className="w-3 h-3 text-[#FFD88A]" />
-                        <span>Expand</span>
-                      </div>
-                    </div>
                   </div>
 
                   {/* Media Stage Controls & Progress Indicator */}
@@ -279,24 +284,6 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                             title={`Image ${idx + 1}`}
                           />
                         ))}
-                      </div>
-
-                      {/* Mini Arrow Controls */}
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length)}
-                          className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                          title="Previous Image"
-                        >
-                          <ChevronLeft className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => setActiveMediaIndex((prev) => (prev + 1) % allMedia.length)}
-                          className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                          title="Next Image"
-                        >
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
                       </div>
                     </div>
                   )}
