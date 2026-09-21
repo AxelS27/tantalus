@@ -150,11 +150,12 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         </div>
       </header>
 
-      {/* Main Fluid Editorial Container */}
-      <article className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-14 pt-24 sm:pt-32 pb-24">
+      {/* Main Center Editorial Canvas Panel (Darkened Translucent Frosted Glass) */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
+        <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-black/60 dark:bg-black/70 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 dark:border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
         
         {/* ================= 1. WIDE FLUID HERO SECTION ================= */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-14 sm:mb-18">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Left Side (6 cols on desktop): Title, Meta Ledger, Links & Tags */}
           <div className="lg:col-span-6 space-y-6 pt-1">
@@ -386,7 +387,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
         {/* ================= 2. ESSAY TREATISE ================= */}
         {project.content && project.content.length > 0 && (
-          <section className="mb-20 sm:mb-28 pt-10 border-t border-white/20 max-w-4xl">
+          <section className="pt-10 border-t border-white/20 max-w-4xl">
             <h2
               className="font-serif italic text-2xl sm:text-3xl text-white font-light mb-6"
               style={{ textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
@@ -475,7 +476,8 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           </div>
         </nav>
 
-      </article>
+        </article>
+      </div>
 
       {/* Editorial Page Footer */}
       <Footer className="bg-black/60 dark:bg-black/75 backdrop-blur-2xl border-t border-white/15 text-stone-200" />
