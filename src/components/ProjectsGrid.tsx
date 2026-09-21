@@ -86,22 +86,14 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   }, [rotationX, rotationY]);
 
   const handleNext = useCallback(() => {
-    if (currentPage >= projectPages.length - 1) {
-      onReachEnd?.();
-    } else {
-      const nextY = Math.round(rotationYRef.current / 90) * 90 - 90;
-      settleToFace(nextY);
-    }
-  }, [currentPage, onReachEnd, settleToFace]);
+    const nextY = Math.round(rotationYRef.current / 90) * 90 - 90;
+    settleToFace(nextY);
+  }, [settleToFace]);
 
   const handlePrev = useCallback(() => {
-    if (currentPage <= 0) {
-      onReachStart?.();
-    } else {
-      const prevY = Math.round(rotationYRef.current / 90) * 90 + 90;
-      settleToFace(prevY);
-    }
-  }, [currentPage, onReachStart, settleToFace]);
+    const prevY = Math.round(rotationYRef.current / 90) * 90 + 90;
+    settleToFace(prevY);
+  }, [settleToFace]);
 
   const handleCardClick = useCallback((projectId: string) => {
     if (hasDraggedRef.current) return;
@@ -225,15 +217,13 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         
         {/* Left Arrow Slot */}
         <div className="w-10 sm:w-12 md:w-14 flex items-center justify-center flex-shrink-0 z-40">
-          {currentPage > 0 ? (
-            <button
-              onClick={handlePrev}
-              title="Rotate Cube Left"
-              className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
-            >
-              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
-          ) : null}
+          <button
+            onClick={handlePrev}
+            title="Rotate Cube Left"
+            className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
+          >
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
         </div>
 
         {/* 3D Perspective Stage */}
@@ -271,7 +261,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                     backfaceVisibility: 'hidden',
                     WebkitFontSmoothing: 'antialiased',
                   }}
-                  className={`absolute inset-0 w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 transition-all duration-700 ease-out ${
+                  className={`absolute inset-0 w-full h-full grid grid-cols-2 gap-3 sm:gap-4 transition-all duration-700 ease-out ${
                     isFaceActive
                       ? 'opacity-100 pointer-events-auto filter-none'
                       : isFaceVisible
@@ -325,17 +315,39 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
         {/* Right Arrow Slot */}
         <div className="w-10 sm:w-12 md:w-14 flex items-center justify-center flex-shrink-0 z-40">
-          {currentPage < projectPages.length - 1 ? (
-            <button
-              onClick={handleNext}
-              title="Rotate Cube Right"
-              className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
-            >
-              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
-          ) : null}
+          <button
+            onClick={handleNext}
+            title="Rotate Cube Right"
+            className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
+          >
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
         </div>
 
+      </div>
+
+      {/* Face Indicator Dots (1 to 4) */}
+      <div className="flex items-center justify-center gap-2.5 pt-4 select-none z-30">
+        {[0, 1, 2, 3].map((idx) => (
+          <button
+            key={idx}
+            onClick={() => {
+              const currentRot = rotationYRef.current;
+              const currentF = ((-Math.round(currentRot / 90)) % 4 + 4) % 4;
+              let diff = idx - currentF;
+              if (diff > 2) diff -= 4;
+              if (diff < -2) diff += 4;
+              const targetY = Math.round(currentRot / 90) * 90 - diff * 90;
+              settleToFace(targetY);
+            }}
+            className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+              facingStep === idx
+                ? 'w-7 bg-amber-700 dark:bg-[#FFD88A] shadow-sm'
+                : 'w-2 bg-stone-400/50 dark:bg-white/25 hover:bg-stone-500 dark:hover:bg-white/40'
+            }`}
+            title={`Face ${idx + 1}`}
+          />
+        ))}
       </div>
     </div>
   );

@@ -555,10 +555,12 @@ export const allProjects: ProjectCardItem[] = allProjectsData.map((project) => (
   client: project.client,
 }));
 
-export const projectPages = Array.from(
-  { length: Math.ceil(allProjects.length / 6) },
-  (_, pageIndex) => allProjects.slice(pageIndex * 6, pageIndex * 6 + 6),
-);
+export const projectPages = [
+  allProjects.slice(0, 4),
+  allProjects.slice(4, 8),
+  allProjects.slice(8, 12),
+  allProjects.slice(12, 16),
+];
 
 export const cubeFaces = projectPages.map((items, faceIdx) => ({
   faceIdx,
