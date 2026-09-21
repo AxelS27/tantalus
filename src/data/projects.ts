@@ -32,7 +32,9 @@ export interface ProjectCardItem {
   client?: string;
 }
 
+// 16 Authentic Projects sorted chronologically: Newest (2026) to Oldest (2024)
 export const allProjectsData: ProjectItem[] = [
+  // ================= 2026 PROJECTS (Page 1) =================
   {
     id: 'computational-biology-cca',
     title: 'Identification of Biomarkers For Bile Duct Cancer Using Feature Selection',
@@ -241,6 +243,8 @@ export const allProjectsData: ProjectItem[] = [
       '/projects/hit-or-flop/ml7.webp',
     ],
   },
+
+  // ================= 2025 PROJECTS (Page 2) =================
   {
     id: 'brightstar',
     title: 'Brightstar Database LMS App',
@@ -400,6 +404,63 @@ export const allProjectsData: ProjectItem[] = [
     ],
   },
   {
+    id: 'wam-bot',
+    title: 'WAM Telegram Bot',
+    description: 'A specialized Telegram Bot for Wahyu Agung Motor (WAM) to manage and track motorcycle inventory data in real time. Features automated data retrieval from cloud stored Excel files and multi parameter search capabilities.',
+    thumbnail: '/projects/wam-bot/wam1.webp',
+    demoUrl: '',
+    githubUrl: 'https://github.com/AxelS27',
+    tags: [
+      'Python',
+      'Telegram API',
+      'Pandas',
+      'Automation',
+      'Data Management',
+    ],
+    client: 'Wahyu Agung Motor Madiun',
+    role: 'Lead Developer & Architect',
+    year: '2025',
+    content: [
+      'The WAM Telegram Bot was developed to modernize the inventory management system for a motorcycle dealership in Madiun. It serves as a real time gateway for the owner to access sensitive sales and unit data directly through a secure chat interface.',
+      'Technically, the bot implements a decoupled data architecture, dynamically fetching and parsing Excel spreadsheets hosted on Dropbox or Google Drive using Pandas. This allows the owner to update data via their mobile spreadsheet app while the bot reflects changes instantly without requiring a redeploy.',
+      'The bot features a robust command system including role based authentication, status based filtering (Ready, Process, Sold), and specialized search algorithms for license plates and vehicle models. It also parses financial data to provide instant profit analysis and tax expiry reminders for each unit.',
+    ],
+    gallery: [
+      '/projects/wam-bot/wam1.webp',
+      '/projects/wam-bot/wam2.webp',
+      '/projects/wam-bot/wam3.webp',
+    ],
+  },
+
+  // ================= 2025 & 2024 PROJECTS (Page 3) =================
+  {
+    id: 'jolybee-2025',
+    title: 'INC 2025: Competitive Programming',
+    description: 'Represented a team in one of Indonesia\'s most prestigious competitive programming contests, competing against hundreds of university teams nationwide. Focused on advanced algorithmic problem solving and high-pressure optimization.',
+    thumbnail: '/projects/jolybee-2025/ada-1.webp',
+    demoUrl: 'https://drive.google.com/file/d/1QkHYS-CJYJkQbG-Ptndw8hqirz103_6O/view?usp=drive_link',
+    demoLabel: 'Project Report',
+    githubUrl: '',
+    tags: [
+      'Competitive Programming',
+      'Algorithms',
+      'C++',
+      'Data Structures',
+      'Team Leadership',
+    ],
+    client: 'Algorithm Design and Analysis Course',
+    role: 'Team Leader (Team Athelstan)',
+    year: '2025',
+    content: [
+      'INC (Indonesia National Contest) 2025 is a prestigious national scale competitive programming arena that serves as a gateway to the ICPC regional finals. Competing as the leader of Team \'Athelstan\', I led our squad through the rigorous process of solving complex algorithmic problems as part of our Algorithm Design and Analysis course.',
+      'The competition required quick thinking and proficiency in complex data structures and efficient algorithm design. Although the final result was a work in progress, the experience was invaluable for developing mental fortitude and collaborative debugging strategies in a high stakes environment.',
+      'Beyond technical skills, this experience reinforced my ability to manage a team\'s workflow under strict time limits: delegating tasks based on problem difficulty and ensuring consistent logical verification across our solutions.',
+    ],
+    gallery: [
+      '/projects/jolybee-2025/ada-1.webp',
+    ],
+  },
+  {
     id: 'dinoverse',
     title: 'Dinoverse AR',
     description: 'An augmented reality educational app about dinosaurs. Features a pathfinding puzzle mini-game, AR card scanning to view 3D dinosaurs and informational videos, plus an interactive quiz. Includes 3 interactive dinosaurs to learn about.',
@@ -486,61 +547,6 @@ export const allProjectsData: ProjectItem[] = [
       '/projects/travel-menu/screenshot-2.webp',
       '/projects/travel-menu/screenshot-3.webp',
       '/projects/travel-menu/screenshot-4.webp',
-    ],
-  },
-  {
-    id: 'wam-bot',
-    title: 'WAM Telegram Bot',
-    description: 'A specialized Telegram Bot for Wahyu Agung Motor (WAM) to manage and track motorcycle inventory data in real time. Features automated data retrieval from cloud stored Excel files and multi parameter search capabilities.',
-    thumbnail: '/projects/wam-bot/wam1.webp',
-    demoUrl: '',
-    githubUrl: 'https://github.com/AxelS27',
-    tags: [
-      'Python',
-      'Telegram API',
-      'Pandas',
-      'Automation',
-      'Data Management',
-    ],
-    client: 'Wahyu Agung Motor Madiun',
-    role: 'Lead Developer & Architect',
-    year: '2025',
-    content: [
-      'The WAM Telegram Bot was developed to modernize the inventory management system for a motorcycle dealership in Madiun. It serves as a real time gateway for the owner to access sensitive sales and unit data directly through a secure chat interface.',
-      'Technically, the bot implements a decoupled data architecture, dynamically fetching and parsing Excel spreadsheets hosted on Dropbox or Google Drive using Pandas. This allows the owner to update data via their mobile spreadsheet app while the bot reflects changes instantly without requiring a redeploy.',
-      'The bot features a robust command system including role based authentication, status based filtering (Ready, Process, Sold), and specialized search algorithms for license plates and vehicle models. It also parses financial data to provide instant profit analysis and tax expiry reminders for each unit.',
-    ],
-    gallery: [
-      '/projects/wam-bot/wam1.webp',
-      '/projects/wam-bot/wam2.webp',
-      '/projects/wam-bot/wam3.webp',
-    ],
-  },
-  {
-    id: 'jolybee-2025',
-    title: 'INC 2025: Competitive Programming',
-    description: 'Represented a team in one of Indonesia\'s most prestigious competitive programming contests, competing against hundreds of university teams nationwide. Focused on advanced algorithmic problem solving and high-pressure optimization.',
-    thumbnail: '/projects/jolybee-2025/ada-1.webp',
-    demoUrl: 'https://drive.google.com/file/d/1QkHYS-CJYJkQbG-Ptndw8hqirz103_6O/view?usp=drive_link',
-    demoLabel: 'Project Report',
-    githubUrl: '',
-    tags: [
-      'Competitive Programming',
-      'Algorithms',
-      'C++',
-      'Data Structures',
-      'Team Leadership',
-    ],
-    client: 'Algorithm Design and Analysis Course',
-    role: 'Team Leader (Team Athelstan)',
-    year: '2025',
-    content: [
-      'INC (Indonesia National Contest) 2025 is a prestigious national scale competitive programming arena that serves as a gateway to the ICPC regional finals. Competing as the leader of Team \'Athelstan\', I led our squad through the rigorous process of solving complex algorithmic problems as part of our Algorithm Design and Analysis course.',
-      'The competition required quick thinking and proficiency in complex data structures and efficient algorithm design. Although the final result was a work in progress, the experience was invaluable for developing mental fortitude and collaborative debugging strategies in a high stakes environment.',
-      'Beyond technical skills, this experience reinforced my ability to manage a team\'s workflow under strict time limits: delegating tasks based on problem difficulty and ensuring consistent logical verification across our solutions.',
-    ],
-    gallery: [
-      '/projects/jolybee-2025/ada-1.webp',
     ],
   },
 ];

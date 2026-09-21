@@ -287,7 +287,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                       {/* Specular Top Light Accent */}
                       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/35 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-xl" />
 
-                      {/* 16:9 Thumbnail Image with Skeleton Shimmer */}
+                      {/* 16:9 Thumbnail Image with Skeleton Shimmer & Year Pill */}
                       <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/10 dark:bg-black/40 border border-white/40 dark:border-white/15 mb-1 flex-shrink-0">
                         <ImageWithSkeleton
                           src={project.image}
@@ -298,6 +298,11 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                           className="w-full h-full object-cover object-center pointer-events-none select-none"
                           skeletonClassName="bg-white/10 dark:bg-black/40"
                         />
+                        {project.year && (
+                          <div className="absolute top-1 right-1 px-1.5 py-0.5 rounded-md bg-black/70 dark:bg-black/80 backdrop-blur-md border border-white/20 text-[9px] font-mono font-semibold text-[#FFD88A] drop-shadow-sm pointer-events-none">
+                            {project.year}
+                          </div>
+                        )}
                       </div>
 
                       {/* Clean Single-Line High-Legibility Title */}
