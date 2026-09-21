@@ -116,11 +116,18 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   }
 
   return (
-    <div className="relative min-h-screen w-full bg-[#FAF8F5] dark:bg-[#121110] text-stone-900 dark:text-stone-100 selection:bg-[#E8C582]/30 selection:text-amber-950 overflow-x-hidden">
+    <div className="relative min-h-screen w-full text-stone-900 dark:text-stone-100 selection:bg-[#E8C582]/30 selection:text-amber-950 overflow-x-hidden">
       
-      {/* Background Classical Ambient Atmosphere */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] h-[70vh] bg-gradient-to-b from-amber-200/20 dark:from-amber-900/10 via-transparent to-transparent blur-3xl opacity-60" />
+      {/* Fixed Classical Artwork Background with Subtle Vignette & Theme Blending */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <img
+          src="/project-detail-bg.png"
+          alt="Project Detail Background"
+          className="w-full h-full object-cover object-center scale-105"
+        />
+        {/* Ambient overlay for supreme text legibility across light and dark themes */}
+        <div className="absolute inset-0 bg-[#FAF8F5]/85 dark:bg-[#121110]/88 backdrop-blur-[2px] transition-colors duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/35 dark:from-black/40 dark:via-transparent dark:to-black/60 pointer-events-none" />
       </div>
 
       {/* Minimal Top Header Bar */}
