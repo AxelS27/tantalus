@@ -261,7 +261,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                     backfaceVisibility: 'hidden',
                     WebkitFontSmoothing: 'antialiased',
                   }}
-                  className={`absolute inset-0 w-full h-full grid grid-cols-2 gap-3 sm:gap-4 transition-all duration-700 ease-out ${
+                  className={`absolute inset-0 w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 transition-all duration-700 ease-out ${
                     isFaceActive
                       ? 'opacity-100 pointer-events-auto filter-none'
                       : isFaceVisible
