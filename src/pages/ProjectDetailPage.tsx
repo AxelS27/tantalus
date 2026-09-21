@@ -127,9 +127,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-black/35 pointer-events-none" />
       </div>
 
-      {/* Centered Floating Apple Frosted Glass Navbar Capsule (Expansive & Luxurious) */}
-      <header className="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 sm:px-8 max-w-6xl">
-        <div className="pointer-events-auto relative w-full h-12 sm:h-13 flex items-center justify-between p-1.5 rounded-full bg-[#141210]/85 hover:bg-[#141210]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-200">
+      {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
+      <header className="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 sm:px-8 max-w-5xl">
+        <div className="pointer-events-auto relative w-full h-11 sm:h-12 flex items-center justify-between p-1.5 rounded-full bg-[#141210]/85 hover:bg-[#141210]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-200">
           
           {/* Left Segment: Back to Projects */}
           <a
@@ -157,14 +157,8 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
             </span>
           </div>
 
-          {/* Right Segment: Year & Index Pill */}
-          <div className="flex items-center gap-2 px-3 sm:px-4 py-1 rounded-full bg-white/10 border border-white/15 shrink-0 text-xs font-mono text-[#FFD88A]">
-            <span className="hidden sm:inline text-stone-300 font-normal">
-              {String(currentIndex + 1).padStart(2, '0')}/{String(allProjects.length).padStart(2, '0')}
-            </span>
-            <span className="hidden sm:inline w-1 h-1 rounded-full bg-[#E8C582]" />
-            <span>{project.year || '2026'}</span>
-          </div>
+          {/* Right Symmetric Spacer to keep Center Title perfectly balanced */}
+          <div className="w-[120px] sm:w-[155px] hidden sm:block pointer-events-none" />
 
         </div>
       </header>
