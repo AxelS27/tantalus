@@ -375,6 +375,33 @@ export const allProjectsData: ProjectItem[] = [
     ],
   },
   {
+    id: 'jolybee-2025',
+    title: 'INC 2025: Competitive Programming',
+    description: 'Represented a team in one of Indonesia\'s most prestigious competitive programming contests, competing against hundreds of university teams nationwide. Focused on advanced algorithmic problem solving and high-pressure optimization.',
+    thumbnail: '/projects/jolybee-2025/ada-1.webp',
+    demoUrl: 'https://drive.google.com/file/d/1QkHYS-CJYJkQbG-Ptndw8hqirz103_6O/view?usp=drive_link',
+    demoLabel: 'Project Report',
+    githubUrl: '',
+    tags: [
+      'Competitive Programming',
+      'Algorithms',
+      'C++',
+      'Data Structures',
+      'Team Leadership',
+    ],
+    client: 'Algorithm Design and Analysis Course',
+    role: 'Team Leader (Team Athelstan)',
+    year: '2025',
+    content: [
+      'INC (Indonesia National Contest) 2025 is a prestigious national scale competitive programming arena that serves as a gateway to the ICPC regional finals. Competing as the leader of Team \'Athelstan\', I led our squad through the rigorous process of solving complex algorithmic problems as part of our Algorithm Design and Analysis course.',
+      'The competition required quick thinking and proficiency in complex data structures and efficient algorithm design. Although the final result was a work in progress, the experience was invaluable for developing mental fortitude and collaborative debugging strategies in a high stakes environment.',
+      'Beyond technical skills, this experience reinforced my ability to manage a team\'s workflow under strict time limits: delegating tasks based on problem difficulty and ensuring consistent logical verification across our solutions.',
+    ],
+    gallery: [
+      '/projects/jolybee-2025/ada-1.webp',
+    ],
+  },
+  {
     id: 'resto-menu-vba',
     title: 'Resto Menu VBA App',
     description: 'A dynamic restaurant menu system built with Excel VBA and MySQL, featuring real time stock synchronization and automated inventory management.',
@@ -432,34 +459,7 @@ export const allProjectsData: ProjectItem[] = [
     ],
   },
 
-  // ================= 2025 & 2024 PROJECTS (Page 3) =================
-  {
-    id: 'jolybee-2025',
-    title: 'INC 2025: Competitive Programming',
-    description: 'Represented a team in one of Indonesia\'s most prestigious competitive programming contests, competing against hundreds of university teams nationwide. Focused on advanced algorithmic problem solving and high-pressure optimization.',
-    thumbnail: '/projects/jolybee-2025/ada-1.webp',
-    demoUrl: 'https://drive.google.com/file/d/1QkHYS-CJYJkQbG-Ptndw8hqirz103_6O/view?usp=drive_link',
-    demoLabel: 'Project Report',
-    githubUrl: '',
-    tags: [
-      'Competitive Programming',
-      'Algorithms',
-      'C++',
-      'Data Structures',
-      'Team Leadership',
-    ],
-    client: 'Algorithm Design and Analysis Course',
-    role: 'Team Leader (Team Athelstan)',
-    year: '2025',
-    content: [
-      'INC (Indonesia National Contest) 2025 is a prestigious national scale competitive programming arena that serves as a gateway to the ICPC regional finals. Competing as the leader of Team \'Athelstan\', I led our squad through the rigorous process of solving complex algorithmic problems as part of our Algorithm Design and Analysis course.',
-      'The competition required quick thinking and proficiency in complex data structures and efficient algorithm design. Although the final result was a work in progress, the experience was invaluable for developing mental fortitude and collaborative debugging strategies in a high stakes environment.',
-      'Beyond technical skills, this experience reinforced my ability to manage a team\'s workflow under strict time limits: delegating tasks based on problem difficulty and ensuring consistent logical verification across our solutions.',
-    ],
-    gallery: [
-      '/projects/jolybee-2025/ada-1.webp',
-    ],
-  },
+  // ================= 2024 PROJECTS (Page 3) =================
   {
     id: 'dinoverse',
     title: 'Dinoverse AR',
