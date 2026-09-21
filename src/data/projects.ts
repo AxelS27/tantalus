@@ -6,8 +6,7 @@ export interface ProjectCardItem {
   image: string;
 }
 
-// Batch 1 (Page 01 - 12 Items)
-export const page1Projects: ProjectCardItem[] = [
+export const allProjects: ProjectCardItem[] = [
   {
     id: 'comp-bio',
     title: 'Biomarker Discovery for Cancer',
@@ -68,10 +67,6 @@ export const page1Projects: ProjectCardItem[] = [
     title: 'Self-Healing Mesh',
     image: getAssetUrl('/images/tantalize/projects.webp'),
   },
-];
-
-// Batch 2 (Page 02 - 12 Items)
-export const page2Projects: ProjectCardItem[] = [
   {
     id: 'quantum-sim',
     title: 'Qubit State Simulator',
@@ -134,11 +129,12 @@ export const page2Projects: ProjectCardItem[] = [
   },
 ];
 
-export const projectPages = [page1Projects, page2Projects];
+export const projectPages = Array.from({ length: 4 }, (_, pageIndex) =>
+  allProjects.slice(pageIndex * 6, pageIndex * 6 + 6),
+);
 
-export const cubeFaces = [
-  { faceIdx: 0, pageIdx: 0, items: page1Projects },
-  { faceIdx: 1, pageIdx: 1, items: page2Projects },
-  { faceIdx: 2, pageIdx: 0, items: page1Projects },
-  { faceIdx: 3, pageIdx: 1, items: page2Projects },
-];
+export const cubeFaces = projectPages.map((items, faceIdx) => ({
+  faceIdx,
+  pageIdx: faceIdx,
+  items,
+}));

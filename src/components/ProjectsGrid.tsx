@@ -1,15 +1,8 @@
 import { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { animate, motion, useMotionValue } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { getAssetUrl } from '../lib/assets';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
-import {
-  page1Projects,
-  page2Projects,
-  projectPages,
-  cubeFaces,
-  type ProjectCardItem,
-} from '../data/projects';
+import { projectPages, cubeFaces, type ProjectCardItem } from '../data/projects';
 
 export type { ProjectCardItem };
 
@@ -67,7 +60,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         : [currentFace, targetFace],
     );
     setFacingStep(targetFace);
-    setCurrentPage(targetFace % 2);
+    setCurrentPage(targetFace);
     rotationYRef.current = targetY;
     rotationXRef.current = 0;
 
@@ -255,7 +248,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                     backfaceVisibility: 'hidden',
                     WebkitFontSmoothing: 'antialiased',
                   }}
-                  className={`absolute inset-0 w-full h-full grid grid-cols-4 gap-2 sm:gap-2.5 transition-all duration-700 ease-out ${
+                  className={`absolute inset-0 w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 transition-all duration-700 ease-out ${
                     isFaceActive
                       ? 'opacity-100 pointer-events-auto filter-none'
                       : 'opacity-85 pointer-events-none brightness-75'
