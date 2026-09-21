@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, memo } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowLeft,
@@ -60,9 +60,15 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const filmstripRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to top on mount / change
-  useEffect(() => {
+  // Scroll container to top immediately on project change
+  useLayoutEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const scrollContainer = document.querySelector('.overflow-y-auto');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = 0;
+    }
     setActiveMediaIndex(0);
   }, [projectId]);
 
@@ -475,7 +481,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   <div className="min-w-0 flex-1">
                     <span className="text-xs font-semibold text-stone-400 flex items-center gap-1 group-hover:text-[#FFD88A] transition-colors" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
                       <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform text-[#FFD88A]" />
-                      <span>Previous Project ({prevProject.year})</span>
+                      <span>Previous Project</span>
                     </span>
                     <h4 className="text-sm sm:text-base text-white truncate font-medium pt-0.5 group-hover:underline" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
                       {prevProject.title}
@@ -498,7 +504,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 >
                   <div className="min-w-0 flex-1">
                     <span className="text-xs font-semibold text-stone-400 flex items-center justify-end gap-1 group-hover:text-[#FFD88A] transition-colors" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                      <span>Next Project ({nextProject.year})</span>
+                      <span>Next Project</span>
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-[#FFD88A]" />
                     </span>
                     <h4 className="text-sm sm:text-base text-white truncate font-medium pt-0.5 group-hover:underline" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
