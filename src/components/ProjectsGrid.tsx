@@ -262,7 +262,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     <div
       onWheel={isActive ? handleWheel : undefined}
       aria-hidden={!isActive}
-      className={`relative w-full h-full flex flex-col items-center justify-center z-20 px-4 py-4 overflow-hidden transition-opacity duration-300 ${
+      className={`relative w-full h-full flex flex-col items-center justify-center z-20 px-4 py-4 overflow-hidden ${
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
@@ -317,7 +317,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                     backfaceVisibility: 'hidden',
                     WebkitFontSmoothing: 'antialiased',
                   }}
-                  className={`absolute inset-0 w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 transition-all duration-700 ease-out ${
+                  className={`absolute inset-0 w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 ${
                     isFaceActive
                       ? 'opacity-100 pointer-events-auto filter-none'
                       : isFaceVisible
