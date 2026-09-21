@@ -5,22 +5,16 @@ import {
   ArrowRight,
   Github,
   ExternalLink,
-  Calendar,
-  Tag,
-  User,
-  Briefcase,
-  X,
   ChevronLeft,
   ChevronRight,
   Presentation,
   Play,
   Image as ImageIcon,
   Compass,
-  Sparkles,
   Maximize2,
-  Layers,
+  X,
 } from 'lucide-react';
-import { getProjectById, getAllProjects, type ProjectItem } from '../data/projects';
+import { getProjectById, getAllProjects } from '../data/projects';
 import { getAssetUrl } from '../lib/assets';
 import ImageWithSkeleton from '../components/common/ImageWithSkeleton';
 
@@ -123,13 +117,13 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   return (
     <div className="relative min-h-screen w-full bg-[#FAF8F5] dark:bg-[#121110] text-stone-900 dark:text-stone-100 selection:bg-[#E8C582]/30 selection:text-amber-950 overflow-x-hidden">
       
-      {/* Background Classical Radial Atmosphere */}
+      {/* Background Classical Ambient Atmosphere */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] h-[80vh] bg-gradient-to-b from-amber-200/25 dark:from-amber-900/15 via-transparent to-transparent blur-3xl opacity-70" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] h-[70vh] bg-gradient-to-b from-amber-200/20 dark:from-amber-900/10 via-transparent to-transparent blur-3xl opacity-60" />
       </div>
 
-      {/* Floating Top Navigation Pill */}
-      <header className="fixed top-6 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-10 md:px-12 pointer-events-none max-w-7xl mx-auto">
+      {/* Minimal Top Header Bar */}
+      <header className="fixed top-6 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-12 md:px-16 pointer-events-none max-w-7xl mx-auto">
         <a
           href="/#projects"
           onClick={(e) => {
@@ -138,32 +132,32 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               onBack();
             }
           }}
-          className="pointer-events-auto group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/80 dark:bg-[#1c1a18]/85 hover:bg-white dark:hover:bg-[#1c1a18] backdrop-blur-2xl backdrop-saturate-[180%] border border-white/80 dark:border-white/15 text-stone-900 dark:text-stone-100 font-serif italic text-sm tracking-wide shadow-[0_8px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.6)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer no-underline"
+          className="pointer-events-auto group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 dark:bg-[#1c1a18]/70 hover:bg-white/90 dark:hover:bg-[#1c1a18]/90 backdrop-blur-xl border border-stone-300/60 dark:border-white/10 text-stone-800 dark:text-stone-200 font-serif italic text-xs sm:text-sm tracking-wide shadow-sm hover:scale-105 transition-all duration-200 cursor-pointer no-underline"
         >
-          <ArrowLeft className="w-4 h-4 text-amber-700 dark:text-[#E8C582] group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="w-3.5 h-3.5 text-amber-700 dark:text-[#E8C582] group-hover:-translate-x-1 transition-transform" />
           <span>Return to Canvas</span>
         </a>
 
-        <div className="pointer-events-auto hidden sm:inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/50 dark:bg-black/40 backdrop-blur-xl border border-white/60 dark:border-white/10 text-xs font-serif italic text-stone-600 dark:text-stone-300 shadow-sm">
+        <div className="pointer-events-auto hidden sm:inline-flex items-center gap-2.5 font-serif italic text-xs text-stone-500 dark:text-stone-400">
           <Compass className="w-3.5 h-3.5 text-amber-700 dark:text-[#E8C582]" />
-          <span>Codex Entry #{String(currentIndex + 1).padStart(2, '0')}</span>
+          <span>Codex #{String(currentIndex + 1).padStart(2, '0')}</span>
           <span className="w-1 h-1 rounded-full bg-amber-600 dark:bg-[#E8C582]" />
           <span>{project.year || '2026'}</span>
         </div>
       </header>
 
-      {/* Main Expansive Horizontal Editorial Spread */}
-      <article className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-12 pt-24 sm:pt-32 pb-28">
+      {/* Main Fluid Editorial Container */}
+      <article className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-14 pt-24 sm:pt-32 pb-24">
         
-        {/* ================= 1. WIDE HORIZONTAL HERO SECTION (Title/Actions Left + Visual Stage Right) ================= */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-start mb-14 sm:mb-20">
+        {/* ================= 1. WIDE FLUID HERO SECTION (Split Left/Right, Zero Boxy Cards) ================= */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start mb-16 sm:mb-24">
           
-          {/* Left Column (5 of 12 cols on desktop): Monumental Title, Meta & Actions */}
-          <div className="lg:col-span-5 space-y-6 sm:space-y-7">
+          {/* Left Side (5 cols): Typography, Ledger Meta, Links, Tags */}
+          <div className="lg:col-span-5 space-y-7 pt-2">
             
-            {/* Project Title (Greek Classical Cormorant Garamond) */}
+            {/* Monumental Classical Title */}
             <h1
-              className="font-serif italic text-3xl sm:text-5xl lg:text-[46px] xl:text-5xl font-light tracking-tight text-stone-950 dark:text-white leading-[1.12]"
+              className="font-serif italic text-4xl sm:text-5xl lg:text-[46px] xl:text-5xl font-light tracking-tight text-stone-950 dark:text-stone-50 leading-[1.12]"
               style={{
                 textShadow: '0 2px 14px rgba(0,0,0,0.06)',
               }}
@@ -171,60 +165,55 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               {project.title}
             </h1>
 
-            {/* Structured Metadata Box */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white/50 dark:bg-white/[0.04] backdrop-blur-xl border border-stone-200/70 dark:border-white/10 space-y-2.5 text-xs sm:text-sm font-serif italic">
+            {/* Editorial Metadata Ledger (Hairline Border Flow) */}
+            <div className="border-t border-b border-stone-300/60 dark:border-white/10 py-3.5 space-y-2.5 text-xs sm:text-sm font-serif italic">
               {project.role && (
-                <div className="flex items-center justify-between text-stone-800 dark:text-stone-200">
-                  <span className="text-stone-500 dark:text-stone-400">Role</span>
+                <div className="flex items-baseline justify-between text-stone-800 dark:text-stone-200">
+                  <span className="text-stone-500 dark:text-stone-400 font-light">Role</span>
                   <span className="text-amber-800 dark:text-[#FFD88A] font-medium">{project.role}</span>
                 </div>
               )}
               {project.client && (
-                <div className="flex items-center justify-between text-stone-800 dark:text-stone-200">
-                  <span className="text-stone-500 dark:text-stone-400">Client / Context</span>
-                  <span className="text-stone-700 dark:text-stone-300 font-normal">{project.client}</span>
+                <div className="flex items-baseline justify-between text-stone-800 dark:text-stone-200">
+                  <span className="text-stone-500 dark:text-stone-400 font-light">Client / Context</span>
+                  <span className="text-stone-700 dark:text-stone-300 font-light">{project.client}</span>
                 </div>
               )}
               {project.year && (
-                <div className="flex items-center justify-between text-stone-800 dark:text-stone-200">
-                  <span className="text-stone-500 dark:text-stone-400">Timeline</span>
+                <div className="flex items-baseline justify-between text-stone-800 dark:text-stone-200">
+                  <span className="text-stone-500 dark:text-stone-400 font-light">Timeline</span>
                   <span className="font-mono text-xs font-semibold text-amber-700 dark:text-[#E8C582]">{project.year}</span>
                 </div>
               )}
             </div>
 
-            {/* Quick Action Buttons (Direct Access Vault) */}
-            <div className="space-y-2.5 pt-1">
+            {/* Fluid Action Links (Typographic buttons & pills) */}
+            <div className="space-y-3 pt-1">
               {project.demoUrl && (
                 <a
                   href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center justify-between px-4 py-3 rounded-2xl bg-amber-800 dark:bg-[#E8C582] hover:bg-amber-900 dark:hover:bg-[#FFD88A] text-white dark:text-stone-950 shadow-md hover:shadow-xl transition-all duration-200 cursor-pointer no-underline"
+                  className="group inline-flex items-center gap-3 text-base sm:text-lg font-serif italic text-amber-900 dark:text-[#FFD88A] hover:text-amber-700 dark:hover:text-[#E8C582] transition-colors no-underline"
                 >
-                  <div className="flex items-center gap-2.5">
-                    <ExternalLink className="w-4 h-4" />
-                    <span className="font-serif italic text-sm sm:text-base font-semibold">
-                      {project.demoLabel || 'Launch Live Project / Paper'}
-                    </span>
-                  </div>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <span className="underline underline-offset-4 decoration-amber-700/40 dark:decoration-[#E8C582]/40 font-medium">
+                    {project.demoLabel || 'Launch Live Project / Paper'}
+                  </span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
                 </a>
               )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Auxiliary Resource Links */}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 pt-1 text-xs sm:text-sm font-serif italic text-stone-700 dark:text-stone-300">
                 {project.githubUrl && (
                   <a
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-white/5 hover:bg-white dark:hover:bg-white/15 border border-stone-200/80 dark:border-white/10 text-stone-900 dark:text-stone-100 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 shadow-sm transition-all cursor-pointer no-underline"
+                    className="inline-flex items-center gap-1.5 hover:text-amber-800 dark:hover:text-[#E8C582] transition-colors no-underline"
                   >
-                    <div className="flex items-center gap-2">
-                      <Github className="w-4 h-4 text-stone-800 dark:text-stone-200 group-hover:text-amber-800 dark:group-hover:text-[#E8C582]" />
-                      <span className="font-serif italic text-xs sm:text-sm font-medium">Repository</span>
-                    </div>
-                    <ExternalLink className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
+                    <Github className="w-3.5 h-3.5" />
+                    <span className="underline underline-offset-4 decoration-stone-300 dark:decoration-stone-700">Repository</span>
                   </a>
                 )}
 
@@ -233,13 +222,10 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     href={project.presentationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-white/5 hover:bg-white dark:hover:bg-white/15 border border-stone-200/80 dark:border-white/10 text-stone-900 dark:text-stone-100 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 shadow-sm transition-all cursor-pointer no-underline"
+                    className="inline-flex items-center gap-1.5 hover:text-amber-800 dark:hover:text-[#E8C582] transition-colors no-underline"
                   >
-                    <div className="flex items-center gap-2">
-                      <Presentation className="w-4 h-4 text-amber-700 dark:text-[#E8C582]" />
-                      <span className="font-serif italic text-xs sm:text-sm font-medium">{project.presentationLabel || 'Presentation'}</span>
-                    </div>
-                    <ExternalLink className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
+                    <Presentation className="w-3.5 h-3.5 text-amber-700 dark:text-[#E8C582]" />
+                    <span className="underline underline-offset-4 decoration-stone-300 dark:decoration-stone-700">{project.presentationLabel || 'Presentation'}</span>
                   </a>
                 )}
 
@@ -248,13 +234,10 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     href={project.videoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-white/5 hover:bg-white dark:hover:bg-white/15 border border-stone-200/80 dark:border-white/10 text-stone-900 dark:text-stone-100 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 shadow-sm transition-all cursor-pointer no-underline"
+                    className="inline-flex items-center gap-1.5 hover:text-amber-800 dark:hover:text-[#E8C582] transition-colors no-underline"
                   >
-                    <div className="flex items-center gap-2">
-                      <Play className="w-4 h-4 text-amber-700 dark:text-[#E8C582]" />
-                      <span className="font-serif italic text-xs sm:text-sm font-medium">{project.videoLabel || 'Video Demo'}</span>
-                    </div>
-                    <ExternalLink className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
+                    <Play className="w-3.5 h-3.5 text-amber-700 dark:text-[#E8C582]" />
+                    <span className="underline underline-offset-4 decoration-stone-300 dark:decoration-stone-700">{project.videoLabel || 'Video Demo'}</span>
                   </a>
                 )}
 
@@ -263,55 +246,44 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     href={project.posterUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/70 dark:bg-white/5 hover:bg-white dark:hover:bg-white/15 border border-stone-200/80 dark:border-white/10 text-stone-900 dark:text-stone-100 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 shadow-sm transition-all cursor-pointer no-underline"
+                    className="inline-flex items-center gap-1.5 hover:text-amber-800 dark:hover:text-[#E8C582] transition-colors no-underline"
                   >
-                    <div className="flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4 text-amber-700 dark:text-[#E8C582]" />
-                      <span className="font-serif italic text-xs sm:text-sm font-medium">{project.posterLabel || 'Poster'}</span>
-                    </div>
-                    <ExternalLink className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
+                    <ImageIcon className="w-3.5 h-3.5 text-amber-700 dark:text-[#E8C582]" />
+                    <span className="underline underline-offset-4 decoration-stone-300 dark:decoration-stone-700">{project.posterLabel || 'Poster'}</span>
                   </a>
                 )}
               </div>
             </div>
 
-            {/* Technology Stack Tags (Placed neatly under Actions) */}
+            {/* Fluid Technology Tags */}
             {project.tags && project.tags.length > 0 && (
               <div className="pt-2">
-                <span className="text-[11px] font-sans font-semibold uppercase tracking-widest text-stone-400 dark:text-stone-500 block mb-2">
-                  Domains & Technologies
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 block mb-2">
+                  Stack / Disciplines
                 </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {project.tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 rounded-lg text-xs font-mono font-medium bg-black/[0.03] dark:bg-white/[0.05] border border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <p className="font-serif italic text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
+                  {project.tags.join('  •  ')}
+                </p>
               </div>
             )}
 
           </div>
 
-          {/* Right Column (7 of 12 cols on desktop): Expansive Cinematic Media Studio */}
+          {/* Right Side (7 cols): Fluid Cinematic Artwork Canvas & Filmstrip */}
           <div className="lg:col-span-7">
             {allMedia.length > 0 && (
-              <div className="w-full rounded-3xl overflow-hidden bg-white/40 dark:bg-stone-950/60 backdrop-blur-2xl border border-white/80 dark:border-white/15 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_60px_-12px_rgba(0,0,0,0.7)] p-3 sm:p-4">
-                
-                {/* Main Artwork Stage */}
+              <div className="space-y-3">
+                {/* Main Visual Frame (Clean Border, No Multiple Nested Boxes) */}
                 <div
                   onClick={() => openLightbox(activeMediaIndex)}
-                  className="relative w-full h-[300px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden bg-black/10 dark:bg-black/50 border border-stone-200/80 dark:border-white/10 group cursor-pointer"
+                  className="relative w-full h-[320px] sm:h-[420px] md:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden bg-black/5 dark:bg-black/50 border border-stone-300/70 dark:border-white/10 group cursor-pointer shadow-sm hover:shadow-lg transition-shadow duration-300"
                 >
                   {/* Ambient Blur Backdrop */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <img
                       src={getAssetUrl(allMedia[activeMediaIndex])}
                       alt=""
-                      className="w-full h-full object-cover blur-3xl opacity-30 scale-125 transition-all duration-700"
+                      className="w-full h-full object-cover blur-3xl opacity-25 scale-125 transition-all duration-700"
                     />
                   </div>
 
@@ -330,7 +302,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                         alt={`${project.title} Artifact ${activeMediaIndex + 1}`}
                         optimizeSource={false}
                         wrapperClassName="w-full h-full flex items-center justify-center"
-                        className="max-h-full max-w-full object-contain object-center rounded-xl select-none group-hover:scale-[1.01] transition-transform duration-500 drop-shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
+                        className="max-h-full max-w-full object-contain object-center rounded-lg select-none group-hover:scale-[1.01] transition-transform duration-500 drop-shadow-[0_8px_24px_rgba(0,0,0,0.2)]"
                         loading="eager"
                         decoding="async"
                       />
@@ -346,9 +318,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                           setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length);
                         }}
                         title="Previous Artifact"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/70 dark:bg-black/70 hover:bg-white dark:hover:bg-black backdrop-blur-2xl border border-white/80 dark:border-white/20 text-stone-900 dark:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-xl"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/70 dark:bg-black/70 hover:bg-white dark:hover:bg-black backdrop-blur-xl border border-white/80 dark:border-white/20 text-stone-900 dark:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
                       >
-                        <ChevronLeft className="w-5 h-5" />
+                        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                       </button>
                       <button
                         onClick={(e) => {
@@ -356,27 +328,27 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                           setActiveMediaIndex((prev) => (prev + 1) % allMedia.length);
                         }}
                         title="Next Artifact"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/70 dark:bg-black/70 hover:bg-white dark:hover:bg-black backdrop-blur-2xl border border-white/80 dark:border-white/20 text-stone-900 dark:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-xl"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/70 dark:bg-black/70 hover:bg-white dark:hover:bg-black backdrop-blur-xl border border-white/80 dark:border-white/20 text-stone-900 dark:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
                       >
-                        <ChevronRight className="w-5 h-5" />
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                       </button>
                     </>
                   )}
 
-                  {/* Expand Gallery View Pill */}
-                  <div className="absolute bottom-3.5 right-3.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/75 backdrop-blur-xl border border-white/20 text-white text-xs font-serif italic shadow-xl">
+                  {/* Minimal Expand Pill */}
+                  <div className="absolute bottom-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/75 backdrop-blur-xl border border-white/20 text-white text-xs font-serif italic shadow-lg">
                       <Maximize2 className="w-3 h-3 text-[#E8C582]" />
-                      <span>Expand Artifact</span>
+                      <span>Expand</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Horizontal Filmstrip Rail */}
+                {/* Minimalist Filmstrip Rail */}
                 {allMedia.length > 1 && (
                   <div
                     ref={filmstripRef}
-                    className="flex items-center justify-center gap-2 sm:gap-2.5 overflow-x-auto pt-3 px-1 no-scrollbar select-none"
+                    className="flex items-center justify-center gap-2 sm:gap-2.5 overflow-x-auto pt-1 px-1 no-scrollbar select-none"
                   >
                     {allMedia.map((mediaUrl, idx) => {
                       const isSelected = idx === activeMediaIndex;
@@ -384,10 +356,10 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                         <button
                           key={idx}
                           onClick={() => setActiveMediaIndex(idx)}
-                          className={`relative shrink-0 w-16 sm:w-20 md:w-22 h-11 sm:h-14 md:h-15 rounded-xl overflow-hidden border transition-all duration-300 cursor-pointer ${
+                          className={`relative shrink-0 w-14 sm:w-18 md:w-20 h-10 sm:h-12 md:h-13 rounded-lg overflow-hidden border transition-all duration-300 cursor-pointer ${
                             isSelected
-                              ? 'ring-2 ring-amber-700 dark:ring-[#E8C582] scale-105 opacity-100 shadow-md'
-                              : 'opacity-40 hover:opacity-85 hover:scale-100 border-stone-300/80 dark:border-white/10'
+                              ? 'ring-2 ring-amber-700 dark:ring-[#E8C582] scale-105 opacity-100 shadow-sm'
+                              : 'opacity-35 hover:opacity-80 hover:scale-100 border-stone-300/80 dark:border-white/10'
                           }`}
                         >
                           <img
@@ -396,9 +368,6 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                             className="w-full h-full object-cover"
                             loading="lazy"
                           />
-                          <span className="absolute bottom-1 right-1 px-1 py-0.2 rounded text-[8px] font-mono font-bold bg-black/75 text-white">
-                            {idx + 1}
-                          </span>
                         </button>
                       );
                     })}
@@ -410,31 +379,24 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
         </section>
 
-        {/* ================= 2. ARCHITECTURAL TREATISE & METHODOLOGY (Horizontal 2-Column Spread) ================= */}
+        {/* ================= 2. ESSAY TREATISE (Flowing 2-Column Typography, No Cards) ================= */}
         {project.content && project.content.length > 0 && (
-          <section className="mb-16 sm:mb-24 pt-8 border-t border-stone-200/80 dark:border-white/10 space-y-8">
-            
-            <div className="flex items-center gap-3">
-              <Sparkles className="w-5 h-5 text-amber-700 dark:text-[#E8C582]" />
-              <h2 className="font-serif italic text-2xl sm:text-3xl md:text-4xl text-stone-950 dark:text-stone-100 font-normal">
-                Architectural Treatise & Methodology
-              </h2>
-            </div>
+          <section className="mb-20 sm:mb-28 pt-8 border-t border-stone-300/60 dark:border-white/10">
+            <h2 className="font-serif italic text-2xl sm:text-3xl text-stone-950 dark:text-stone-100 font-light mb-8">
+              Treatise & Architectural Insights
+            </h2>
 
-            {/* Horizontal Multi-Column Editorial Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+            {/* Flowing 2-Column Editorial Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14">
               {project.content.map((paragraph, idx) => (
-                <div
-                  key={idx}
-                  className="p-6 sm:p-7 rounded-3xl bg-white/40 dark:bg-white/[0.03] backdrop-blur-xl border border-stone-200/60 dark:border-white/5 space-y-3"
-                >
-                  <span className="font-serif italic text-xs text-amber-800 dark:text-[#E8C582] font-semibold uppercase tracking-widest block">
-                    Section {idx + 1}
+                <div key={idx} className="space-y-2">
+                  <span className="font-serif italic text-xs text-amber-800 dark:text-[#E8C582] font-medium tracking-wider block">
+                    {String(idx + 1).padStart(2, '0')}
                   </span>
-                  <p className="font-serif text-base sm:text-lg leading-[1.8] text-stone-800 dark:text-stone-200 font-light tracking-[0.01em]">
+                  <p className="font-serif text-base sm:text-lg leading-[1.85] text-stone-800 dark:text-stone-200 font-light tracking-[0.01em]">
                     {idx === 0 ? (
                       <>
-                        <span className="float-left text-4xl sm:text-5xl font-serif italic text-amber-800 dark:text-[#E8C582] leading-none pr-2.5 pt-0.5 font-semibold">
+                        <span className="float-left text-4xl sm:text-5xl font-serif italic text-amber-800 dark:text-[#E8C582] leading-none pr-2 pt-0.5 font-semibold">
                           {paragraph.charAt(0)}
                         </span>
                         {paragraph.slice(1)}
@@ -449,29 +411,11 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           </section>
         )}
 
-        {/* ================= 3. CONTINUUM OF WORKS (Horizontal Bottom Navigation) ================= */}
-        <nav className="pt-8 border-t border-stone-200/80 dark:border-white/10">
-          <div className="flex items-center justify-between gap-4 mb-6">
-            <span className="font-serif italic text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400">
-              Continuum of Works
-            </span>
-            <a
-              href="/#projects"
-              onClick={(e) => {
-                if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
-                  e.preventDefault();
-                  onBack();
-                }
-              }}
-              className="text-xs font-serif italic text-amber-800 dark:text-[#E8C582] hover:underline cursor-pointer no-underline"
-            >
-              Back to Canvas Hub
-            </a>
-          </div>
-
-          <div className={`grid gap-5 sm:gap-6 ${prevProject && nextProject ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
+        {/* ================= 3. CONTINUUM OF WORKS (Typographic Bottom Links) ================= */}
+        <nav className="pt-8 border-t border-stone-300/60 dark:border-white/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12">
             {/* Previous Work */}
-            {prevProject && (
+            {prevProject ? (
               <a
                 href={`/projects/${prevProject.id}`}
                 onClick={(e) => {
@@ -480,9 +424,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     onSelectProject(prevProject.id);
                   }
                 }}
-                className="group p-5 rounded-3xl bg-white/60 dark:bg-[#161412]/80 hover:bg-white/95 dark:hover:bg-[#161412]/95 backdrop-blur-xl border border-stone-200/80 dark:border-white/15 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 transition-all duration-300 flex items-center gap-4 cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 no-underline text-inherit"
+                className="group flex items-center gap-4 cursor-pointer no-underline text-inherit"
               >
-                <div className="w-18 h-14 sm:w-22 sm:h-16 rounded-xl overflow-hidden bg-black/10 dark:bg-black/40 border border-stone-200 dark:border-white/10 shrink-0">
+                <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-300/60 dark:border-white/10 shrink-0">
                   <img
                     src={getAssetUrl(prevProject.thumbnail)}
                     alt={prevProject.title}
@@ -490,16 +434,16 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="font-serif italic text-xs text-amber-800 dark:text-[#E8C582] flex items-center gap-1">
+                  <span className="font-serif italic text-xs text-stone-500 dark:text-stone-400 flex items-center gap-1 group-hover:text-amber-800 dark:group-hover:text-[#E8C582] transition-colors">
                     <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
                     <span>Previous Work ({prevProject.year})</span>
                   </span>
-                  <h4 className="font-serif italic text-base sm:text-lg text-stone-950 dark:text-white truncate font-medium pt-0.5">
+                  <h4 className="font-serif italic text-base sm:text-lg text-stone-950 dark:text-white truncate font-light pt-0.5 group-hover:underline">
                     {prevProject.title}
                   </h4>
                 </div>
               </a>
-            )}
+            ) : <div />}
 
             {/* Next Work */}
             {nextProject && (
@@ -511,18 +455,18 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     onSelectProject(nextProject.id);
                   }
                 }}
-                className="group p-5 rounded-3xl bg-white/60 dark:bg-[#161412]/80 hover:bg-white/95 dark:hover:bg-[#161412]/95 backdrop-blur-xl border border-stone-200/80 dark:border-white/15 hover:border-amber-700/40 dark:hover:border-[#E8C582]/40 transition-all duration-300 flex items-center gap-4 cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 no-underline text-inherit"
+                className="group flex items-center justify-end gap-4 cursor-pointer no-underline text-inherit text-right"
               >
-                <div className="min-w-0 flex-1 text-right sm:text-left">
-                  <span className="font-serif italic text-xs text-amber-800 dark:text-[#E8C582] flex items-center justify-end sm:justify-start gap-1">
+                <div className="min-w-0 flex-1">
+                  <span className="font-serif italic text-xs text-stone-500 dark:text-stone-400 flex items-center justify-end gap-1 group-hover:text-amber-800 dark:group-hover:text-[#E8C582] transition-colors">
                     <span>Next Work ({nextProject.year})</span>
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                   </span>
-                  <h4 className="font-serif italic text-base sm:text-lg text-stone-950 dark:text-white truncate font-medium pt-0.5">
+                  <h4 className="font-serif italic text-base sm:text-lg text-stone-950 dark:text-white truncate font-light pt-0.5 group-hover:underline">
                     {nextProject.title}
                   </h4>
                 </div>
-                <div className="w-18 h-14 sm:w-22 sm:h-16 rounded-xl overflow-hidden bg-black/10 dark:bg-black/40 border border-stone-200 dark:border-white/10 shrink-0 order-first sm:order-last">
+                <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-300/60 dark:border-white/10 shrink-0">
                   <img
                     src={getAssetUrl(nextProject.thumbnail)}
                     alt={nextProject.title}
