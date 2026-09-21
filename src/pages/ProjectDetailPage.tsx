@@ -321,10 +321,10 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     <span className="text-sm sm:text-base text-stone-100 font-normal">{project.client}</span>
                   </div>
                 )}
-                {project.year && (
+                {(project.date || project.year) && (
                   <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <span className="text-stone-400 font-medium text-xs sm:text-sm">Year:</span>
-                    <span className="font-mono text-sm sm:text-base font-semibold text-[#FFD88A]">{project.year}</span>
+                    <span className="text-stone-400 font-medium text-xs sm:text-sm">Date:</span>
+                    <span className="font-mono text-sm sm:text-base font-semibold text-[#FFD88A]">{project.date || project.year}</span>
                   </div>
                 )}
               </div>

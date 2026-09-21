@@ -18,6 +18,7 @@ export interface ProjectItem {
   client?: string;
   role?: string;
   year?: string;
+  date?: string;
   content?: string[];
   gallery?: string[];
 }
@@ -27,12 +28,13 @@ export interface ProjectCardItem {
   title: string;
   image: string;
   year?: string;
+  date?: string;
   role?: string;
   tags?: string[];
   client?: string;
 }
 
-// 16 Authentic Projects sorted chronologically: Newest (2026) to Oldest (2024)
+// 16 Authentic Projects sorted chronologically: Newest (February 2026) to Oldest (January 2024)
 export const allProjectsData: ProjectItem[] = [
   // ================= 2026 PROJECTS (Page 1) =================
   {
@@ -57,6 +59,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Computational Biology Course Project',
     role: 'ML Coder & ML Researcher',
     year: '2026',
+    date: 'February 2026',
     content: [
       'This Computational Biology project focuses on identifying diagnostic gene biomarkers for Cholangiocarcinoma (CCA), an aggressive liver cancer, using tumor and matched non-tumor transcriptomic data. To ensure biological and statistical validity, the study implements patient-level data partitioning (StratifiedGroupKFold) to properly account for paired samples and prevent cross-validation bias.',
       'The key methodological innovation is the implementation of a leakage-controlled feature selection pipeline. Unlike standard pipelines that prefilter Differential Expression Genes (DEGs) globally before cross-validation (which leaks test set information), this pipeline encapsulates the entire prefiltering, normalization (quantile normalization), and feature selection (LASSO, SVM-RFE, or Random Forest) inside each training split. Evaluated on the GSE76297 cohort (Affymetrix HTA 2.0 array), the model maintains robust performance even after data-leakage controls are strictly applied.',
@@ -94,6 +97,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Computer Vision Course Project',
     role: 'Project Leader & Lead Developer',
     year: '2026',
+    date: 'January 2026',
     content: [
       'Railroad CV is an intelligent computer vision safety monitoring system developed for railway level-crossings. The application enables automated classification of crossing safety states (SAFE or DANGER) by processing visual feeds and identifying potential hazards, such as blocked tracks or vehicle queues.',
       'The codebase is managed as a pnpm monorepo with Turborepo, isolating the Next.js frontend (utilizing Tailwind CSS and shadcn/ui) from a Hono API backend. The system enables comparative analysis between two distinct computer vision architectures: (1) a Classic ML Pipeline that extracts shape, color, texture, and edge features (via HOG, HSV Histograms, Uniform Local Binary Patterns, and Canny Edge Density) classified through linear/RBF Support Vector Machines and tuned Random Forests; and (2) a Deep Learning model that uses object detection to identify obstacles and crossing barriers.',
@@ -131,6 +135,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Software Engineering Course Project',
     role: 'Project Leader & Lead Developer',
     year: '2026',
+    date: 'January 2026',
     content: [
       'Phylaxify is a full stack, third party web application built to secure content creator platforms and livestream overlays. Driven by a Triple Layer Protection Engine, the system intercepts incoming donation webhook payloads in real time, determining whether they contain spam, predatory loans, or online gambling (\'Judol\') promotions.',
       'The core architecture is built for sub-200ms latency to preserve stream pacing. When a donation event triggers, it undergoes consensus verification across three distinct gates: (1) a deterministic Smart Filter (Regex & Keyword Matcher) for instant hits, (2) Shield BERT (a fine-tuned BERT Transformer hosted as an isolated GPU microservice on Hugging Face Spaces) to catch contextual or obfuscated leetspeak spam, and (3) Linguistic Heuristics to detect automated bot behaviors and repetitive syntax.',
@@ -170,6 +175,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Natural Language Processing & Research Methodology Course',
     role: 'Project Leader & Lead Researcher',
     year: '2026',
+    date: 'January 2026',
     content: [
       'This Natural Language Processing and Research Methodology project focuses on the detection of online gambling (known locally as \'Judol\') spam comments on Indonesian YouTube videos. Because spammers actively try to bypass automated filters using creative spelling (leetspeak, unicode homoglyphs, repeated characters, and dot/dash fragmentation), this research investigates the impact of targeted preprocessing pipelines on machine learning models.',
       'The key contribution is a custom multi stage preprocessing pipeline: (Level 1) standard punctuation removal, lowercasing, and URL stripping; (Level 2) a mapping layer to normalize common leetspeak substitutions; and (Level 3) advanced unicode homoglyph normalization, character reduction (collapsing repeated letters), and token defragmentation. This level of normalization is shown to dramatically reduce false negatives.',
@@ -199,6 +205,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Personal Project',
     role: 'Sole Developer',
     year: '2026',
+    date: 'January 2026',
     content: [
       'The Minesweeper Solver Agent is a sophisticated multistage Computer Vision framework built to bridge the gap between image perception and logical reasoning. Developed as a Sole Developer, I designed a system capable of interpreting dynamic graphical interfaces across various grid sizes and rendering styles with nearly 100% accuracy.',
       'The core architectural innovation lies in its hybrid detection pipeline. For complex icons like flags and mines, the system utilizes Normalized Cross-Correlation (cv2.TM_CCOEFF_NORMED) to handle high resolution template matching. For numerical cells and empty states, it implements a custom Average BGR Color Analysis using Euclidean Distance (L2 Norm) for high speed classification.',
@@ -227,6 +234,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Machine Learning Course Project',
     role: 'AI Developer, Website Developer & Project Leader',
     year: '2026',
+    date: 'January 2026',
     content: [
       'Hit or Flop is a high performance machine learning system built to predict song success by analyzing 13 acoustic dimensions including Tempo (BPM), Spectral Centroid, and RMS Energy across a massive dataset of 125 genres. The project specifically optimizes for \'Emerging Hits\' (tracks with a popularity threshold of 15), capturing the nuance of rising indie and regional music.',
       'The core prediction engine leverages a \'Big 5\' Ensemble Architecture, combining the predictive power of RandomForest, XGBoost, AdaBoost, KNN, and DecisionTree models. By using a Voting Consensus Mechanism, the platform ensures robust predictions with a 78.94% top model accuracy (Random Forest) and a 71.7% ensemble consensus accuracy, strictly reducing false positives through cross model verification.',
@@ -262,6 +270,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Database Course Project',
     role: 'Lead Developer & Architect',
     year: '2025',
+    date: 'December 2025',
     content: [
       'BrightStar is a comprehensive database driven Learning Management System (LMS) built to automate administration processes for an educational course center in Madiun, moving them away from manual record keeping.',
       'The system features a multi role architecture separating privileges between Admins, Teachers, and Students. Admins manage users and curriculum, Teachers facilitate sessions and issue progress reports, while Students track their schedule and performance.',
@@ -293,6 +302,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'OOP Course Project',
     role: 'Lead Developer & Architect',
     year: '2025',
+    date: 'November 2025',
     content: [
       'The Path of Winter is a Binus University course project exploring native desktop game development using raw Java Swing. Instead of relying on a pre built engine like Unity or Godot, we built a custom 2D rendering pipeline from scratch to handle sprite sheets and map management.',
       'Game development in Java provides a perfect sandbox to implement and demonstrate core Object Oriented Programming (OOP) concepts such as Inheritance, Polymorphism, Abstraction, and Encapsulation.',
@@ -324,6 +334,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Artificial Intelligence Course Project',
     role: 'AI Developer & Apps Developer',
     year: '2025',
+    date: 'October 2025',
     githubUrl: 'https://github.com/AxelS27/gaialeaf_flutter',
     content: [
       'Gaia Leaf is a comprehensive AI solution designed to assist farmers and urban gardeners in identifying plant diseases early. The core of the application is a Convolutional Neural Network (CNN) trained on the PlantVillage dataset, capable of identifying diseases with high confidence.',
@@ -356,6 +367,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Personal Project',
     role: 'Developer',
     year: '2025',
+    date: 'October 2025',
     content: [
       'This project is a highly optimized and aesthetic Hyprland configuration designed for users who prioritize speed and visual harmony in their Linux environment.',
       'The setup features custom window management rules, smooth animations, and a seamless workflow integrated with Waybar for system monitoring and Wofi for application launching.',
@@ -392,6 +404,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Algorithm Design and Analysis Course',
     role: 'Team Leader (Team Athelstan)',
     year: '2025',
+    date: 'September 2025',
     content: [
       'INC (Indonesia National Contest) 2025 is a prestigious national scale competitive programming arena that serves as a gateway to the ICPC regional finals. Competing as the leader of Team \'Athelstan\', I led our squad through the rigorous process of solving complex algorithmic problems as part of our Algorithm Design and Analysis course.',
       'The competition required quick thinking and proficiency in complex data structures and efficient algorithm design. Although the final result was a work in progress, the experience was invaluable for developing mental fortitude and collaborative debugging strategies in a high stakes environment.',
@@ -418,6 +431,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Personal Project',
     role: 'Developer',
     year: '2025',
+    date: 'August 2025',
     content: [
       'This project introduces a dynamic restaurant menu system that is exceptionally easy to use and update. Built using Excel VBA integrated with a MySQL database, it allows restaurant owners to add or modify menu items efficiently without ever needing to touch the underlying code.',
       'The architecture features full database synchronization, where all menu data and stock levels are stored securely in MySQL. This setup facilitates seamless integration with daily sales reports and other management systems, ensuring data consistency across the entire business operation.',
@@ -447,6 +461,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Wahyu Agung Motor Madiun',
     role: 'Lead Developer & Architect',
     year: '2025',
+    date: 'June 2025',
     content: [
       'The WAM Telegram Bot was developed to modernize the inventory management system for a motorcycle dealership in Madiun. It serves as a real time gateway for the owner to access sensitive sales and unit data directly through a secure chat interface.',
       'Technically, the bot implements a decoupled data architecture, dynamically fetching and parsing Excel spreadsheets hosted on Dropbox or Google Drive using Pandas. This allows the owner to update data via their mobile spreadsheet app while the bot reflects changes instantly without requiring a redeploy.',
@@ -475,6 +490,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'HCI Course Project',
     role: 'Lead Developer & Architect',
     year: '2024',
+    date: 'December 2024',
     content: [
       'Dinoverse leverages advanced Augmented Reality to bring prehistoric creatures to life directly on a user\'s device. By scanning specialized physical cards, users can spawn interactive 3D models of dinosaurs in their own physical space.',
       'Beyond just viewing models, the app gamifies the learning experience. It includes an algorithmic pathfinding puzzle where players navigate their dinosaur toward a crown using code blocks, teaching basic logic and problem solving skills.',
@@ -504,6 +520,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Data Structures Course Project',
     role: 'Lead Developer & Architect',
     year: '2024',
+    date: 'July 2024',
     content: [
       'Stock Up Caffee is a comprehensive terminal based application designed to efficiently manage the inventory and cashier system of a coffee shop. It features real time stock availability tracking powered by a Binary Search Tree (BST) algorithm.',
       'The application was written entirely in C and implements robust raw file handling to keep accurate records. Preset data files like `#item_stock.txt`, `#history_transaction.txt`, and `#member_data.txt` are provided to manage persistent transaction histories and store operations.',
@@ -537,6 +554,7 @@ export const allProjectsData: ProjectItem[] = [
     client: 'Algorithms and Programming Course Project',
     role: 'Lead Developer & Architect',
     year: '2024',
+    date: 'January 2024',
     content: [
       'Travel Menu is a C based command line interface application intended to act as a system for planning and managing travel paths.',
       'Using complex terminal output handling and C\'s native file read/write mechanisms, the application offers booking capabilities that persist inside `.txt` files.',
@@ -556,6 +574,7 @@ export const allProjects: ProjectCardItem[] = allProjectsData.map((project) => (
   title: project.title,
   image: getAssetUrl(project.thumbnail),
   year: project.year,
+  date: project.date,
   role: project.role,
   tags: project.tags,
   client: project.client,
