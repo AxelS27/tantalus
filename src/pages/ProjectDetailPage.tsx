@@ -127,26 +127,42 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-black/35 pointer-events-none" />
       </div>
 
-      {/* Minimal Top Header Bar */}
-      <header className="fixed top-6 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-12 md:px-16 pointer-events-none max-w-7xl mx-auto">
-        <a
-          href="/#projects"
-          onClick={(e) => {
-            if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
-              e.preventDefault();
-              onBack();
-            }
-          }}
-          className="pointer-events-auto group inline-flex items-center gap-2 px-4.5 py-2.5 rounded-full bg-black/45 hover:bg-black/65 backdrop-blur-2xl border border-white/25 text-white text-xs sm:text-sm font-serif italic tracking-wide shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:scale-105 transition-all duration-200 cursor-pointer no-underline"
-        >
-          <ArrowLeft className="w-3.5 h-3.5 text-[#FFD88A] group-hover:-translate-x-1 transition-transform" />
-          <span>Back to Projects</span>
-        </a>
+      {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
+      <header className="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 max-w-4xl">
+        <div className="pointer-events-auto relative h-10 sm:h-11 flex items-center px-1.5 py-1 rounded-full bg-[#161412]/80 hover:bg-[#161412]/90 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2),0_12px_36px_rgba(0,0,0,0.5)] transition-colors duration-200">
+          
+          {/* Left Segment: Back to Projects */}
+          <a
+            href="/#projects"
+            onClick={(e) => {
+              if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                e.preventDefault();
+                onBack();
+              }
+            }}
+            className="group relative h-full flex items-center gap-1.5 px-3.5 sm:px-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-serif italic tracking-wide transition-all duration-200 cursor-pointer no-underline"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-[#FFD88A] group-hover:-translate-x-1 transition-transform" />
+            <span>Projects</span>
+          </a>
 
-        <div className="pointer-events-auto hidden sm:inline-flex items-center gap-2 font-serif italic text-xs text-stone-200/90 px-3.5 py-1.5 rounded-full bg-black/35 backdrop-blur-xl border border-white/15">
-          <span>{String(currentIndex + 1).padStart(2, '0')} / {String(allProjects.length).padStart(2, '0')}</span>
-          <span className="w-1 h-1 rounded-full bg-[#E8C582]" />
-          <span>{project.year || '2026'}</span>
+          {/* Center Segment: Truncated Project Title */}
+          <div className="flex items-center px-3 sm:px-4 min-w-0 max-w-[170px] sm:max-w-xs md:max-w-md">
+            <span
+              title={project.title}
+              className="font-serif italic text-xs sm:text-sm text-stone-200 truncate font-normal tracking-wide"
+            >
+              {project.title}
+            </span>
+          </div>
+
+          {/* Right Segment: Year */}
+          {project.year && (
+            <div className="flex items-center pl-2.5 pr-3 text-xs font-mono text-[#FFD88A] border-l border-white/15">
+              <span>{project.year}</span>
+            </div>
+          )}
+
         </div>
       </header>
 
