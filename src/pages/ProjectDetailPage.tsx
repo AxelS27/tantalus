@@ -196,38 +196,28 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   {/* Main Visual Frame */}
                   <div
                     onClick={() => openLightbox(activeMediaIndex)}
-                    className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/40 backdrop-blur-xl border border-white/25 group cursor-pointer shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-white/40 transition-colors duration-300"
+                    className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/40 backdrop-blur-xl border border-white/25 group cursor-pointer shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-white/40 transition-colors duration-200"
                   >
                     {/* Ambient Blur Backdrop */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                       <img
                         src={getAssetUrl(allMedia[activeMediaIndex])}
                         alt=""
-                        className="w-full h-full object-cover blur-3xl opacity-30 scale-125 transition-all duration-700"
+                        className="w-full h-full object-cover blur-3xl opacity-30 scale-125 transition-opacity duration-200"
                       />
                     </div>
 
-                    {/* Active Media Image */}
-                    <AnimatePresence mode="wait">
-                      <motion.div
+                    {/* Active Media Image (Instant 0ms Swap) */}
+                    <div className="w-full h-full relative z-10 flex items-center justify-center p-2.5 sm:p-4">
+                      <img
                         key={activeMediaIndex}
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.98 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                        className="w-full h-full relative z-10 flex items-center justify-center p-2.5 sm:p-4"
-                      >
-                        <ImageWithSkeleton
-                          src={getAssetUrl(allMedia[activeMediaIndex])}
-                          alt={`${project.title} Preview ${activeMediaIndex + 1}`}
-                          optimizeSource={false}
-                          wrapperClassName="w-full h-full flex items-center justify-center"
-                          className="max-h-full max-w-full object-contain object-center rounded-lg select-none group-hover:scale-[1.01] transition-transform duration-500 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
-                          loading="eager"
-                          decoding="async"
-                        />
-                      </motion.div>
-                    </AnimatePresence>
+                        src={getAssetUrl(allMedia[activeMediaIndex])}
+                        alt={`${project.title} Preview ${activeMediaIndex + 1}`}
+                        className="max-h-full max-w-full object-contain object-center rounded-lg select-none group-hover:scale-[1.01] transition-transform duration-200 drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                        loading="eager"
+                        decoding="async"
+                      />
+                    </div>
 
                     {/* Left/Right Floating Glide Arrows */}
                     {allMedia.length > 1 && (
