@@ -59,8 +59,11 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     const sequence = ++animationSequenceRef.current;
     rotationY.stop();
     rotationX.stop();
-    const currentFace = ((-Math.round(rotationY.get() / angleStep)) % numFaces + numFaces) % numFaces;
-    const targetFace = ((-Math.round(targetY / angleStep)) % numFaces + numFaces) % numFaces;
+    // Clamp target within [-(numFaces - 1) * angleStep, 0]
+    const clampedY = Math.max(-(numFaces - 1) * angleStep, Math.min(0, targetY));
+    const targetFace = Math.max(0, Math.min(numFaces - 1, Math.round(-clampedY / angleStep)));
+    const currentFace = Math.max(0, Math.min(numFaces - 1, Math.round(-rotationY.get() / angleStep)));
+
     setVisibleFaceIndexes((faces) =>
       faces.includes(targetFace) && faces.includes(currentFace)
         ? faces
@@ -71,10 +74,10 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     );
     setFacingStep(targetFace);
     setCurrentPage(targetFace);
-    rotationYRef.current = targetY;
+    rotationYRef.current = clampedY;
     rotationXRef.current = 0;
 
-    const yAnimation = animate(rotationY, targetY, {
+    const yAnimation = animate(rotationY, clampedY, {
       duration: 0.85,
       ease: [0.22, 1, 0.36, 1],
     });
@@ -90,14 +93,24 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   }, [angleStep, numFaces, rotationX, rotationY]);
 
   const handleNext = useCallback(() => {
-    const nextY = Math.round(rotationYRef.current / angleStep) * angleStep - angleStep;
-    settleToFace(nextY);
-  }, [angleStep, settleToFace]);
+    if (currentPage >= numFaces - 1) {
+      onReachEnd?.();
+    } else {
+      const nextIndex = currentPage + 1;
+      const nextY = -nextIndex * angleStep;
+      settleToFace(nextY);
+    }
+  }, [angleStep, currentPage, numFaces, onReachEnd, settleToFace]);
 
   const handlePrev = useCallback(() => {
-    const prevY = Math.round(rotationYRef.current / angleStep) * angleStep + angleStep;
-    settleToFace(prevY);
-  }, [angleStep, settleToFace]);
+    if (currentPage <= 0) {
+      onReachStart?.();
+    } else {
+      const prevIndex = currentPage - 1;
+      const prevY = -prevIndex * angleStep;
+      settleToFace(prevY);
+    }
+  }, [angleStep, currentPage, onReachStart, settleToFace]);
 
   const handleCardClick = useCallback((projectId: string) => {
     if (hasDraggedRef.current) return;
@@ -143,7 +156,17 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       hasDraggedRef.current = true;
     }
 
-    const nextRotY = dragStartRef.current.rotY + dx * 0.35;
+    let nextRotY = dragStartRef.current.rotY + dx * 0.35;
+    const minRot = -(numFaces - 1) * angleStep;
+    const maxRot = 0;
+
+    // Elastic resistance beyond boundaries
+    if (nextRotY > maxRot) {
+      nextRotY = maxRot + (nextRotY - maxRot) * 0.25;
+    } else if (nextRotY < minRot) {
+      nextRotY = minRot + (nextRotY - minRot) * 0.25;
+    }
+
     // Bounded subtle tilt on X axis
     const nextRotX = Math.max(-20, Math.min(20, dragStartRef.current.rotX - dy * 0.18));
 
@@ -153,9 +176,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     rotationY.set(nextRotY);
     rotationX.set(nextRotX);
 
-    const continuousFace = -nextRotY / angleStep;
-    const lowerFace = ((Math.floor(continuousFace) % numFaces) + numFaces) % numFaces;
-    const upperFace = ((Math.ceil(continuousFace) % numFaces) + numFaces) % numFaces;
+    const continuousFace = Math.max(0, Math.min(numFaces - 1, -nextRotY / angleStep));
+    const lowerFace = Math.max(0, Math.min(numFaces - 1, Math.floor(continuousFace)));
+    const upperFace = Math.max(0, Math.min(numFaces - 1, Math.ceil(continuousFace)));
     const nextFaces = lowerFace === upperFace ? [lowerFace] : [lowerFace, upperFace];
     setVisibleFaceIndexes((faces) =>
       faces.length === nextFaces.length && faces.every((face, index) => face === nextFaces[index])
@@ -163,7 +186,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         : nextFaces,
     );
 
-    const nearestFace = ((Math.round(continuousFace) % numFaces) + numFaces) % numFaces;
+    const nearestFace = Math.max(0, Math.min(numFaces - 1, Math.round(continuousFace)));
     setVisitedFaceIndexes((visited) =>
       nextFaces.some((f) => !visited.includes(f))
         ? Array.from(new Set([...visited, ...nextFaces]))
@@ -219,15 +242,17 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       {/* 3D Cube Container with Non-Overlapping Flex Flanks */}
       <div className="relative w-full flex items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-14">
         
-        {/* Left Arrow Slot */}
+        {/* Left Arrow Slot (Hidden on newest / Page 0) */}
         <div className="w-10 sm:w-12 md:w-14 flex items-center justify-center flex-shrink-0 z-40">
-          <button
-            onClick={handlePrev}
-            title="Rotate Cube Left"
-            className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
+          {currentPage > 0 ? (
+            <button
+              onClick={handlePrev}
+              title="Previous Page"
+              className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          ) : null}
         </div>
 
         {/* 3D Perspective Stage */}
@@ -287,7 +312,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                       {/* Specular Top Light Accent */}
                       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/35 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-xl" />
 
-                      {/* 16:9 Thumbnail Image with Skeleton Shimmer & Year Pill */}
+                      {/* 16:9 Thumbnail Image with Skeleton Shimmer */}
                       <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/10 dark:bg-black/40 border border-white/40 dark:border-white/15 mb-1 flex-shrink-0">
                         <ImageWithSkeleton
                           src={project.image}
@@ -298,11 +323,6 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                           className="w-full h-full object-cover object-center pointer-events-none select-none"
                           skeletonClassName="bg-white/10 dark:bg-black/40"
                         />
-                        {project.year && (
-                          <div className="absolute top-1 right-1 px-1.5 py-0.5 rounded-md bg-black/70 dark:bg-black/80 backdrop-blur-md border border-white/20 text-[9px] font-mono font-semibold text-[#FFD88A] drop-shadow-sm pointer-events-none">
-                            {project.year}
-                          </div>
-                        )}
                       </div>
 
                       {/* Clean Single-Line High-Legibility Title */}
@@ -322,15 +342,17 @@ export const ProjectsGrid = memo(function ProjectsGrid({
           </motion.div>
         </div>
 
-        {/* Right Arrow Slot */}
+        {/* Right Arrow Slot (Hidden on oldest / last page) */}
         <div className="w-10 sm:w-12 md:w-14 flex items-center justify-center flex-shrink-0 z-40">
-          <button
-            onClick={handleNext}
-            title="Rotate Cube Right"
-            className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-          </button>
+          {currentPage < numFaces - 1 ? (
+            <button
+              onClick={handleNext}
+              title="Next Page"
+              className="p-2.5 sm:p-3 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_4px_18px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_4px_18px_rgba(0,0,0,0.4)]"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          ) : null}
         </div>
 
       </div>
@@ -341,13 +363,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
           <button
             key={face.faceIdx}
             onClick={() => {
-              const currentRot = rotationYRef.current;
-              const currentF = ((-Math.round(currentRot / angleStep)) % numFaces + numFaces) % numFaces;
-              let diff = face.faceIdx - currentF;
-              if (diff > numFaces / 2) diff -= numFaces;
-              if (diff < -numFaces / 2) diff += numFaces;
-              const targetY = Math.round(currentRot / angleStep) * angleStep - diff * angleStep;
-              settleToFace(targetY);
+              settleToFace(-face.faceIdx * angleStep);
             }}
             className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
               facingStep === face.faceIdx
