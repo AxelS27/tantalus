@@ -124,11 +124,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   // Pointer drag controls for holding & rotating freely
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!isActive || e.button !== 0) return;
-    isDraggingRef.current = true;
-    animationSequenceRef.current += 1;
-    rotationY.stop();
-    rotationX.stop();
-    setIsDragging(true);
+    isDraggingRef.current = false;
     hasDraggedRef.current = false;
     dragStartRef.current = {
       x: e.clientX,
@@ -140,21 +136,25 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       y: rotationY.get(),
       x: rotationX.get(),
     };
-    try {
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    } catch {
-      // fallback
-    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current) return;
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
 
-    if (Math.hypot(dx, dy) > 4) {
+    if (!hasDraggedRef.current && Math.hypot(dx, dy) > 4) {
       hasDraggedRef.current = true;
+      isDraggingRef.current = true;
+      setIsDragging(true);
+      animationSequenceRef.current += 1;
+      rotationY.stop();
+      rotationX.stop();
+      try {
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      } catch {}
     }
+
+    if (!isDraggingRef.current) return;
 
     let nextRotY = dragStartRef.current.rotY + dx * 0.35;
     const minRot = -(numFaces - 1) * angleStep;
@@ -196,19 +196,18 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    setIsDragging(false);
+    if (isDraggingRef.current) {
+      isDraggingRef.current = false;
+      setIsDragging(false);
 
-    try {
-      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch {
-      // fallback
+      try {
+        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {}
+
+      // Snap using the latest pointer position.
+      const snappedY = Math.round(pendingRotationRef.current.y / angleStep) * angleStep;
+      settleToFace(snappedY);
     }
-
-    // Snap using the latest pointer position.
-    const snappedY = Math.round(pendingRotationRef.current.y / angleStep) * angleStep;
-    settleToFace(snappedY);
   };
 
   // Mousewheel listener for rotating Cube & Section Handoff
@@ -301,7 +300,12 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                   {face.items.map((project) => (
                     <motion.div
                       key={`${face.faceIdx}-${project.id}`}
-                      onClick={() => !isDragging && isFaceActive && handleCardClick(project.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!hasDraggedRef.current && isFaceActive) {
+                          handleCardClick(project.id);
+                        }
+                      }}
                       whileHover={{
                         scale: !isDragging && isFaceActive ? 1.09 : 1,
                         y: !isDragging && isFaceActive ? -5 : 0,
