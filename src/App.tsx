@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { type PortfolioSettings, getSavedSettings } from './lib/settings';
 import { getAssetUrl } from './lib/assets';
@@ -365,41 +365,32 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      {activeProjectId ? (
-        <Suspense fallback={<CanvasSectionSkeleton />}>
-          <ProjectDetailPage
-            projectId={activeProjectId}
-            onBack={handleBackToProjects}
-            onSelectProject={handleSelectProject}
-          />
-        </Suspense>
-      ) : (
-        <div
-          onWheel={handleGlobalWheel}
-          className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
-        >
-          {/* Floating Centered Apple Frosted Glass Navbar */}
-          <Navbar
-            activeTab={activeTab}
-            onTabChange={(tab) => triggerSectionChange(tab, true, true)}
-          />
+      <div
+        onWheel={activeProjectId ? undefined : handleGlobalWheel}
+        className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
+      >
+        {/* Floating Centered Apple Frosted Glass Navbar */}
+        <Navbar
+          activeTab={activeTab}
+          onTabChange={(tab) => triggerSectionChange(tab, true, true)}
+        />
 
-          {/* 2D Spatial Canvas World with GPU Off-Thread Transform Acceleration */}
-          <motion.div
-            initial={{ x: coords.x, y: coords.y }}
-            animate={{
-              x: coords.x,
-              y: coords.y,
-            }}
-            transition={{
-              duration: shouldReduceMotion ? 0.25 : 1.6,
-              ease: shouldReduceMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
-            }}
-            onAnimationComplete={handleCameraAnimationComplete}
-            className={`canvas-quality-${renderQuality} absolute inset-0 w-full h-full bg-[#161412] transform-gpu ${
-              isNavigating ? 'canvas-world--moving will-change-transform' : ''
-            }`}
-          >
+        {/* 2D Spatial Canvas World with GPU Off-Thread Transform Acceleration */}
+        <motion.div
+          initial={{ x: coords.x, y: coords.y }}
+          animate={{
+            x: coords.x,
+            y: coords.y,
+          }}
+          transition={{
+            duration: shouldReduceMotion ? 0.25 : 1.6,
+            ease: shouldReduceMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
+          }}
+          onAnimationComplete={handleCameraAnimationComplete}
+          className={`canvas-quality-${renderQuality} absolute inset-0 w-full h-full bg-[#161412] transform-gpu ${
+            isNavigating ? 'canvas-world--moving will-change-transform' : ''
+          }`}
+        >
             {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
             <div className="spatial-section absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
               <div
@@ -628,8 +619,28 @@ export default function App() {
             </div>
 
           </motion.div>
+
+          {/* Full-Screen Project Detail Overlay */}
+          <AnimatePresence>
+            {activeProjectId && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="fixed inset-0 z-[100] overflow-y-auto bg-[#FAF8F5] dark:bg-[#121110]"
+              >
+                <Suspense fallback={<CanvasSectionSkeleton />}>
+                  <ProjectDetailPage
+                    projectId={activeProjectId}
+                    onBack={handleBackToProjects}
+                    onSelectProject={handleSelectProject}
+                  />
+                </Suspense>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      )}
     </ErrorBoundary>
   );
 }

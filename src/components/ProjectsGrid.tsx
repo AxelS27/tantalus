@@ -113,7 +113,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   }, [angleStep, currentPage, onReachStart, settleToFace]);
 
   const handleCardClick = useCallback((projectId: string) => {
-    if (hasDraggedRef.current) return;
+    isDraggingRef.current = false;
+    hasDraggedRef.current = false;
+    setIsDragging(false);
     if (onSelectProject) {
       onSelectProject(projectId);
     } else {
@@ -121,7 +123,24 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     }
   }, [onSelectProject]);
 
-  // Pointer drag controls for holding & rotating freely
+  // Global pointer up listener to prevent stuck drag state on gesture interruptions
+  useEffect(() => {
+    const handleGlobalPointerUp = () => {
+      if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        setIsDragging(false);
+        const snappedY = Math.round(pendingRotationRef.current.y / angleStep) * angleStep;
+        settleToFace(snappedY);
+      }
+    };
+    window.addEventListener('pointerup', handleGlobalPointerUp);
+    window.addEventListener('pointercancel', handleGlobalPointerUp);
+    return () => {
+      window.removeEventListener('pointerup', handleGlobalPointerUp);
+      window.removeEventListener('pointercancel', handleGlobalPointerUp);
+    };
+  }, [angleStep, settleToFace]);
+
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!isActive || e.button !== 0) return;
     isDraggingRef.current = false;
