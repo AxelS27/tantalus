@@ -31,6 +31,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   const rotationXRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
   const isDraggingRef = useRef(false);
+  const isPointerDownRef = useRef(false);
   const dragStartRef = useRef({ x: 0, y: 0, rotY: 0, rotX: 0 });
   const hasDraggedRef = useRef(false);
   const pendingRotationRef = useRef({ y: 0, x: 0 });
@@ -113,6 +114,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   }, [angleStep, currentPage, onReachStart, settleToFace]);
 
   const handleCardClick = useCallback((projectId: string) => {
+    isPointerDownRef.current = false;
     isDraggingRef.current = false;
     hasDraggedRef.current = false;
     setIsDragging(false);
@@ -126,6 +128,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   // Global pointer up listener to prevent stuck drag state on gesture interruptions
   useEffect(() => {
     const handleGlobalPointerUp = () => {
+      isPointerDownRef.current = false;
       if (isDraggingRef.current) {
         isDraggingRef.current = false;
         setIsDragging(false);
@@ -143,6 +146,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!isActive || e.button !== 0) return;
+    isPointerDownRef.current = true;
     isDraggingRef.current = false;
     hasDraggedRef.current = false;
     dragStartRef.current = {
@@ -158,10 +162,12 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isPointerDownRef.current) return;
+
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
 
-    if (!hasDraggedRef.current && Math.hypot(dx, dy) > 4) {
+    if (!hasDraggedRef.current && Math.hypot(dx, dy) > 6) {
       hasDraggedRef.current = true;
       isDraggingRef.current = true;
       setIsDragging(true);
@@ -215,6 +221,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
+    if (!isPointerDownRef.current) return;
+    isPointerDownRef.current = false;
+
     if (isDraggingRef.current) {
       isDraggingRef.current = false;
       setIsDragging(false);
