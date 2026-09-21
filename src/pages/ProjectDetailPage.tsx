@@ -380,22 +380,17 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
         {/* ================= 2. ESSAY TREATISE ================= */}
         {project.content && project.content.length > 0 && (
-          <section className="mb-20 sm:mb-28 pt-8 border-t border-stone-300/60 dark:border-white/10">
-            <h2 className="font-serif italic text-2xl sm:text-3xl text-stone-950 dark:text-stone-100 font-light mb-8">
+          <section className="mb-20 sm:mb-28 pt-10 border-t border-stone-300/60 dark:border-white/10 max-w-4xl">
+            <h2 className="font-serif italic text-2xl sm:text-3xl text-stone-950 dark:text-stone-100 font-light mb-6">
               About the Project
             </h2>
 
-            {/* Flowing 2-Column Editorial Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-14">
+            {/* Seamless Cohesive Article Flow */}
+            <div className="space-y-5 sm:space-y-6 text-base sm:text-lg text-stone-800 dark:text-stone-200 leading-[1.8] font-light">
               {project.content.map((paragraph, idx) => (
-                <div key={idx} className="space-y-2">
-                  <span className="font-mono text-xs text-amber-800 dark:text-[#E8C582] font-semibold tracking-wider block">
-                    {String(idx + 1).padStart(2, '0')}
-                  </span>
-                  <p className="font-sans text-sm sm:text-base leading-[1.8] text-stone-700 dark:text-stone-300 font-normal">
-                    {paragraph}
-                  </p>
-                </div>
+                <p key={idx}>
+                  {paragraph}
+                </p>
               ))}
             </div>
           </section>
