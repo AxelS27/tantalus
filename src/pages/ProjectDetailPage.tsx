@@ -17,6 +17,7 @@ import {
 import { getProjectById, getAllProjects } from '../data/projects';
 import { getAssetUrl } from '../lib/assets';
 import ImageWithSkeleton from '../components/common/ImageWithSkeleton';
+import Footer from '../components/common/Footer';
 
 interface ProjectDetailPageProps {
   projectId: string;
@@ -148,15 +149,15 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
       {/* Main Fluid Editorial Container */}
       <article className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 md:px-14 pt-24 sm:pt-32 pb-24">
         
-        {/* ================= 1. WIDE FLUID HERO SECTION (Split Left/Right, Zero Boxy Cards) ================= */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start mb-16 sm:mb-24">
+        {/* ================= 1. WIDE FLUID HERO SECTION ================= */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-14 sm:mb-18">
           
-          {/* Left Side (5 cols): Typography, Ledger Meta, Links, Tags */}
-          <div className="lg:col-span-5 space-y-7 pt-2">
+          {/* Left Side (6 cols on desktop): Title, Meta Ledger, Links & Tags */}
+          <div className="lg:col-span-6 space-y-6 pt-1">
             
             {/* Monumental Classical Title */}
             <h1
-              className="font-serif italic text-4xl sm:text-5xl lg:text-[46px] xl:text-5xl font-light tracking-tight text-stone-950 dark:text-stone-50 leading-[1.12]"
+              className="font-serif italic text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-light tracking-tight text-stone-950 dark:text-stone-50 leading-[1.15]"
               style={{
                 textShadow: '0 2px 14px rgba(0,0,0,0.06)',
               }}
@@ -164,8 +165,8 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               {project.title}
             </h1>
 
-            {/* Editorial Metadata Ledger (Hairline Border Flow) */}
-            <div className="border-t border-b border-stone-300/60 dark:border-white/10 py-3.5 space-y-2.5 text-xs sm:text-sm">
+            {/* Editorial Metadata Ledger */}
+            <div className="border-t border-b border-stone-300/60 dark:border-white/10 py-3 space-y-2 text-xs sm:text-sm">
               {project.role && (
                 <div className="flex items-baseline justify-between text-stone-800 dark:text-stone-200">
                   <span className="text-stone-500 dark:text-stone-400 font-sans">Role</span>
@@ -187,23 +188,23 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
             </div>
 
             {/* Fluid Action Links */}
-            <div className="space-y-3 pt-1">
+            <div className="space-y-2.5 pt-0.5">
               {project.demoUrl && (
                 <a
                   href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-2.5 text-sm sm:text-base font-sans font-semibold text-amber-900 dark:text-[#FFD88A] hover:text-amber-700 dark:hover:text-[#E8C582] transition-colors no-underline"
+                  className="group inline-flex items-center gap-2 text-sm sm:text-base font-sans font-semibold text-amber-900 dark:text-[#FFD88A] hover:text-amber-700 dark:hover:text-[#E8C582] transition-colors no-underline"
                 >
                   <span className="underline underline-offset-4 decoration-amber-700/40 dark:decoration-[#E8C582]/40">
                     {project.demoLabel || 'Live Demo'}
                   </span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform duration-200" />
                 </a>
               )}
 
               {/* Auxiliary Resource Links */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 pt-1 text-xs sm:text-sm font-sans text-stone-700 dark:text-stone-300">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm font-sans text-stone-700 dark:text-stone-300">
                 {project.githubUrl && (
                   <a
                     href={project.githubUrl}
@@ -256,8 +257,8 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
             {/* Fluid Technology Tags */}
             {project.tags && project.tags.length > 0 && (
-              <div className="pt-2">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 block mb-1.5">
+              <div className="pt-1">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 dark:text-stone-500 block mb-1">
                   Technologies
                 </span>
                 <p className="font-sans text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
@@ -268,14 +269,14 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
           </div>
 
-          {/* Right Side (7 cols): Fluid Cinematic Artwork Canvas & Filmstrip */}
-          <div className="lg:col-span-7">
+          {/* Right Side (6 cols on desktop): Compact & Proportionate Visual Stage */}
+          <div className="lg:col-span-6">
             {allMedia.length > 0 && (
-              <div className="space-y-3">
-                {/* Main Visual Frame (Clean Border, No Multiple Nested Boxes) */}
+              <div className="space-y-2.5">
+                {/* Main Visual Frame (Refined Height & Proportion) */}
                 <div
                   onClick={() => openLightbox(activeMediaIndex)}
-                  className="relative w-full h-[320px] sm:h-[420px] md:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden bg-black/5 dark:bg-black/50 border border-stone-300/70 dark:border-white/10 group cursor-pointer shadow-sm hover:shadow-lg transition-shadow duration-300"
+                  className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/5 dark:bg-black/50 border border-stone-300/70 dark:border-white/10 group cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300"
                 >
                   {/* Ambient Blur Backdrop */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -294,14 +295,14 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.98 }}
                       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      className="w-full h-full relative z-10 flex items-center justify-center p-3 sm:p-5"
+                      className="w-full h-full relative z-10 flex items-center justify-center p-2.5 sm:p-4"
                     >
                       <ImageWithSkeleton
                         src={getAssetUrl(allMedia[activeMediaIndex])}
                         alt={`${project.title} Preview ${activeMediaIndex + 1}`}
                         optimizeSource={false}
                         wrapperClassName="w-full h-full flex items-center justify-center"
-                        className="max-h-full max-w-full object-contain object-center rounded-lg select-none group-hover:scale-[1.01] transition-transform duration-500 drop-shadow-[0_8px_24px_rgba(0,0,0,0.2)]"
+                        className="max-h-full max-w-full object-contain object-center rounded-lg select-none group-hover:scale-[1.01] transition-transform duration-500 drop-shadow-[0_6px_20px_rgba(0,0,0,0.2)]"
                         loading="eager"
                         decoding="async"
                       />
@@ -317,9 +318,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                           setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length);
                         }}
                         title="Previous Image"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/70 dark:bg-black/70 hover:bg-white dark:hover:bg-black backdrop-blur-xl border border-white/80 dark:border-white/20 text-stone-900 dark:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
+                        className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/75 dark:bg-black/75 hover:bg-white dark:hover:bg-black backdrop-blur-xl border border-white/80 dark:border-white/20 text-stone-900 dark:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
                       >
-                        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <ChevronLeft className="w-4 h-4" />
                       </button>
                       <button
                         onClick={(e) => {
@@ -327,27 +328,27 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                           setActiveMediaIndex((prev) => (prev + 1) % allMedia.length);
                         }}
                         title="Next Image"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/70 dark:bg-black/70 hover:bg-white dark:hover:bg-black backdrop-blur-xl border border-white/80 dark:border-white/20 text-stone-900 dark:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/75 dark:bg-black/75 hover:bg-white dark:hover:bg-black backdrop-blur-xl border border-white/80 dark:border-white/20 text-stone-900 dark:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 z-20 cursor-pointer shadow-md"
                       >
-                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <ChevronRight className="w-4 h-4" />
                       </button>
                     </>
                   )}
 
                   {/* Minimal Expand Pill */}
-                  <div className="absolute bottom-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/75 backdrop-blur-xl border border-white/20 text-white text-xs font-serif italic shadow-lg">
+                  <div className="absolute bottom-2.5 right-2.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-xl border border-white/20 text-white text-[11px] font-sans font-medium shadow-md">
                       <Maximize2 className="w-3 h-3 text-[#E8C582]" />
                       <span>Expand</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Minimalist Filmstrip Rail */}
+                {/* Compact Filmstrip Rail */}
                 {allMedia.length > 1 && (
                   <div
                     ref={filmstripRef}
-                    className="flex items-center justify-center gap-2 sm:gap-2.5 overflow-x-auto pt-1 px-1 no-scrollbar select-none"
+                    className="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto pt-1 px-1 no-scrollbar select-none"
                   >
                     {allMedia.map((mediaUrl, idx) => {
                       const isSelected = idx === activeMediaIndex;
@@ -355,7 +356,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                         <button
                           key={idx}
                           onClick={() => setActiveMediaIndex(idx)}
-                          className={`relative shrink-0 w-14 sm:w-18 md:w-20 h-10 sm:h-12 md:h-13 rounded-lg overflow-hidden border transition-all duration-300 cursor-pointer ${
+                          className={`relative shrink-0 w-12 sm:w-14 md:w-16 h-8 sm:h-9 md:h-10 rounded-md overflow-hidden border transition-all duration-300 cursor-pointer ${
                             isSelected
                               ? 'ring-2 ring-amber-700 dark:ring-[#E8C582] scale-105 opacity-100 shadow-sm'
                               : 'opacity-35 hover:opacity-80 hover:scale-100 border-stone-300/80 dark:border-white/10'
@@ -464,6 +465,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         </nav>
 
       </article>
+
+      {/* Editorial Page Footer (Consistent with Main Web Experience) */}
+      <Footer />
 
       {/* Fullscreen Fluid Lightbox Modal */}
       <AnimatePresence>
