@@ -302,23 +302,23 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           {/* Right Side (6 cols on desktop): Fluid Typographic Ledger, Actions & Technologies */}
           <div className="lg:col-span-6 space-y-5 pt-0.5">
             
-            {/* Direct Metadata List (Prominent & Clear) */}
-            <div className="border-b border-white/15 pb-5 space-y-3">
+            {/* Direct Metadata List (Optimized Sweet Spot) */}
+            <div className="border-b border-white/15 pb-4.5 space-y-2.5">
               {project.role && (
                 <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                  <span className="text-stone-400 font-sans text-xs sm:text-sm font-medium tracking-wide">Role:</span>
-                  <span className="font-serif italic text-base sm:text-lg text-[#FFD88A] font-normal">{project.role}</span>
+                  <span className="text-stone-300 font-sans text-xs sm:text-sm font-medium">Role:</span>
+                  <span className="font-serif italic text-base sm:text-lg text-[#FFD88A] font-normal leading-snug">{project.role}</span>
                 </div>
               )}
               {project.client && (
                 <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                  <span className="text-stone-400 font-sans text-xs sm:text-sm font-medium tracking-wide">Client:</span>
-                  <span className="font-serif italic text-base sm:text-lg text-white font-light">{project.client}</span>
+                  <span className="text-stone-300 font-sans text-xs sm:text-sm font-medium">Client:</span>
+                  <span className="font-serif italic text-base sm:text-lg text-white font-light leading-snug">{project.client}</span>
                 </div>
               )}
               {project.year && (
                 <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                  <span className="text-stone-400 font-sans text-xs sm:text-sm font-medium tracking-wide">Year:</span>
+                  <span className="text-stone-300 font-sans text-xs sm:text-sm font-medium">Year:</span>
                   <span className="font-mono text-sm sm:text-base font-semibold text-[#FFD88A]">{project.year}</span>
                 </div>
               )}
