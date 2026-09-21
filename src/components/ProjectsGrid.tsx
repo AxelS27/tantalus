@@ -19,6 +19,8 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   onReachStart,
   onSelectProject,
 }: ProjectsGridProps) {
+  const numFaces = cubeFaces.length;
+  const angleStep = 360 / numFaces;
   const [currentPage, setCurrentPage] = useState(0);
   const [facingStep, setFacingStep] = useState(0);
   const [visibleFaceIndexes, setVisibleFaceIndexes] = useState<number[]>([0]);
@@ -39,24 +41,26 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   const [radius, setRadius] = useState<number>(384);
 
   useEffect(() => {
-    if (!isActive || !stageRef.current) return;
+    if (!stageRef.current) return;
     const updateRadius = () => {
       if (stageRef.current) {
-        setRadius(stageRef.current.offsetWidth / 2);
+        const width = stageRef.current.offsetWidth || 640;
+        const calculated = (width / 2) / Math.tan(Math.PI / numFaces);
+        setRadius(Math.round(calculated));
       }
     };
     updateRadius();
     const ro = new ResizeObserver(updateRadius);
     ro.observe(stageRef.current);
     return () => ro.disconnect();
-  }, [isActive]);
+  }, [numFaces]);
 
   const settleToFace = useCallback((targetY: number) => {
     const sequence = ++animationSequenceRef.current;
     rotationY.stop();
     rotationX.stop();
-    const currentFace = ((-Math.round(rotationY.get() / 90)) % 4 + 4) % 4;
-    const targetFace = ((-Math.round(targetY / 90)) % 4 + 4) % 4;
+    const currentFace = ((-Math.round(rotationY.get() / angleStep)) % numFaces + numFaces) % numFaces;
+    const targetFace = ((-Math.round(targetY / angleStep)) % numFaces + numFaces) % numFaces;
     setVisibleFaceIndexes((faces) =>
       faces.includes(targetFace) && faces.includes(currentFace)
         ? faces
@@ -83,17 +87,17 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         setVisibleFaceIndexes([targetFace]);
       }
     });
-  }, [rotationX, rotationY]);
+  }, [angleStep, numFaces, rotationX, rotationY]);
 
   const handleNext = useCallback(() => {
-    const nextY = Math.round(rotationYRef.current / 90) * 90 - 90;
+    const nextY = Math.round(rotationYRef.current / angleStep) * angleStep - angleStep;
     settleToFace(nextY);
-  }, [settleToFace]);
+  }, [angleStep, settleToFace]);
 
   const handlePrev = useCallback(() => {
-    const prevY = Math.round(rotationYRef.current / 90) * 90 + 90;
+    const prevY = Math.round(rotationYRef.current / angleStep) * angleStep + angleStep;
     settleToFace(prevY);
-  }, [settleToFace]);
+  }, [angleStep, settleToFace]);
 
   const handleCardClick = useCallback((projectId: string) => {
     if (hasDraggedRef.current) return;
@@ -149,9 +153,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     rotationY.set(nextRotY);
     rotationX.set(nextRotX);
 
-    const continuousFace = -nextRotY / 90;
-    const lowerFace = ((Math.floor(continuousFace) % 4) + 4) % 4;
-    const upperFace = ((Math.ceil(continuousFace) % 4) + 4) % 4;
+    const continuousFace = -nextRotY / angleStep;
+    const lowerFace = ((Math.floor(continuousFace) % numFaces) + numFaces) % numFaces;
+    const upperFace = ((Math.ceil(continuousFace) % numFaces) + numFaces) % numFaces;
     const nextFaces = lowerFace === upperFace ? [lowerFace] : [lowerFace, upperFace];
     setVisibleFaceIndexes((faces) =>
       faces.length === nextFaces.length && faces.every((face, index) => face === nextFaces[index])
@@ -159,7 +163,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         : nextFaces,
     );
 
-    const nearestFace = ((Math.round(continuousFace) % 4) + 4) % 4;
+    const nearestFace = ((Math.round(continuousFace) % numFaces) + numFaces) % numFaces;
     setVisitedFaceIndexes((visited) =>
       nextFaces.some((f) => !visited.includes(f))
         ? Array.from(new Set([...visited, ...nextFaces]))
@@ -180,7 +184,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     }
 
     // Snap using the latest pointer position.
-    const snappedY = Math.round(pendingRotationRef.current.y / 90) * 90;
+    const snappedY = Math.round(pendingRotationRef.current.y / angleStep) * angleStep;
     settleToFace(snappedY);
   };
 
@@ -257,7 +261,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                 <div
                   key={face.faceIdx}
                   style={{
-                    transform: `rotateY(${face.faceIdx * 90}deg) translateZ(${radius}px)`,
+                    transform: `rotateY(${face.faceIdx * angleStep}deg) translateZ(${radius}px)`,
                     backfaceVisibility: 'hidden',
                     WebkitFontSmoothing: 'antialiased',
                   }}
@@ -326,26 +330,26 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
       </div>
 
-      {/* Face Indicator Dots (1 to 4) */}
+      {/* Face Indicator Dots */}
       <div className="flex items-center justify-center gap-2.5 pt-4 select-none z-30">
-        {[0, 1, 2, 3].map((idx) => (
+        {cubeFaces.map((face) => (
           <button
-            key={idx}
+            key={face.faceIdx}
             onClick={() => {
               const currentRot = rotationYRef.current;
-              const currentF = ((-Math.round(currentRot / 90)) % 4 + 4) % 4;
-              let diff = idx - currentF;
-              if (diff > 2) diff -= 4;
-              if (diff < -2) diff += 4;
-              const targetY = Math.round(currentRot / 90) * 90 - diff * 90;
+              const currentF = ((-Math.round(currentRot / angleStep)) % numFaces + numFaces) % numFaces;
+              let diff = face.faceIdx - currentF;
+              if (diff > numFaces / 2) diff -= numFaces;
+              if (diff < -numFaces / 2) diff += numFaces;
+              const targetY = Math.round(currentRot / angleStep) * angleStep - diff * angleStep;
               settleToFace(targetY);
             }}
             className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-              facingStep === idx
+              facingStep === face.faceIdx
                 ? 'w-7 bg-amber-700 dark:bg-[#FFD88A] shadow-sm'
                 : 'w-2 bg-stone-400/50 dark:bg-white/25 hover:bg-stone-500 dark:hover:bg-white/40'
             }`}
-            title={`Face ${idx + 1}`}
+            title={`Page ${face.faceIdx + 1}`}
           />
         ))}
       </div>
