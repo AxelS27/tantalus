@@ -339,14 +339,15 @@ export const ArchiveHub = memo(function ArchiveHub({
     }
   };
 
-  if (!isActive) return null;
-
   return (
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      onWheel={handleWheel}
-      className="relative w-full h-full overflow-y-auto overflow-x-hidden pointer-events-auto select-text scroll-smooth no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      onWheel={isActive ? handleWheel : undefined}
+      aria-hidden={!isActive}
+      className={`relative w-full h-full overflow-y-auto overflow-x-hidden select-text scroll-smooth no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-opacity duration-300 ${
+        isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+      }`}
     >
       {/* ================= 1. LAUNCHPAD HERO VIEWPORT (Full Screen) ================= */}
       <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 py-16 select-none">

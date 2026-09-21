@@ -169,7 +169,7 @@ export const TimelineRoller = memo(function TimelineRoller({
 
   // Pointer drag controls for holding & rolling freely
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (e.button !== 0) return;
+    if (!isActive || e.button !== 0) return;
     isDraggingRef.current = true;
     position.stop();
     setIsDragging(true);
@@ -244,6 +244,7 @@ export const TimelineRoller = memo(function TimelineRoller({
 
   // Weighted wheel listener with deliberate mechanical interval
   const handleWheel = (e: React.WheelEvent) => {
+    if (!isActive) return;
     e.stopPropagation();
     const now = Date.now();
 
@@ -259,12 +260,13 @@ export const TimelineRoller = memo(function TimelineRoller({
     }
   };
 
-  if (!isActive) return null;
-
   return (
     <div
-      onWheel={handleWheel}
-      className="relative w-full h-full flex items-center justify-center z-20 pointer-events-auto px-6 sm:px-12 md:px-16"
+      onWheel={isActive ? handleWheel : undefined}
+      aria-hidden={!isActive}
+      className={`relative w-full h-full flex items-center justify-center z-20 px-6 sm:px-12 md:px-16 transition-opacity duration-300 ${
+        isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+      }`}
     >
       {/* Centered Enlarged Snug Cluster */}
       <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-10 sm:gap-14 lg:gap-18">

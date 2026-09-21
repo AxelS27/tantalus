@@ -1,4 +1,6 @@
 import { getAssetUrl } from './assets';
+import { getThumbnailUrl, getThumbnailSrcSet } from './thumbnails';
+import { projectPages } from '../data/projects';
 
 /**
  * Smart Canvas Section & Route Prefetching Engine
@@ -29,6 +31,7 @@ const sectionLoaders: Record<PrefetchSectionKey, () => Promise<unknown>> = {
 
 const prefetchedSections = new Set<string>();
 const prefetchedBackgrounds = new Set<CanvasBackgroundKey>();
+const prefetchedProjectThumbnails = new Set<string>();
 const hoverTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
 const backgroundPaths: Record<CanvasBackgroundKey, string> = {
@@ -57,6 +60,31 @@ export function prefetchSectionBackground(key: CanvasBackgroundKey): void {
   });
 }
 
+/** Pre-warms project card thumbnails (default: page 1) to avoid skeleton delay. */
+export function prefetchProjectThumbnails(pageIndex = 0): void {
+  if (typeof window === 'undefined' || shouldSkipPrefetch()) return;
+  const page = projectPages[pageIndex];
+  if (!page) return;
+
+  page.forEach((project) => {
+    const thumbUrl = getThumbnailUrl(project.image);
+    if (!thumbUrl || prefetchedProjectThumbnails.has(thumbUrl)) return;
+    prefetchedProjectThumbnails.add(thumbUrl);
+
+    const img = new Image();
+    img.decoding = 'async';
+    const srcSet = getThumbnailSrcSet(project.image);
+    if (srcSet) {
+      img.srcset = srcSet;
+      img.sizes = '(max-width: 640px) 140px, 200px';
+    }
+    img.src = thumbUrl;
+    img.decode?.().catch(() => {
+      prefetchedProjectThumbnails.delete(thumbUrl);
+    });
+  });
+}
+
 /**
  * Checks if the user's browser/network prefers reduced data usage
  */
@@ -80,6 +108,9 @@ export function prefetchSection(key: PrefetchSectionKey): void {
   if (shouldSkipPrefetch()) return;
 
   prefetchSectionBackground(key);
+  if (key === 'projects') {
+    prefetchProjectThumbnails(0);
+  }
   if (prefetchedSections.has(key)) return;
   prefetchedSections.add(key);
 

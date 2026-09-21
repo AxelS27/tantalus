@@ -180,7 +180,7 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
 
   // Pointer drag controls: 1:1 continuous dragging with elastic resistance (matching TimelineRoller UX)
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (e.button !== 0) return;
+    if (!isActive || e.button !== 0) return;
     isDraggingRef.current = true;
     position.stop();
     setIsDragging(true);
@@ -237,6 +237,7 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
 
   // Weighted wheel listener with deliberate mechanical interval (matching TimelineRoller UX)
   const handleWheel = (e: React.WheelEvent) => {
+    if (!isActive) return;
     e.stopPropagation();
     const now = Date.now();
 
@@ -294,12 +295,13 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
     }
   }, [animateToIndex]);
 
-  if (!isActive) return null;
-
   return (
     <div
-      onWheel={handleWheel}
-      className="relative w-full h-full flex flex-col items-center justify-center select-none pointer-events-auto px-4 sm:px-8 py-6 z-20 overflow-hidden"
+      onWheel={isActive ? handleWheel : undefined}
+      aria-hidden={!isActive}
+      className={`relative w-full h-full flex flex-col items-center justify-center select-none px-4 sm:px-8 py-6 z-20 overflow-hidden transition-opacity duration-300 ${
+        isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+      }`}
     >
       {/* ================= FAR-LEFT ARROW (Pushed all the way outward to the left) ================= */}
       <div className="absolute left-4 sm:left-8 md:left-12 lg:left-16 top-1/2 -translate-y-1/2 z-40">

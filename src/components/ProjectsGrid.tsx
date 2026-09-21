@@ -20,6 +20,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   const [currentPage, setCurrentPage] = useState(0);
   const [facingStep, setFacingStep] = useState(0);
   const [visibleFaceIndexes, setVisibleFaceIndexes] = useState<number[]>([0]);
+  const [visitedFaceIndexes, setVisitedFaceIndexes] = useState<number[]>([0]);
   const rotationY = useMotionValue(0);
   const rotationX = useMotionValue(0);
   const rotationYRef = useRef(0);
@@ -58,6 +59,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       faces.includes(targetFace) && faces.includes(currentFace)
         ? faces
         : [currentFace, targetFace],
+    );
+    setVisitedFaceIndexes((visited) =>
+      visited.includes(targetFace) ? visited : [...visited, targetFace],
     );
     setFacingStep(targetFace);
     setCurrentPage(targetFace);
@@ -99,7 +103,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
   // Pointer drag controls for holding & rotating freely
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (e.button !== 0) return;
+    if (!isActive || e.button !== 0) return;
     isDraggingRef.current = true;
     animationSequenceRef.current += 1;
     rotationY.stop();
@@ -153,6 +157,11 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     );
 
     const nearestFace = ((Math.round(continuousFace) % 4) + 4) % 4;
+    setVisitedFaceIndexes((visited) =>
+      nextFaces.some((f) => !visited.includes(f))
+        ? Array.from(new Set([...visited, ...nextFaces]))
+        : visited,
+    );
     setFacingStep((current) => current === nearestFace ? current : nearestFace);
   };
 
@@ -174,6 +183,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
   // Mousewheel listener for rotating Cube & Section Handoff
   const handleWheel = (e: React.WheelEvent) => {
+    if (!isActive) return;
     e.stopPropagation();
     const now = Date.now();
 
@@ -191,12 +201,13 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     }
   };
 
-  if (!isActive) return null;
-
   return (
     <div
-      onWheel={handleWheel}
-      className="relative w-full h-full flex flex-col items-center justify-center z-20 pointer-events-auto px-4 py-4 overflow-hidden"
+      onWheel={isActive ? handleWheel : undefined}
+      aria-hidden={!isActive}
+      className={`relative w-full h-full flex flex-col items-center justify-center z-20 px-4 py-4 overflow-hidden transition-opacity duration-300 ${
+        isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+      }`}
     >
       {/* 3D Cube Container with Non-Overlapping Flex Flanks */}
       <div className="relative w-full flex items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-14">
@@ -237,8 +248,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
             className="relative w-full h-full"
           >
             {cubeFaces.map((face) => {
-              if (!visibleFaceIndexes.includes(face.faceIdx)) return null;
+              if (!visitedFaceIndexes.includes(face.faceIdx)) return null;
               const isFaceActive = facingStep === face.faceIdx;
+              const isFaceVisible = visibleFaceIndexes.includes(face.faceIdx);
 
               return (
                 <div
@@ -251,7 +263,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                   className={`absolute inset-0 w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 transition-all duration-700 ease-out ${
                     isFaceActive
                       ? 'opacity-100 pointer-events-auto filter-none'
-                      : 'opacity-85 pointer-events-none brightness-75'
+                      : isFaceVisible
+                        ? 'opacity-85 pointer-events-none brightness-75'
+                        : 'opacity-0 pointer-events-none'
                   }`}
                 >
                   {face.items.map((project) => (
@@ -272,7 +286,8 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                         <ImageWithSkeleton
                           src={project.image}
                           alt={project.title}
-                          optimizeSource={false}
+                          loading={face.faceIdx === 0 ? 'eager' : 'lazy'}
+                          decoding="async"
                           wrapperClassName="w-full h-full"
                           className="w-full h-full object-cover object-center pointer-events-none select-none"
                           skeletonClassName="bg-white/10 dark:bg-black/40"
