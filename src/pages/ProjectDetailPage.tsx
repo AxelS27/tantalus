@@ -127,9 +127,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-black/35 pointer-events-none" />
       </div>
 
-      {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
-      <header className="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 max-w-4xl">
-        <div className="pointer-events-auto relative h-10 sm:h-11 flex items-center px-1.5 py-1 rounded-full bg-[#161412]/80 hover:bg-[#161412]/90 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2),0_12px_36px_rgba(0,0,0,0.5)] transition-colors duration-200">
+      {/* Centered Floating Apple Frosted Glass Navbar Capsule (Expansive & Luxurious) */}
+      <header className="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 sm:px-8 max-w-6xl">
+        <div className="pointer-events-auto relative w-full h-12 sm:h-13 flex items-center justify-between p-1.5 rounded-full bg-[#141210]/85 hover:bg-[#141210]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-200">
           
           {/* Left Segment: Back to Projects */}
           <a
@@ -140,28 +140,31 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 onBack();
               }
             }}
-            className="group relative h-full flex items-center gap-1.5 px-3.5 sm:px-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-serif italic tracking-wide transition-all duration-200 cursor-pointer no-underline"
+            className="group relative h-full flex items-center gap-2 px-4 sm:px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs sm:text-sm font-serif italic tracking-wide transition-all duration-200 cursor-pointer no-underline shrink-0"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-[#FFD88A] group-hover:-translate-x-1 transition-transform" />
-            <span>Projects</span>
+            <ArrowLeft className="w-4 h-4 text-[#FFD88A] group-hover:-translate-x-1 transition-transform" />
+            <span>Back to Projects</span>
           </a>
 
-          {/* Center Segment: Truncated Project Title */}
-          <div className="flex items-center px-3 sm:px-4 min-w-0 max-w-[170px] sm:max-w-xs md:max-w-md">
+          {/* Center Segment: Prominent Project Title */}
+          <div className="flex-1 flex items-center justify-center px-3 sm:px-6 min-w-0 overflow-hidden">
             <span
               title={project.title}
-              className="font-serif italic text-xs sm:text-sm text-stone-200 truncate font-normal tracking-wide"
+              className="font-serif italic text-sm sm:text-base md:text-lg text-white truncate font-light tracking-wide text-center"
+              style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}
             >
               {project.title}
             </span>
           </div>
 
-          {/* Right Segment: Year */}
-          {project.year && (
-            <div className="flex items-center pl-2.5 pr-3 text-xs font-mono text-[#FFD88A] border-l border-white/15">
-              <span>{project.year}</span>
-            </div>
-          )}
+          {/* Right Segment: Year & Index Pill */}
+          <div className="flex items-center gap-2 px-3 sm:px-4 py-1 rounded-full bg-white/10 border border-white/15 shrink-0 text-xs font-mono text-[#FFD88A]">
+            <span className="hidden sm:inline text-stone-300 font-normal">
+              {String(currentIndex + 1).padStart(2, '0')}/{String(allProjects.length).padStart(2, '0')}
+            </span>
+            <span className="hidden sm:inline w-1 h-1 rounded-full bg-[#E8C582]" />
+            <span>{project.year || '2026'}</span>
+          </div>
 
         </div>
       </header>
