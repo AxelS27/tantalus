@@ -329,33 +329,39 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 )}
               </div>
 
-              {/* Clearly Clickable Action Buttons with Original Authentic Brand Colors */}
-              <div className="space-y-2">
-                {project.demoUrl && (
-                  <a
-                    href={project.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-between px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-stone-950 font-bold text-xs sm:text-sm tracking-wide shadow-[0_4px_16px_rgba(217,119,6,0.35)] hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
-                  >
-                    <div className="flex items-center gap-2">
-                      <ExternalLink className="w-4 h-4 text-stone-950" />
-                      <span>{project.demoLabel || 'Launch Live Project / Paper'}</span>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-stone-950 group-hover:translate-x-1 transition-transform" />
-                  </a>
-                )}
+              {/* Split Section: Action Links on Left & Technologies on Right (Parallel 2-Column) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start pt-1">
+                
+                {/* Left Column: Action Buttons */}
+                <div className="space-y-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 block mb-1">
+                    Links & Resources
+                  </span>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {project.demoUrl && (
+                    <a
+                      href={project.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-stone-950 font-bold text-xs tracking-wide shadow-[0_4px_16px_rgba(217,119,6,0.35)] hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
+                    >
+                      <div className="flex items-center gap-2">
+                        <ExternalLink className="w-3.5 h-3.5 text-stone-950" />
+                        <span className="truncate">{project.demoLabel || 'Live Demo / Paper'}</span>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-stone-950 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                    </a>
+                  )}
+
                   {project.githubUrl && (
                     <a
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#24292e] hover:bg-[#2f363d] border border-white/20 text-white text-xs font-semibold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3 py-2 rounded-xl bg-[#24292e] hover:bg-[#2f363d] border border-white/20 text-white text-xs font-semibold shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <Github className="w-4 h-4 text-white" />
+                      <div className="flex items-center gap-2">
+                        <Github className="w-3.5 h-3.5 text-white" />
                         <span>GitHub</span>
                       </div>
                       <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100" />
@@ -367,10 +373,10 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.presentationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#00c4cc]/20 hover:bg-[#00c4cc]/30 border border-[#00c4cc]/50 text-[#5fe3e8] text-xs font-semibold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3 py-2 rounded-xl bg-[#00c4cc]/20 hover:bg-[#00c4cc]/30 border border-[#00c4cc]/50 text-[#5fe3e8] text-xs font-semibold shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <Presentation className="w-4 h-4 text-[#00c4cc]" />
+                      <div className="flex items-center gap-2">
+                        <Presentation className="w-3.5 h-3.5 text-[#00c4cc]" />
                         <span className="truncate">{project.presentationLabel || 'Presentation'}</span>
                       </div>
                       <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
@@ -382,10 +388,10 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#ff0000]/20 hover:bg-[#ff0000]/30 border border-[#ff0000]/50 text-[#ff7070] text-xs font-semibold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3 py-2 rounded-xl bg-[#ff0000]/20 hover:bg-[#ff0000]/30 border border-[#ff0000]/50 text-[#ff7070] text-xs font-semibold shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <Play className="w-4 h-4 text-[#ff0000] fill-[#ff0000]" />
+                      <div className="flex items-center gap-2">
+                        <Play className="w-3.5 h-3.5 text-[#ff0000] fill-[#ff0000]" />
                         <span>{project.videoLabel || 'Video Demo'}</span>
                       </div>
                       <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
@@ -397,36 +403,37 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.posterUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/50 text-indigo-300 text-xs font-semibold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/50 text-indigo-300 text-xs font-semibold shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <ImageIcon className="w-4 h-4 text-indigo-400" />
+                      <div className="flex items-center gap-2">
+                        <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />
                         <span>{project.posterLabel || 'Poster'}</span>
                       </div>
                       <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
                     </a>
                   )}
                 </div>
-              </div>
 
-              {/* Technologies Badges */}
-              {project.tags && project.tags.length > 0 && (
-                <div className="space-y-1.5 pt-0.5">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-stone-400">
-                    <span>Technologies</span>
+                {/* Right Column: Technologies */}
+                {project.tags && project.tags.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 block mb-1">
+                      Technologies
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-white/10 hover:bg-white/15 border border-white/20 text-stone-100 shadow-sm transition-colors"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {project.tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2.5 py-0.5 rounded-lg text-xs font-mono font-medium bg-white/10 hover:bg-white/15 border border-white/20 text-stone-100 shadow-sm transition-colors"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+                )}
+
+              </div>
 
             </div>
 
