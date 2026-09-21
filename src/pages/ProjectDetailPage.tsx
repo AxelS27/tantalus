@@ -308,7 +308,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
             <div className="lg:col-span-6 space-y-5 pt-0.5 font-sans">
               
               {/* Direct Metadata List (Clean Modern Sans Typography) */}
-              <div className="border-b border-white/15 pb-4.5 space-y-2.5">
+              <div className="space-y-2.5 pb-2">
                 {project.role && (
                   <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
                     <span className="text-stone-400 font-medium text-xs sm:text-sm">Role:</span>
@@ -330,7 +330,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               </div>
 
               {/* Split Section: Action Links on Left & Technologies on Right (Parallel 2-Column) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start pt-3">
                 
                 {/* Left Column: Action Buttons */}
                 <div className="space-y-2">
