@@ -39,46 +39,49 @@ body {
   scrollbar-width: none;
 }
 
-/* Sleek Apple-grade visible scrollbar for project detail page */
+/* Sleek solid visible scrollbar for project detail page */
 .project-detail-scroll-container::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
   display: block !important;
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.06);
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .dark .project-detail-scroll-container::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.35);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-thumb {
-  background-color: rgba(30, 20, 10, 0.6);
+  background-color: #786450;
   border-radius: 9999px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  border: 2px solid #FAF8F5;
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(30, 20, 10, 0.85);
+  background-color: #4A3B2C;
 }
 
 .dark .project-detail-scroll-container::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.6);
-  border: 2px solid rgba(0, 0, 0, 0.3);
+  background-color: #E8C582;
+  border-radius: 9999px;
+  border: 2px solid #141210;
 }
 
 .dark .project-detail-scroll-container::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: #FFD88A;
 }
 
 .project-detail-scroll-container {
   scrollbar-width: thin;
-  scrollbar-color: rgba(30, 20, 10, 0.6) rgba(0, 0, 0, 0.05);
+  scrollbar-color: #786450 rgba(0, 0, 0, 0.06);
 }
 
 .dark .project-detail-scroll-container {
-  scrollbar-color: rgba(255, 255, 255, 0.6) rgba(255, 255, 255, 0.05);
+  scrollbar-color: #E8C582 rgba(0, 0, 0, 0.35);
 }
 
 @keyframes canvas-ambient-drift {
