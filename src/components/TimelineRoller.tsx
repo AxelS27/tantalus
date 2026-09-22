@@ -69,13 +69,21 @@ const TimelineCard = memo(function TimelineCard({
         transformStyle: 'preserve-3d',
         pointerEvents: isInteractive ? 'auto' : 'none',
       }}
-      className={`absolute w-full p-2.5 sm:p-3 rounded-2xl transition-colors duration-300 cursor-pointer ${
+      className={`absolute w-full p-2.5 sm:p-3 rounded-2xl transition-all duration-300 cursor-pointer overflow-hidden ${
         isCenter
-          ? 'bg-white/[0.18] dark:bg-black/55 backdrop-blur-2xl border border-white/40 dark:border-white/20'
-          : 'bg-black/20 dark:bg-black/45 backdrop-blur-md border border-white/10 dark:border-white/5 hover:opacity-75'
+          ? 'bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/75 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_12px_36px_-4px_rgba(40,30,20,0.18)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_16px_40px_-4px_rgba(0,0,0,0.65)]'
+          : 'bg-white/25 dark:bg-[#161412]/40 backdrop-blur-xl backdrop-saturate-[160%] border border-white/40 dark:border-white/10 hover:opacity-85'
       } ${isDragging ? 'select-none' : ''}`}
     >
-      <div className="flex items-center gap-3.5">
+      {/* Specular Top Light Accent */}
+      {isCenter && (
+        <>
+          <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-2xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/10 via-transparent to-transparent opacity-50 pointer-events-none rounded-2xl" />
+        </>
+      )}
+
+      <div className="flex items-center gap-3.5 relative z-10">
         <div
           className={`relative overflow-hidden rounded-xl border border-white/25 flex-shrink-0 transition-all duration-300 ${
             isCenter ? 'w-26 h-18 sm:w-30 sm:h-20' : 'w-18 h-12 sm:w-22 sm:h-15'
@@ -291,7 +299,7 @@ export const TimelineRoller = memo(function TimelineRoller({
             </h2>
 
             {/* Grouped Location & Date in Frosted Glass Capsule */}
-            <div className="inline-flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-black/35 dark:bg-black/60 backdrop-blur-xl border border-white/25 dark:border-white/15 shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0.5px_rgba(255,255,255,0.4)] text-sm sm:text-base md:text-lg font-serif italic tracking-wide">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_24px_rgba(0,0,0,0.2)] text-sm sm:text-base md:text-lg font-serif italic tracking-wide">
               {/* Company / Location */}
               <div className="flex items-center gap-1.5 text-[#FFD88A] font-medium">
                 <MapPin className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#FFD88A]" />
