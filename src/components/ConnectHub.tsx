@@ -213,20 +213,25 @@ export const ConnectHub = memo(function ConnectHub({
                   whileHover={{ scale: 1.025, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.15 }}
-                  className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-black/40 dark:bg-black/60 hover:bg-black/60 dark:hover:bg-black/75 backdrop-blur-xl backdrop-saturate-[180%] border border-white/25 dark:border-white/15 hover:border-white/50 dark:hover:border-white/35 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0.5px_rgba(255,255,255,0.3)] cursor-pointer no-underline text-white transition-all duration-200"
+                  className="group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_32px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_16px_40px_-4px_rgba(40,30,20,0.22)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_18px_44px_-4px_rgba(0,0,0,0.85)] cursor-pointer no-underline text-stone-900 dark:text-white transition-all duration-200 overflow-hidden"
                 >
+                  {/* Specular Top Light Accent */}
+                  <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-2xl" />
+
+                  {/* Ambient Glass Sheen */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none rounded-2xl" />
+
                   {/* Left: Icon & Info */}
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center shadow-xs shrink-0 group-hover:scale-110 group-hover:border-[#FFD88A]/60 transition-all text-[#FFD88A]">
+                  <div className="flex items-center gap-3.5 min-w-0 relative z-10">
+                    <div className="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/10 hover:bg-white/90 dark:hover:bg-white/20 border border-white/80 dark:border-white/20 flex items-center justify-center shadow-xs shrink-0 group-hover:scale-110 group-hover:border-amber-700/60 dark:group-hover:border-[#FFD88A]/60 transition-all text-amber-800 dark:text-[#FFD88A]">
                       <Icon size={19} className="shrink-0" />
                     </div>
                     <div className="flex flex-col min-w-0 text-left">
-                      <span className="text-xs sm:text-sm font-sans font-bold text-white leading-tight">
+                      <span className="text-xs sm:text-sm font-sans font-bold text-stone-950 dark:text-white leading-tight">
                         {channel.name}
                       </span>
                       <span
-                        className="text-[11px] sm:text-xs font-mono text-stone-300 truncate pt-0.5"
-                        style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}
+                        className="text-[11px] sm:text-xs font-mono text-stone-700 dark:text-stone-300 truncate pt-0.5"
                       >
                         {isCopied ? 'Copied to Clipboard!' : channel.handle}
                       </span>
@@ -234,14 +239,14 @@ export const ConnectHub = memo(function ConnectHub({
                   </div>
 
                   {/* Right: Feedback or Arrow */}
-                  <div className="shrink-0 ml-2">
+                  <div className="shrink-0 ml-2 relative z-10">
                     {isCopied ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/25 text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
                         <Check className="w-3 h-3" />
                         <span>Copied</span>
                       </span>
                     ) : (
-                      <ArrowUpRight className="w-4 h-4 text-stone-300 group-hover:text-[#FFD88A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-60 group-hover:opacity-100" />
+                      <ArrowUpRight className="w-4 h-4 text-stone-500 dark:text-stone-300 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-70 group-hover:opacity-100" />
                     )}
                   </div>
                 </motion.a>

@@ -81,12 +81,17 @@ const CertificateCard = memo(function CertificateCard({
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
         }}
-        className={`w-full h-full rounded-2xl flex flex-col justify-between p-3.5 sm:p-4.5 border transition-all duration-300 ${
+        className={`relative w-full h-full rounded-2xl flex flex-col justify-between p-3.5 sm:p-4.5 border transition-all duration-300 overflow-hidden ${
           isCenter
-            ? 'bg-[#FAF8F5]/85 dark:bg-[#161412]/85 backdrop-blur-2xl border-white/80 dark:border-white/25 shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,0.9),0_24px_50px_-10px_rgba(0,0,0,0.35)] group-hover:border-amber-700/60 dark:group-hover:border-amber-400/50 group-hover:shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,1),0_28px_60px_-10px_rgba(0,0,0,0.45)]'
-            : 'bg-[#FAF8F5]/65 dark:bg-[#161412]/65 backdrop-blur-sm border-white/50 dark:border-white/15 shadow-[0_12px_32px_rgba(0,0,0,0.2)] hover:border-white/80'
+            ? 'bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border-white/75 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_24px_50px_-10px_rgba(0,0,0,0.35)] group-hover:border-amber-700/60 dark:group-hover:border-amber-400/50 group-hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_28px_60px_-10px_rgba(0,0,0,0.45)]'
+            : 'bg-white/30 dark:bg-[#161412]/40 backdrop-blur-xl backdrop-saturate-[160%] border-white/50 dark:border-white/10 shadow-[0_12px_32px_rgba(0,0,0,0.2)] hover:border-white/80'
         }`}
       >
+        {/* Specular Top Light Accent */}
+        <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-2xl" />
+
+        {/* Ambient Glass Sheen */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none rounded-2xl" />
         <div className="relative w-full h-40 sm:h-48 md:h-52 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-2 flex-shrink-0">
           <img
             src={getThumbnailUrl(cert.image)}

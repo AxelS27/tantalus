@@ -346,13 +346,16 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                         y: !isDragging && isFaceActive ? -5 : 0,
                         transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] },
                       }}
-                      className="group relative flex flex-col justify-start p-1.5 sm:p-2 rounded-xl bg-white/40 dark:bg-[#121110]/80 hover:bg-white/60 dark:hover:bg-[#121110]/95 backdrop-blur-xl backdrop-saturate-[165%] border border-white/60 dark:border-white/15 hover:border-white/95 dark:hover:border-white/35 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.85),0_8px_24px_-4px_rgba(0,0,0,0.18)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.12),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.95),0_16px_40px_-4px_rgba(0,0,0,0.28)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2),0_18px_44px_-4px_rgba(0,0,0,0.85)] z-10 hover:z-40 transition-colors duration-200 cursor-pointer no-underline text-inherit"
+                      className="group relative flex flex-col justify-start p-1.5 sm:p-2 rounded-xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_16px_40px_-4px_rgba(40,30,20,0.22)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_18px_44px_-4px_rgba(0,0,0,0.85)] z-10 hover:z-40 transition-all duration-200 cursor-pointer no-underline text-inherit overflow-hidden"
                     >
                       {/* Specular Top Light Accent */}
-                      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/35 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-xl" />
+                      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-xl" />
+
+                      {/* Ambient Glass Sheen */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none rounded-xl" />
 
                       {/* 16:9 Thumbnail Image with Skeleton Shimmer */}
-                      <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/10 dark:bg-black/40 border border-white/40 dark:border-white/15 mb-1 flex-shrink-0">
+                      <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/10 dark:bg-black/40 border border-white/40 dark:border-white/15 mb-1 flex-shrink-0 z-10">
                         <ImageWithSkeleton
                           src={project.image}
                           alt={project.title}
