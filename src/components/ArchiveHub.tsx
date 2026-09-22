@@ -17,6 +17,7 @@ import {
   Minus,
   Check,
 } from 'lucide-react';
+import Footer from './common/Footer';
 
 // macOS Genie Effect 10-point polygon:
 // In the open state, all points align with the rectangular window bounds.
@@ -107,7 +108,6 @@ export const ArchiveHub = memo(function ArchiveHub({
   onUpdateSettings,
 }: ArchiveHubProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const footerRef = useRef<HTMLElement>(null);
   const isAtTopRef = useRef<boolean>(true);
   const arrivedAtTopTimeRef = useRef<number>(Date.now());
   const lastHandoffTimeRef = useRef<number>(0);
@@ -425,82 +425,7 @@ export const ArchiveHub = memo(function ArchiveHub({
       </div>
 
       {/* ================= 2. EDITORIAL PAGE FOOTER (Normal Document Flow) ================= */}
-      <footer
-        ref={footerRef}
-        className="relative w-full bg-[#FAF8F5]/85 dark:bg-[#121110]/92 hover:bg-[#FAF8F5]/95 dark:hover:bg-[#121110]/98 backdrop-blur-2xl backdrop-saturate-[180%] border-t border-white/70 dark:border-stone-800 shadow-[0_-12px_40px_rgba(0,0,0,0.18)] px-6 sm:px-12 md:px-16 pt-10 pb-12 select-text z-20 transition-colors duration-200"
-      >
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 border-b border-stone-300/60 dark:border-stone-800 pb-8">
-          {/* Col 1: Identity */}
-          <div className="space-y-2">
-            <h3 className="font-serif italic text-2xl sm:text-3xl text-stone-950 dark:text-stone-100 font-semibold leading-tight">
-              Farrell Axel Suwandi
-            </h3>
-            <p className="font-serif italic text-xs sm:text-sm text-[#9E6F18] dark:text-[#E8C582] font-medium">
-              AI Researcher & Software Engineer
-            </p>
-            <p className="font-sans text-xs text-stone-600 dark:text-stone-400 leading-relaxed pt-1 max-w-sm">
-              Exploring high-performance deep learning systems, spatial computing, and classical artistic expressions.
-            </p>
-          </div>
-
-          {/* Col 2: Navigation Links */}
-          <div className="space-y-2.5">
-            <h4 className="font-sans text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 font-semibold">
-              Navigation
-            </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs font-serif italic text-stone-800 dark:text-stone-300">
-              <a href="#" className="hover:text-amber-900 dark:hover:text-amber-400 transition-colors">Home</a>
-              <a href="#timeline" className="hover:text-amber-900 dark:hover:text-amber-400 transition-colors">Timeline</a>
-              <a href="#projects" className="hover:text-amber-900 dark:hover:text-amber-400 transition-colors">Projects</a>
-              <a href="#archive" className="hover:text-amber-900 dark:hover:text-amber-400 transition-colors font-semibold text-stone-950 dark:text-stone-100">Archive</a>
-            </div>
-          </div>
-
-          {/* Col 3: Social & Connect */}
-          <div className="space-y-2.5">
-            <h4 className="font-sans text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 font-semibold">
-              Connect
-            </h4>
-            <div className="flex flex-wrap gap-2 pt-0.5">
-              <a
-                href="https://github.com/AxelS27"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-100 transition-colors"
-              >
-                <span>GitHub</span>
-                <ArrowUpRight className="w-3 h-3 text-stone-500 dark:text-stone-400" />
-              </a>
-              <a
-                href="https://linkedin.com/in/farrell-axel"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-100 transition-colors"
-              >
-                <span>LinkedIn</span>
-                <ArrowUpRight className="w-3 h-3 text-stone-500 dark:text-stone-400" />
-              </a>
-              <a
-                href="mailto:contact@liemaxels.com"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-100 transition-colors"
-              >
-                <span>Email</span>
-                <ArrowUpRight className="w-3 h-3 text-stone-500 dark:text-stone-400" />
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Colophon Bar */}
-        <div className="max-w-6xl mx-auto pt-5 flex flex-col sm:flex-row items-center justify-between text-[11px] font-sans text-stone-500 dark:text-stone-400 gap-3">
-          <p>
-            © 2026 Farrell Axel Suwandi. Built with React 19, Motion & Vite.
-          </p>
-          <span className="font-serif italic text-stone-600 dark:text-stone-400">
-            Tantalize - The Myth of Eternal Reach
-          </span>
-        </div>
-      </footer>
+      <Footer />
 
       {/* ================= 3. macOS SYSTEM SETTINGS FLOATING WINDOW ================= */}
       {typeof document !== 'undefined' &&

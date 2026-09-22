@@ -30,10 +30,10 @@ export const Footer = memo(function Footer({ className = '' }: FooterProps) {
             Navigation
           </h4>
           <div className="grid grid-cols-2 gap-2 text-xs font-serif italic text-stone-800 dark:text-stone-300">
-            <a href="/#" className="hover:text-amber-900 dark:hover:text-amber-400 transition-colors">Home</a>
-            <a href="/#timeline" className="hover:text-amber-900 dark:hover:text-amber-400 transition-colors">Timeline</a>
-            <a href="/#projects" className="hover:text-amber-900 dark:hover:text-amber-400 transition-colors">Projects</a>
-            <a href="/#archive" className="hover:text-amber-900 dark:hover:text-amber-400 transition-colors">Archive</a>
+            <a href="/#" className="hover:text-amber-900 dark:hover:text-[#FFD88A] transition-colors">Home</a>
+            <a href="/#timeline" className="hover:text-amber-900 dark:hover:text-[#FFD88A] transition-colors">Timeline</a>
+            <a href="/#projects" className="hover:text-amber-900 dark:hover:text-[#FFD88A] transition-colors">Projects</a>
+            <a href="/#archive" className="hover:text-amber-900 dark:hover:text-[#FFD88A] transition-colors">Archive</a>
           </div>
         </div>
 
