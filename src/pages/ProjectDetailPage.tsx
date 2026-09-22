@@ -203,14 +203,14 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   return (
     <div className="relative min-h-screen w-full text-stone-900 dark:text-white selection:bg-[#E8C582]/40 selection:text-white font-sans overflow-x-hidden">
       
-      {/* Fixed Classical Artwork Background with Subtle Vignette */}
+      {/* Fixed Classical Artwork Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#FAF8F5] dark:bg-[#121110]">
         <img
           src="/project-detail-bg.png"
           alt="Project Detail Background"
-          className="w-full h-full object-cover object-center scale-105 opacity-80 dark:opacity-90"
+          className="w-full h-full object-cover object-center scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#FAF8F5]/90 via-[#FAF8F5]/50 to-[#FAF8F5]/65 dark:from-black/75 dark:via-black/45 dark:to-black/55 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/20 pointer-events-none" />
       </div>
 
       {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
