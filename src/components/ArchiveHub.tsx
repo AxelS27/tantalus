@@ -23,6 +23,12 @@ import {
   DEFAULT_SETTINGS,
   getSavedSettings,
 } from '../lib/settings';
+import {
+  prefetchSection,
+  prefetchSectionBackground,
+  getPrefetchProps,
+  type PrefetchSectionKey,
+} from '../lib/prefetch';
 
 export type { PortfolioSettings };
 export { DEFAULT_SETTINGS, getSavedSettings };
@@ -133,6 +139,16 @@ export const ArchiveHub = memo(function ArchiveHub({
       });
     }
   };
+
+  // Eagerly prefetch destination sections and backgrounds in advance
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      prefetchSection('certificates');
+      prefetchSection('connect');
+      prefetchSectionBackground('certificates');
+      prefetchSectionBackground('connect');
+    }
+  }, []);
 
   // GitHub Commit Info for About Tab
   const [githubInfo, setGithubInfo] = useState<{
@@ -359,6 +375,10 @@ export const ArchiveHub = memo(function ArchiveHub({
 
             const partedX = isLeftHalf ? -190 : 190;
             const partedRotate = isLeftHalf ? -9 : 9;
+            const prefetchProps =
+              app.id === 'certificates' || app.id === 'connect'
+                ? getPrefetchProps(app.id as PrefetchSectionKey)
+                : {};
 
             return (
               <motion.div
@@ -381,6 +401,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                 {/* macOS Squircle Pure Apple VisionOS Frosted Glassmorphism Icon */}
                 <motion.button
                   onClick={() => handleAppClick(app)}
+                  {...prefetchProps}
                   disabled={isSettingsOpen}
                   whileHover={
                     activeSettings.interactiveTilt && !isSettingsOpen

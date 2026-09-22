@@ -262,9 +262,9 @@ export default function App() {
   );
   const handleArchiveAppSelect = useCallback((appId: ArchiveAppId) => {
     if (appId === 'certificates') {
-      triggerSectionChange('certificates');
+      triggerSectionChange('certificates', true, true);
     } else if (appId === 'connect') {
-      triggerSectionChange('connect');
+      triggerSectionChange('connect', true, true);
     }
   }, [triggerSectionChange]);
   const handleCertificatesTop = useCallback(
