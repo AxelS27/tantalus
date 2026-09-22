@@ -299,25 +299,25 @@ export const TimelineRoller = memo(function TimelineRoller({
             </h2>
 
             {/* Grouped Location & Date in Frosted Glass Capsule */}
-            <div className="inline-flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_24px_rgba(0,0,0,0.2)] text-sm sm:text-base md:text-lg font-serif italic tracking-wide">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/55 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_8px_24px_rgba(0,0,0,0.15)] text-sm sm:text-base md:text-lg font-serif italic tracking-wide">
               {/* Company / Location */}
-              <div className="flex items-center gap-1.5 text-[#FFD88A] font-medium">
-                <MapPin className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#FFD88A]" />
+              <div className="flex items-center gap-1.5 text-amber-800 dark:text-[#FFD88A] font-semibold dark:font-medium">
+                <MapPin className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-700 dark:text-[#FFD88A]" />
                 <span>{activeItem.company}</span>
               </div>
 
               {/* Separator Dot */}
-              <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+              <span className="w-1.5 h-1.5 rounded-full bg-stone-400/70 dark:bg-white/40" />
 
               {/* Date / Year */}
-              <div className="flex items-center gap-1.5 text-white font-medium">
-                <Calendar className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#FFD88A]" />
+              <div className="flex items-center gap-1.5 text-stone-900 dark:text-white font-semibold dark:font-medium">
+                <Calendar className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-700 dark:text-[#FFD88A]" />
                 <span>{activeItem.year}</span>
               </div>
 
               {/* Upcoming Badge */}
               {activeItem.isUpcoming && (
-                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/30 border border-amber-300/40 text-[10px] sm:text-xs uppercase tracking-[0.18em] text-amber-200 font-medium ml-1">
+                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 dark:bg-amber-500/30 border border-amber-600/40 dark:border-amber-300/40 text-[10px] sm:text-xs uppercase tracking-[0.18em] text-amber-900 dark:text-amber-200 font-medium ml-1">
                   <Sparkles className="w-3 h-3" />
                   <span>Upcoming</span>
                 </span>
