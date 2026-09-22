@@ -137,7 +137,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   }, [allMedia]);
 
   const handleNavProject = useCallback((targetId: string) => {
-    const scrollContainer = document.querySelector('.overflow-y-auto');
+    const scrollContainer = document.querySelector('.project-detail-scroll-container') || document.querySelector('.overflow-y-auto');
     if (scrollContainer) {
       scrollContainer.scrollTo({
         top: 0,
