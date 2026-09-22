@@ -200,17 +200,6 @@ export const LegalModal = memo(function LegalModal({
                 </div>
               )}
             </div>
-
-            {/* Bottom Footer Bar */}
-            <div className="flex items-center justify-between px-6 sm:px-8 py-3.5 border-t border-stone-200 dark:border-stone-800 bg-black/[0.02] dark:bg-white/[0.02] text-xs text-stone-500 dark:text-stone-400 shrink-0">
-              <span className="font-serif italic">Tantalize © 2026</span>
-              <button
-                onClick={onClose}
-                className="px-4 py-1.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-950 font-medium hover:opacity-90 transition-opacity cursor-pointer text-xs"
-              >
-                Close
-              </button>
-            </div>
           </motion.div>
         </div>
       )}
