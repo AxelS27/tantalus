@@ -34,7 +34,7 @@ export const Footer = memo(function Footer({ className = '' }: FooterProps) {
               AI Researcher & Software Engineer
             </p>
             <p className="font-sans text-xs text-stone-600 dark:text-stone-400 leading-relaxed pt-1 max-w-sm">
-              Exploring high-performance deep learning systems, spatial computing, and classical artistic expressions.
+              Exploring agentic AI systems, spatial computing, and classical artistic expressions.
             </p>
           </div>
 
@@ -91,7 +91,7 @@ export const Footer = memo(function Footer({ className = '' }: FooterProps) {
         {/* Bottom Colophon Bar */}
         <div className="max-w-6xl mx-auto pt-5 flex flex-col sm:flex-row items-center justify-between text-[11px] font-sans text-stone-500 dark:text-stone-400 gap-3">
           <p>
-            © 2026 Farrell Axel Suwandi. Built with React 19, Motion & Vite.
+            © 2026 Farrell Axel Suwandi.
           </p>
           <div className="flex items-center gap-3.5 text-[11px] font-sans text-stone-500 dark:text-stone-400">
             <button
