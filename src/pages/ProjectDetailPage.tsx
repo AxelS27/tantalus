@@ -59,6 +59,65 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const filmstripRef = useRef<HTMLDivElement>(null);
+  const visualStageRef = useRef<HTMLDivElement>(null);
+  const lastWheelTimeRef = useRef<number>(0);
+
+  // Wheel listener to slide gallery images without scrolling the page
+  useEffect(() => {
+    const stageEl = visualStageRef.current;
+    if (!stageEl || allMedia.length <= 1) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const now = Date.now();
+      if (now - lastWheelTimeRef.current < 200) return;
+
+      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (Math.abs(delta) > 10) {
+        if (delta > 0) {
+          setActiveMediaIndex((prev) => (prev + 1) % allMedia.length);
+        } else {
+          setActiveMediaIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length);
+        }
+        lastWheelTimeRef.current = now;
+      }
+    };
+
+    stageEl.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      stageEl.removeEventListener('wheel', handleWheel);
+    };
+  }, [allMedia.length]);
+
+  // Wheel listener to slide images inside Lightbox modal
+  useEffect(() => {
+    if (!isLightboxOpen || allMedia.length <= 1) return;
+
+    const handleLightboxWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const now = Date.now();
+      if (now - lastWheelTimeRef.current < 200) return;
+
+      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (Math.abs(delta) > 10) {
+        if (delta > 0) {
+          setLightboxIndex((prev) => (prev + 1) % allMedia.length);
+        } else {
+          setLightboxIndex((prev) => (prev - 1 + allMedia.length) % allMedia.length);
+        }
+        lastWheelTimeRef.current = now;
+      }
+    };
+
+    window.addEventListener('wheel', handleLightboxWheel, { passive: false });
+    return () => {
+      window.removeEventListener('wheel', handleLightboxWheel);
+    };
+  }, [isLightboxOpen, allMedia.length]);
 
   // Eagerly pre-load and decode all gallery images on project change
   useEffect(() => {
@@ -202,6 +261,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 <div className="space-y-2.5">
                   {/* Main Visual Frame */}
                   <div
+                    ref={visualStageRef}
                     onClick={() => openLightbox(activeMediaIndex)}
                     className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/40 backdrop-blur-xl border border-white/25 group cursor-pointer shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-white/40 transition-colors duration-200"
                   >
