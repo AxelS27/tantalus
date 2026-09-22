@@ -18,6 +18,14 @@ import {
   Check,
 } from 'lucide-react';
 import Footer from './common/Footer';
+import {
+  type PortfolioSettings,
+  DEFAULT_SETTINGS,
+  getSavedSettings,
+} from '../lib/settings';
+
+export type { PortfolioSettings };
+export { DEFAULT_SETTINGS, getSavedSettings };
 
 // macOS Genie Effect 10-point polygon:
 // In the open state, all points align with the rectangular window bounds.
@@ -82,15 +90,6 @@ const launchpadApps: ArchiveAppItem[] = [
     icon: Settings,
   },
 ];
-
-import {
-  PortfolioSettings,
-  DEFAULT_SETTINGS,
-  getSavedSettings,
-} from '../lib/settings';
-
-export type { PortfolioSettings };
-export { DEFAULT_SETTINGS, getSavedSettings };
 
 interface ArchiveHubProps {
   isActive?: boolean;

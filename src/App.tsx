@@ -199,7 +199,7 @@ export default function App() {
     setTransitionTarget(newTab);
 
     prefetchSectionBackground(newTab);
-    if (newTab !== 'home' && newTab !== 'connect') {
+    if (newTab !== 'home') {
       prefetchSection(newTab);
     }
 
