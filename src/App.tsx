@@ -10,7 +10,12 @@ import {
   startPerformanceMonitoring,
 } from './lib/performanceMonitor';
 import ErrorBoundary from './components/common/ErrorBoundary';
-import CanvasSectionSkeleton from './components/skeletons/CanvasSectionSkeleton';
+import TimelineRollerSkeleton from './components/skeletons/TimelineRollerSkeleton';
+import ProjectsGridSkeleton from './components/skeletons/ProjectsGridSkeleton';
+import ArchiveHubSkeleton from './components/skeletons/ArchiveHubSkeleton';
+import CertificatesCoverflowSkeleton from './components/skeletons/CertificatesCoverflowSkeleton';
+import ConnectHubSkeleton from './components/skeletons/ConnectHubSkeleton';
+import ProjectDetailSkeleton from './components/skeletons/ProjectDetailSkeleton';
 import type { ArchiveAppId } from './components/ArchiveHub';
 import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
 import { getProjectById } from './data/projects';
@@ -271,6 +276,10 @@ export default function App() {
     () => triggerSectionChange('archive'),
     [triggerSectionChange],
   );
+  const handleConnectTop = useCallback(
+    () => triggerSectionChange('archive'),
+    [triggerSectionChange],
+  );
 
   useEffect(() => startPerformanceMonitoring(), []);
 
@@ -361,7 +370,7 @@ export default function App() {
     <ErrorBoundary>
       {activeProjectId ? (
         <div className="project-detail-scroll-container fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-[#FAF8F5] dark:bg-[#121110] z-50">
-          <Suspense fallback={<CanvasSectionSkeleton />}>
+          <Suspense fallback={<ProjectDetailSkeleton />}>
             <ProjectDetailPage
               projectId={activeProjectId}
               onBack={handleBackToProjects}
@@ -496,7 +505,7 @@ export default function App() {
 
               {/* Vertical Cylindrical Roller Wheel Component (Code-Split with Suspense) */}
               {visitedTabs.has('timeline') && (
-                <Suspense fallback={<CanvasSectionSkeleton />}>
+                <Suspense fallback={<TimelineRollerSkeleton />}>
                   <TimelineRoller
                     isActive={isSectionRendered('timeline')}
                     onReachEnd={handleTimelineEnd}
@@ -528,7 +537,7 @@ export default function App() {
 
               {/* 3D Cube Projects Grid (Code-Split with Suspense) */}
               {visitedTabs.has('projects') && (
-                <Suspense fallback={<CanvasSectionSkeleton />}>
+                <Suspense fallback={<ProjectsGridSkeleton />}>
                   <ProjectsGrid
                     isActive={isSectionRendered('projects')}
                     onReachEnd={handleProjectsEnd}
@@ -560,7 +569,7 @@ export default function App() {
 
               {/* macOS Launchpad / App Hub (Code-Split with Suspense) */}
               {visitedTabs.has('archive') && (
-                <Suspense fallback={<CanvasSectionSkeleton />}>
+                <Suspense fallback={<ArchiveHubSkeleton />}>
                   <ArchiveHub
                     isActive={isSectionRendered('archive')}
                     settings={settings}
@@ -593,9 +602,10 @@ export default function App() {
 
               {/* Social & Communication Hub (Code-Split with Suspense) */}
               {visitedTabs.has('connect') && (
-                <Suspense fallback={<CanvasSectionSkeleton />}>
+                <Suspense fallback={<ConnectHubSkeleton />}>
                   <ConnectHub
                     isActive={isSectionRendered('connect')}
+                    onReachTop={handleConnectTop}
                   />
                 </Suspense>
               )}
@@ -622,7 +632,7 @@ export default function App() {
 
               {/* Interactive 3D Spatial Coverflow Carousel (Code-Split with Suspense) */}
               {visitedTabs.has('certificates') && (
-                <Suspense fallback={<CanvasSectionSkeleton />}>
+                <Suspense fallback={<CertificatesCoverflowSkeleton />}>
                   <CertificatesCoverflow
                     isActive={isSectionRendered('certificates')}
                     onReachTop={handleCertificatesTop}
