@@ -248,9 +248,12 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         </div>
       </header>
 
-      {/* Main Center Editorial Canvas Panel (Theme-Adaptive Frosted Glass) */}
+      {/* Main Center Editorial Canvas Panel (Apple Frosted Glassmorphism) */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
-        <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-[#FAF8F5]/85 dark:bg-black/65 backdrop-blur-2xl border border-white/80 dark:border-white/20 shadow-[0_24px_80px_rgba(40,30,20,0.12),inset_0_1px_1.5px_rgba(255,255,255,0.9)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
+        <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-white/45 dark:bg-black/65 backdrop-blur-3xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.95),0_24px_80px_rgba(0,0,0,0.14)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_24px_80px_rgba(0,0,0,0.6)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
+          
+          {/* Specular Top Light Accent */}
+          <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/95 dark:via-white/35 to-transparent opacity-80 rounded-t-3xl sm:rounded-t-[36px]" />
         
           {/* ================= 1. WIDE FLUID HERO SECTION (Visual Left + Specs/Actions Right) ================= */}
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -263,7 +266,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   <div
                     ref={visualStageRef}
                     onClick={() => openLightbox(activeMediaIndex)}
-                    className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/5 dark:bg-black/40 backdrop-blur-xl border border-stone-300/70 dark:border-white/25 group cursor-pointer shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-amber-700/40 dark:hover:border-white/40 transition-colors duration-200"
+                    className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-white/40 dark:bg-black/40 backdrop-blur-xl backdrop-saturate-[165%] border border-white/60 dark:border-white/25 group cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.85),0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-white/90 dark:hover:border-white/40 transition-colors duration-200"
                   >
                     {/* Ambient Blur Backdrop */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -406,7 +409,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.paperUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-amber-900/10 dark:bg-amber-900/35 hover:bg-amber-900/20 dark:hover:bg-amber-900/50 border border-amber-600/30 dark:border-amber-500/40 text-amber-900 dark:text-[#FFD88A] font-semibold text-xs tracking-wide shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-amber-800/15 dark:bg-amber-900/35 hover:bg-amber-800/25 dark:hover:bg-amber-900/50 backdrop-blur-md border border-amber-600/40 dark:border-amber-500/40 text-amber-950 dark:text-[#FFD88A] font-semibold text-xs tracking-wide shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <FileText className="w-3.5 h-3.5 text-amber-800 dark:text-[#FFD88A] shrink-0" />
@@ -487,7 +490,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       {project.tags.map((tag, idx) => (
                         <span
                           key={idx}
-                          className="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/20 text-stone-800 dark:text-stone-100 shadow-xs transition-colors"
+                          className="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-white/55 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/15 backdrop-blur-md border border-white/70 dark:border-white/20 text-stone-900 dark:text-stone-100 shadow-[inset_0_1px_0.5px_rgba(255,255,255,0.9)] dark:shadow-none transition-colors"
                         >
                           {tag}
                         </span>
@@ -537,9 +540,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       handleNavProject(prevProject.id);
                     }
                   }}
-                  className="group flex items-center gap-4 cursor-pointer no-underline text-inherit"
+                  className="group flex items-center gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/40 dark:bg-white/5 hover:bg-white/65 dark:hover:bg-white/10 backdrop-blur-xl border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit transition-all duration-200"
                 >
-                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200 dark:border-white/25 shrink-0 shadow-md">
+                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-white/60 dark:border-white/25 shrink-0 shadow-md">
                     <img
                       src={getAssetUrl(prevProject.thumbnail)}
                       alt={prevProject.title}
@@ -568,7 +571,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       handleNavProject(nextProject.id);
                     }
                   }}
-                  className="group flex items-center justify-end gap-4 cursor-pointer no-underline text-inherit text-right"
+                  className="group flex items-center justify-end gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/40 dark:bg-white/5 hover:bg-white/65 dark:hover:bg-white/10 backdrop-blur-xl border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit text-right transition-all duration-200"
                 >
                   <div className="min-w-0 flex-1">
                     <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 flex items-center justify-end gap-1 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] transition-colors">
@@ -579,7 +582,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       {nextProject.title}
                     </h4>
                   </div>
-                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200 dark:border-white/25 shrink-0 order-first sm:order-last shadow-md">
+                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-white/60 dark:border-white/25 shrink-0 order-first sm:order-last shadow-md">
                     <img
                       src={getAssetUrl(nextProject.thumbnail)}
                       alt={nextProject.title}
