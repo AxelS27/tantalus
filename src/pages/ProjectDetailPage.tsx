@@ -213,8 +213,8 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
       </div>
 
       {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
-      <header className="fixed top-4 sm:top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 sm:px-8 max-w-5xl">
-        <div className="pointer-events-auto relative w-full h-11 sm:h-12 flex items-center justify-between p-1.5 rounded-full bg-[#141210]/85 hover:bg-[#141210]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/20 shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-200">
+      <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 sm:px-8 max-w-5xl">
+        <div className="pointer-events-auto relative w-full h-10 sm:h-11 flex items-center justify-between p-1 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/75 hover:bg-[#FAF8F5]/75 dark:hover:bg-[#161412]/85 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(40,30,20,0.1)] dark:shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-300">
           
           {/* Left Segment: Back to Projects */}
           <a
@@ -225,9 +225,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 onBack();
               }
             }}
-            className="group relative h-full flex items-center gap-2 px-4 sm:px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs sm:text-sm font-sans font-medium tracking-wide transition-all duration-200 cursor-pointer no-underline shrink-0"
+            className="group relative h-full flex items-center gap-2 px-3.5 sm:px-4.5 rounded-full bg-white/70 dark:bg-white/15 hover:bg-white/90 dark:hover:bg-white/25 border border-white/80 dark:border-white/20 text-stone-900 dark:text-stone-100 text-xs sm:text-sm font-sans font-medium tracking-wide transition-all duration-200 cursor-pointer no-underline shrink-0 shadow-[0_1px_4px_rgba(0,0,0,0.04),inset_0_1px_0.5px_rgba(255,255,255,0.85)] dark:shadow-[inset_0_1px_0.5px_rgba(255,255,255,0.15)]"
           >
-            <ArrowLeft className="w-4 h-4 text-[#FFD88A] group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-700 dark:text-[#FFD88A] group-hover:-translate-x-1 transition-transform" />
             <span>Back to Projects</span>
           </a>
 
@@ -235,8 +235,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           <div className="flex-1 flex items-center justify-center px-3 sm:px-6 min-w-0 overflow-hidden">
             <span
               title={project.title}
-              className="text-sm sm:text-base md:text-lg text-white font-serif italic truncate font-light tracking-wide text-center"
-              style={{ textShadow: '0 1px 6px rgba(0,0,0,0.9)' }}
+              className="text-xs sm:text-sm md:text-base text-stone-950 dark:text-white font-serif italic truncate font-light tracking-wide text-center drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] dark:drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
             >
               {project.title}
             </span>
