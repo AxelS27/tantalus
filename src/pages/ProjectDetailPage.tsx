@@ -236,7 +236,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           <div className="flex-1 flex items-center justify-center px-3 sm:px-6 min-w-0 overflow-hidden">
             <span
               title={project.title}
-              className="text-xs sm:text-sm md:text-base text-stone-950 dark:text-white font-serif italic truncate font-light tracking-wide text-center drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] dark:drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]"
+              className="text-sm sm:text-base md:text-lg text-stone-950 dark:text-stone-50 font-serif italic font-semibold truncate tracking-normal text-center drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)] dark:drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]"
             >
               {project.title}
             </span>
