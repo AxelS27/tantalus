@@ -357,7 +357,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       {activeProjectId ? (
-        <div className="project-detail-scroll-container w-screen h-screen overflow-y-auto overflow-x-hidden bg-[#FAF8F5] dark:bg-[#121110]">
+        <div className="project-detail-scroll-container fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-[#FAF8F5] dark:bg-[#121110] z-50">
           <Suspense fallback={<CanvasSectionSkeleton />}>
             <ProjectDetailPage
               projectId={activeProjectId}
