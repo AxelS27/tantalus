@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Presentation,
   Play,
+  FileText,
   Image as ImageIcon,
   Maximize2,
   X,
@@ -392,11 +393,26 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       rel="noopener noreferrer"
                       className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-stone-950 font-bold text-xs tracking-wide shadow-[0_4px_16px_rgba(217,119,6,0.35)] hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
                     >
-                      <div className="flex items-center gap-2">
-                        <ExternalLink className="w-3.5 h-3.5 text-stone-950" />
-                        <span className="truncate">{project.demoLabel || 'Live Demo / Paper'}</span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <ExternalLink className="w-3.5 h-3.5 text-stone-950 shrink-0" />
+                        <span className="truncate">{project.demoLabel || 'Live Demo'}</span>
                       </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-stone-950 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                      <ArrowRight className="w-3.5 h-3.5 text-stone-950 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1.5" />
+                    </a>
+                  )}
+
+                  {project.paperUrl && (
+                    <a
+                      href={project.paperUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-amber-900/35 hover:bg-amber-900/50 border border-amber-500/40 text-[#FFD88A] font-semibold text-xs tracking-wide shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText className="w-3.5 h-3.5 text-[#FFD88A] shrink-0" />
+                        <span className="truncate">{project.paperLabel || 'Research Paper'}</span>
+                      </div>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0 ml-1.5" />
                     </a>
                   )}
 

@@ -7,6 +7,8 @@ export interface ProjectItem {
   thumbnail: string;
   demoUrl?: string;
   demoLabel?: string;
+  paperUrl?: string;
+  paperLabel?: string;
   githubUrl?: string;
   presentationUrl?: string;
   presentationLabel?: string;
@@ -42,8 +44,8 @@ export const allProjectsData: ProjectItem[] = [
     title: 'Identification of Biomarkers For Bile Duct Cancer Using Feature Selection',
     description: 'A computational biology research project applying machine learning to identify genetic biomarkers for Cholangiocarcinoma (CCA). Implements patient-level leakage control inside the cross-validation loops, achieving robust external generalization.',
     thumbnail: '/projects/compbio/02d-heatmap-top50.webp',
-    demoUrl: 'https://drive.google.com/file/d/1eAZzssoFIfmg5apc_seJL9U8PNPv1IQq/view?usp=sharing',
-    demoLabel: 'Research Paper',
+    paperUrl: 'https://drive.google.com/file/d/1eAZzssoFIfmg5apc_seJL9U8PNPv1IQq/view?usp=sharing',
+    paperLabel: 'Research Paper',
     githubUrl: 'https://github.com/AxelS27/CompBio',
     presentationUrl: 'https://canva.link/klu81ydklp20l6g',
     presentationLabel: 'Canva Presentation',
@@ -82,6 +84,7 @@ export const allProjectsData: ProjectItem[] = [
     description: 'An intelligent computer vision safety system designed for railway level-crossings. Uses classic machine learning (HOG, HSV, LBP, and Canny) and deep learning models to predict crossing status, deployed as a Next.js monorepo.',
     thumbnail: '/projects/railroad-cv/00-preprocessing-pipeline-montage.webp',
     demoUrl: 'https://railroadcv.vercel.app',
+    demoLabel: 'Live Demo',
     githubUrl: 'https://github.com/AxelS27/railroad-cv',
     presentationUrl: 'https://canva.link/v927qxjw1aqlpxx',
     presentationLabel: 'Canva Presentation',
@@ -118,6 +121,7 @@ export const allProjectsData: ProjectItem[] = [
     description: 'A high performance web security system and OBS overlay designed to shield content creators from online gambling promotions and spam. Utilizes a Triple Layer Shield featuring keyword filtering, custom BERT NLP classification, and linguistic heuristics.',
     thumbnail: '/projects/phylaxify/screenshot.webp',
     demoUrl: 'https://phylaxify.vercel.app',
+    demoLabel: 'Live Demo',
     githubUrl: 'https://github.com/AxelS27/Phylaxify',
     presentationUrl: 'https://canva.link/p0qt8w7wcr5u5db',
     presentationLabel: 'Canva Presentation',
@@ -157,8 +161,8 @@ export const allProjectsData: ProjectItem[] = [
     title: 'YouTube Gambling Spam Classifier',
     description: 'An NLP research project designed to identify online gambling promotions in social media comments. Implements a multi tier preprocessing pipeline (homoglyph, fragmentation, and leetspeak normalization) and evaluates multiple machine learning classifiers, achieving 98.34% accuracy.',
     thumbnail: '/projects/nlp-gambling-detection/f1-comparison-chart.webp',
-    demoUrl: 'https://drive.google.com/file/d/1WdNZs0b2T-psT6RGebpunDA9M2oKkbxY/view?usp=sharing',
-    demoLabel: 'Research Paper',
+    paperUrl: 'https://drive.google.com/file/d/1WdNZs0b2T-psT6RGebpunDA9M2oKkbxY/view?usp=sharing',
+    paperLabel: 'Research Paper',
     githubUrl: 'https://github.com/AxelS27/NLP',
     presentationUrl: 'https://canva.link/l7trgeo2h2zm2c5',
     presentationLabel: 'Canva Presentation',
@@ -221,6 +225,7 @@ export const allProjectsData: ProjectItem[] = [
     description: 'A professional Machine Learning suite designed to predict track popularity by analyzing acoustic fingerprints. Features a \'Big 5\' Voting Ensemble architecture (71.7% consensus accuracy) and a Random Forest top model (78.94% accuracy).',
     thumbnail: '/projects/hit-or-flop/ml1.webp',
     demoUrl: 'https://hitorflop.vercel.app',
+    demoLabel: 'Live Demo',
     githubUrl: 'https://github.com/AxelS27/HitOrFLop',
     presentationUrl: 'https://canva.link/jbiv0shbz2hcfbm',
     presentationLabel: 'Canva Presentation',
@@ -391,8 +396,8 @@ export const allProjectsData: ProjectItem[] = [
     title: 'INC 2025: Competitive Programming',
     description: 'Represented a team in one of Indonesia\'s most prestigious competitive programming contests, competing against hundreds of university teams nationwide. Focused on advanced algorithmic problem solving and high-pressure optimization.',
     thumbnail: '/projects/jolybee-2025/ada-1.webp',
-    demoUrl: 'https://drive.google.com/file/d/1QkHYS-CJYJkQbG-Ptndw8hqirz103_6O/view?usp=drive_link',
-    demoLabel: 'Project Report',
+    paperUrl: 'https://drive.google.com/file/d/1QkHYS-CJYJkQbG-Ptndw8hqirz103_6O/view?usp=drive_link',
+    paperLabel: 'Project Report',
     githubUrl: '',
     tags: [
       'Competitive Programming',
