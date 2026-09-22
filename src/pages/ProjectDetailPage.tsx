@@ -507,7 +507,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
           {/* ================= 2. ESSAY TREATISE (Clean Sans-Serif Body for Effortless Reading) ================= */}
           {project.content && project.content.length > 0 && (
-            <section className="pt-8 border-t border-stone-200 dark:border-white/20 max-w-4xl font-sans">
+            <section className="pt-8 border-t border-stone-200 dark:border-white/20 font-sans">
               <h2
                 className="text-xl sm:text-2xl font-semibold text-stone-950 dark:text-white tracking-tight mb-5"
               >
@@ -516,7 +516,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
               {/* Seamless Cohesive Article Flow in Crisp Sans-Serif */}
               <div
-                className="space-y-4 sm:space-y-5 text-sm sm:text-base text-stone-700 dark:text-stone-200 leading-relaxed font-normal"
+                className="space-y-4 sm:space-y-5 text-sm sm:text-base text-stone-700 dark:text-stone-200 leading-relaxed font-normal max-w-4xl"
               >
                 {project.content.map((paragraph, idx) => (
                   <p key={idx}>
