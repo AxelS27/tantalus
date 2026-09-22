@@ -71,7 +71,7 @@ const TimelineCard = memo(function TimelineCard({
       }}
       className={`absolute w-full p-2.5 sm:p-3 rounded-2xl cursor-pointer overflow-hidden transform-gpu will-change-transform ${
         isCenter
-          ? 'bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/75 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_12px_36px_-4px_rgba(40,30,20,0.18)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_16px_40px_-4px_rgba(0,0,0,0.65)]'
+          ? 'bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/75 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]'
           : 'bg-white/25 dark:bg-[#161412]/40 backdrop-blur-xl backdrop-saturate-[160%] border border-white/40 dark:border-white/10 hover:opacity-85'
       } ${isDragging ? 'select-none' : ''}`}
     >
