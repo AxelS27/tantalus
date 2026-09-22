@@ -18,15 +18,17 @@ export type PrefetchSectionKey =
   | 'timeline'
   | 'projects'
   | 'archive'
-  | 'certificates';
+  | 'certificates'
+  | 'connect';
 
-export type CanvasBackgroundKey = PrefetchSectionKey | 'home' | 'connect';
+export type CanvasBackgroundKey = PrefetchSectionKey | 'home';
 
 const sectionLoaders: Record<PrefetchSectionKey, () => Promise<unknown>> = {
   timeline: () => import('../components/TimelineRoller'),
   projects: () => import('../components/ProjectsGrid'),
   archive: () => import('../components/ArchiveHub'),
   certificates: () => import('../components/CertificatesCoverflow'),
+  connect: () => import('../components/ConnectHub'),
 };
 
 const prefetchedSections = new Set<string>();

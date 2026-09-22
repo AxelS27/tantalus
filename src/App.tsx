@@ -28,6 +28,9 @@ const ArchiveHub = lazy(() =>
 const CertificatesCoverflow = lazy(() =>
   import('./components/CertificatesCoverflow').then((m) => ({ default: m.CertificatesCoverflow }))
 );
+const ConnectHub = lazy(() =>
+  import('./components/ConnectHub').then((m) => ({ default: m.ConnectHub }))
+);
 const ProjectDetailPage = lazy(() =>
   import('./pages/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage }))
 );
@@ -570,7 +573,7 @@ export default function App() {
             </div>
 
             {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
-            <div className="spatial-section absolute left-[100vw] top-[100vh] w-screen h-screen overflow-hidden z-10">
+            <div className="spatial-section absolute left-[100vw] top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
                   isBackgroundLive('connect') ? 'ambient-canvas-background--live' : ''
@@ -587,6 +590,15 @@ export default function App() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
               </div>
+
+              {/* Social & Communication Hub (Code-Split with Suspense) */}
+              {visitedTabs.has('connect') && (
+                <Suspense fallback={<CanvasSectionSkeleton />}>
+                  <ConnectHub
+                    isActive={isSectionRendered('connect')}
+                  />
+                </Suspense>
+              )}
             </div>
 
             {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
