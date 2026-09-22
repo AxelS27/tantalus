@@ -41,7 +41,7 @@ body {
 
 /* Sleek Apple-grade visible scrollbar for project detail page */
 .project-detail-scroll-container::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-track {
@@ -49,31 +49,31 @@ body {
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.22);
+  background-color: rgba(40, 30, 20, 0.5);
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.38);
+  background-color: rgba(40, 30, 20, 0.8);
 }
 
 .dark .project-detail-scroll-container::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.45);
 }
 
 .dark .project-detail-scroll-container::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.38);
+  background-color: rgba(255, 255, 255, 0.75);
 }
 
 .project-detail-scroll-container {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+  scrollbar-color: rgba(40, 30, 20, 0.5) transparent;
 }
 
 .dark .project-detail-scroll-container {
-  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
 }
 
 @keyframes canvas-ambient-drift {
