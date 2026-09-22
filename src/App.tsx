@@ -268,10 +268,6 @@ export default function App() {
     () => triggerSectionChange('archive'),
     [triggerSectionChange],
   );
-  const handleCertificatesRight = useCallback(
-    () => triggerSectionChange('projects'),
-    [triggerSectionChange],
-  );
 
   useEffect(() => startPerformanceMonitoring(), []);
 
@@ -321,17 +317,11 @@ export default function App() {
       if (e.deltaY < -25) {
         // Scrolling up glides back to Archive Hub
         triggerSectionChange('archive');
-      } else if (e.deltaY > 25 || e.deltaX > 25) {
-        // Scrolling down or right glides to Projects
-        triggerSectionChange('projects');
       }
     } else if (activeTab === 'connect') {
       if (e.deltaY < -25) {
         // Scrolling up glides North to Timeline
         triggerSectionChange('timeline');
-      } else if (e.deltaX < -25 || e.deltaY > 25) {
-        // Scrolling left or down glides West to Projects
-        triggerSectionChange('projects');
       }
     }
   };
@@ -624,7 +614,6 @@ export default function App() {
                   <CertificatesCoverflow
                     isActive={isSectionRendered('certificates')}
                     onReachTop={handleCertificatesTop}
-                    onReachRight={handleCertificatesRight}
                   />
                 </Suspense>
               )}

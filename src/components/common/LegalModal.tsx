@@ -59,7 +59,7 @@ export const LegalModal = memo(function LegalModal({
             exit={{ opacity: 0, scale: 0.95, y: 16 }}
             transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#FAF8F5] dark:bg-[#141210] border border-stone-200/80 dark:border-white/15 shadow-[0_24px_70px_rgba(0,0,0,0.45)] overflow-hidden text-stone-900 dark:text-stone-100 z-10"
+            className="relative w-full max-w-2xl h-[580px] sm:h-[620px] max-h-[85vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#FAF8F5] dark:bg-[#141210] border border-stone-200/80 dark:border-white/15 shadow-[0_24px_70px_rgba(0,0,0,0.45)] overflow-hidden text-stone-900 dark:text-stone-100 z-10"
           >
             {/* Top Navigation Header */}
             <div className="flex items-center justify-between px-5 sm:px-7 py-4 border-b border-stone-200 dark:border-stone-800 bg-black/[0.02] dark:bg-white/[0.02] shrink-0">

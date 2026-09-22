@@ -18,7 +18,6 @@ import { getThumbnailSrcSet, getThumbnailUrl } from '../lib/thumbnails';
 export interface CertificatesCoverflowProps {
   isActive?: boolean;
   onReachTop?: () => void;
-  onReachRight?: () => void;
 }
 
 interface CertificateCardProps {
@@ -134,7 +133,6 @@ const CertificateCard = memo(function CertificateCard({
 export const CertificatesCoverflow = memo(function CertificatesCoverflow({
   isActive = true,
   onReachTop,
-  onReachRight,
 }: CertificatesCoverflowProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(0);
@@ -157,15 +155,13 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
   }, [position]);
 
   const handleNext = useCallback(() => {
-    if (selectedIndex >= certificatesData.length - 1) {
-      onReachRight?.();
-    } else {
+    if (selectedIndex < certificatesData.length - 1) {
       const next = selectedIndex + 1;
       selectedIndexRef.current = next;
       setSelectedIndex(next);
       animateToIndex(next);
     }
-  }, [selectedIndex, onReachRight, animateToIndex]);
+  }, [selectedIndex, animateToIndex]);
 
   const handlePrev = useCallback(() => {
     if (selectedIndex <= 0) {
@@ -245,15 +241,10 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
 
     const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
 
-    // Boundary handoff when user wheels past ends
+    // Boundary handoff when user wheels past start
     if (e.deltaY < -25 && selectedIndex === 0) {
       lastWheelTimeRef.current = now;
       onReachTop?.();
-      return;
-    }
-    if (e.deltaY > 25 && selectedIndex === certificatesData.length - 1) {
-      lastWheelTimeRef.current = now;
-      onReachRight?.();
       return;
     }
 
