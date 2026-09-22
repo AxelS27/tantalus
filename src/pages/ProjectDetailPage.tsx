@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useLayoutEffect, useRef, memo } from 'react';
+import { useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowLeft,
@@ -60,18 +60,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const filmstripRef = useRef<HTMLDivElement>(null);
 
-  // Scroll container to top immediately on project change and pre-warm all gallery images
-  useLayoutEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    const scrollContainer = document.querySelector('.overflow-y-auto');
-    if (scrollContainer) {
-      scrollContainer.scrollTop = 0;
-    }
+  // Eagerly pre-load and decode all gallery images on project change
+  useEffect(() => {
     setActiveMediaIndex(0);
-
-    // Eagerly pre-load and decode all gallery images in advance
     if (typeof window !== 'undefined' && allMedia.length > 0) {
       allMedia.forEach((mediaPath) => {
         const url = getAssetUrl(mediaPath);
@@ -83,7 +74,23 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         }
       });
     }
-  }, [projectId, allMedia]);
+  }, [allMedia]);
+
+  const handleNavProject = useCallback((targetId: string) => {
+    const scrollContainer = document.querySelector('.overflow-y-auto');
+    if (scrollContainer) {
+      scrollContainer.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+    onSelectProject(targetId);
+  }, [onSelectProject]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -454,7 +461,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   onClick={(e) => {
                     if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
                       e.preventDefault();
-                      onSelectProject(prevProject.id);
+                      handleNavProject(prevProject.id);
                     }
                   }}
                   className="group flex items-center gap-4 cursor-pointer no-underline text-inherit"
@@ -485,7 +492,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   onClick={(e) => {
                     if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
                       e.preventDefault();
-                      onSelectProject(nextProject.id);
+                      handleNavProject(nextProject.id);
                     }
                   }}
                   className="group flex items-center justify-end gap-4 cursor-pointer no-underline text-inherit text-right"
