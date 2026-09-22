@@ -597,7 +597,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
       </div>
 
       {/* Editorial Page Footer */}
-      <Footer className="bg-black/60 dark:bg-black/75 backdrop-blur-2xl border-t border-white/15 text-stone-200" />
+      <Footer />
 
       {/* Fullscreen Fluid Lightbox Modal */}
       <AnimatePresence>

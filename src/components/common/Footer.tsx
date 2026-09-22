@@ -8,7 +8,7 @@ interface FooterProps {
 export const Footer = memo(function Footer({ className = '' }: FooterProps) {
   return (
     <footer
-      className={`relative w-full bg-[#FAF8F5]/85 dark:bg-[#121110]/92 hover:bg-[#FAF8F5]/95 dark:hover:bg-[#121110]/98 backdrop-blur-2xl backdrop-saturate-[180%] border-t border-stone-200/80 dark:border-stone-800 shadow-[0_-12px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_-12px_40px_rgba(0,0,0,0.25)] px-6 sm:px-12 md:px-16 pt-10 pb-12 select-text z-20 transition-colors duration-200 ${className}`}
+      className={`relative w-full bg-[#FAF8F5]/90 dark:bg-[#121110]/95 backdrop-blur-2xl backdrop-saturate-[180%] border-t border-stone-200/80 dark:border-stone-800/80 shadow-[0_-12px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_-12px_40px_rgba(0,0,0,0.25)] px-6 sm:px-12 md:px-16 pt-10 pb-12 select-text z-20 ${className}`}
     >
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 border-b border-stone-300/60 dark:border-stone-800 pb-8">
         {/* Col 1: Identity */}
