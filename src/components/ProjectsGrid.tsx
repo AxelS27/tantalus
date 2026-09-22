@@ -167,7 +167,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
 
-    if (!hasDraggedRef.current && Math.hypot(dx, dy) > 6) {
+    if (!hasDraggedRef.current && Math.hypot(dx, dy) > 5) {
       hasDraggedRef.current = true;
       isDraggingRef.current = true;
       setIsDragging(true);
@@ -329,6 +329,8 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                     <motion.a
                       key={`${face.faceIdx}-${project.id}`}
                       href={`/projects/${project.id}`}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                       onClick={(e) => {
                         // For normal left-click without modifier keys, use client-side navigation
                         if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
