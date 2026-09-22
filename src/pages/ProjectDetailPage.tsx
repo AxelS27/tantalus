@@ -362,20 +362,20 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               <div className="space-y-2.5 pb-2">
                 {project.role && (
                   <div className="flex items-baseline gap-2.5 text-stone-900 dark:text-stone-100">
-                    <span className="text-stone-500 dark:text-stone-400 font-medium text-xs sm:text-sm">Role:</span>
-                    <span className="text-sm sm:text-base text-amber-800 dark:text-[#FFD88A] font-semibold">{project.role}</span>
+                    <span className="text-stone-900 dark:text-stone-300 font-semibold text-xs sm:text-sm">Role:</span>
+                    <span className="text-sm sm:text-base text-amber-900 dark:text-[#FFD88A] font-bold">{project.role}</span>
                   </div>
                 )}
                 {project.client && (
                   <div className="flex items-baseline gap-2.5 text-stone-900 dark:text-stone-100">
-                    <span className="text-stone-500 dark:text-stone-400 font-medium text-xs sm:text-sm">Client:</span>
-                    <span className="text-sm sm:text-base text-stone-800 dark:text-stone-100 font-normal">{project.client}</span>
+                    <span className="text-stone-900 dark:text-stone-300 font-semibold text-xs sm:text-sm">Client:</span>
+                    <span className="text-sm sm:text-base text-stone-950 dark:text-stone-100 font-medium">{project.client}</span>
                   </div>
                 )}
                 {(project.date || project.year) && (
                   <div className="flex items-baseline gap-2.5 text-stone-900 dark:text-stone-100">
-                    <span className="text-stone-500 dark:text-stone-400 font-medium text-xs sm:text-sm">Date:</span>
-                    <span className="font-mono text-sm sm:text-base font-semibold text-amber-800 dark:text-[#FFD88A]">{project.date || project.year}</span>
+                    <span className="text-stone-900 dark:text-stone-300 font-semibold text-xs sm:text-sm">Date:</span>
+                    <span className="font-mono text-sm sm:text-base font-bold text-amber-900 dark:text-[#FFD88A]">{project.date || project.year}</span>
                   </div>
                 )}
               </div>
@@ -385,7 +385,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 
                 {/* Left Column: Action Buttons */}
                 <div className="space-y-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-1">
+                  <span className="text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-300 block mb-1">
                     Links & Resources
                   </span>
 
@@ -483,7 +483,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 {/* Right Column: Technologies */}
                 {project.tags && project.tags.length > 0 && (
                   <div className="space-y-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-1">
+                    <span className="text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-300 block mb-1">
                       Technologies
                     </span>
                     <div className="flex flex-wrap gap-1.5">
