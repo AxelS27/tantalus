@@ -144,10 +144,10 @@ export const ConnectHub = memo(function ConnectHub({
     >
       {/* Fluid Floating Content Rig (No Outer Card) */}
       <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.98 }}
-        animate={isActive ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 24, scale: 0.98 }}
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={isActive ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 16, scale: 0.98 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="relative w-full max-w-2xl sm:max-w-3xl flex flex-col items-center justify-center space-y-6 sm:space-y-8"
+        className="relative w-full max-w-2xl sm:max-w-3xl flex flex-col items-center justify-center space-y-5 sm:space-y-7 -translate-y-4 sm:-translate-y-8 md:-translate-y-10"
       >
         {/* Header Block: Editorial Title */}
         <div className="text-center max-w-xl mx-auto">
