@@ -75,7 +75,7 @@ const socialChannels: SocialChannel[] = [
     brandColor: 'hover:border-pink-500/50 hover:text-pink-600 dark:hover:text-pink-400',
   },
   {
-    name: 'X (Twitter)',
+    name: 'X',
     icon: XIcon,
     url: 'https://x.com/liemaxels',
     handle: '@liemaxels',
@@ -149,20 +149,14 @@ export const ConnectHub = memo(function ConnectHub({
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="relative w-full max-w-2xl sm:max-w-3xl flex flex-col items-center justify-center space-y-6 sm:space-y-8"
       >
-        {/* Header Block: Editorial Title & Identity */}
-        <div className="text-center space-y-3 max-w-xl mx-auto">
+        {/* Header Block: Editorial Title */}
+        <div className="text-center max-w-xl mx-auto">
           <h2
             className="font-serif italic text-3xl sm:text-5xl md:text-6xl font-light tracking-tight text-white"
             style={{ textShadow: '0 2px 18px rgba(0,0,0,0.85), 0 8px 40px rgba(0,0,0,0.65)' }}
           >
             Connect With Me
           </h2>
-          <p
-            className="font-serif italic text-sm sm:text-base md:text-lg text-stone-200/90 leading-relaxed font-normal"
-            style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}
-          >
-            Open for AI research inquiries, software engineering collaborations, and professional discussions.
-          </p>
         </div>
 
         {/* 2x3 Grid of Floating Frosted Glass Social Cards */}
