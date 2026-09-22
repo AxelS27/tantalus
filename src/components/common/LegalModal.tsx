@@ -16,7 +16,12 @@ export const LegalModal = memo(function LegalModal({
   initialTab = 'privacy',
   onClose,
 }: LegalModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<LegalTab>(initialTab);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -36,7 +41,7 @@ export const LegalModal = memo(function LegalModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (typeof document === 'undefined') return null;
+  if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
     <AnimatePresence>

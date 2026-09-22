@@ -50,6 +50,11 @@ export default class ErrorBoundary extends Component<Props, State> {
               <p className="text-xs font-sans text-stone-600 dark:text-stone-400 leading-relaxed">
                 A rendering artifact occurred. You can safely restore the canvas below.
               </p>
+              {this.state.error && (
+                <p className="text-[11px] font-mono text-amber-900/90 dark:text-amber-300 bg-black/5 dark:bg-black/50 p-2 rounded-lg text-left overflow-x-auto max-h-24 mt-2">
+                  {this.state.error.message}
+                </p>
+              )}
             </div>
 
             <button
