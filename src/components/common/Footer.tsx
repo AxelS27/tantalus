@@ -77,9 +77,15 @@ export const Footer = memo(function Footer({ className = '' }: FooterProps) {
         <p>
           © 2026 Farrell Axel Suwandi. Built with React 19, Motion & Vite.
         </p>
-        <span className="font-serif italic text-stone-600 dark:text-stone-400">
-          Tantalize - The Myth of Eternal Reach
-        </span>
+        <div className="flex items-center gap-3.5 text-[11px] font-sans text-stone-500 dark:text-stone-400">
+          <span className="hover:text-stone-800 dark:hover:text-stone-200 transition-colors cursor-pointer">
+            Privacy Policy
+          </span>
+          <span className="text-stone-300 dark:text-stone-700">•</span>
+          <span className="hover:text-stone-800 dark:hover:text-stone-200 transition-colors cursor-pointer">
+            Terms of Service
+          </span>
+        </div>
       </div>
     </footer>
   );
