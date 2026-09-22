@@ -439,13 +439,13 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.presentationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3 py-2 rounded-xl bg-[#00c4cc]/20 hover:bg-[#00c4cc]/30 border border-[#00c4cc]/50 text-[#5fe3e8] text-xs font-semibold shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-teal-600/15 dark:bg-[#00c4cc]/20 hover:bg-teal-600/25 dark:hover:bg-[#00c4cc]/30 backdrop-blur-md border border-teal-600/40 dark:border-[#00c4cc]/50 text-teal-950 dark:text-[#5fe3e8] text-xs font-semibold shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
                     >
-                      <div className="flex items-center gap-2">
-                        <Presentation className="w-3.5 h-3.5 text-[#00c4cc]" />
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Presentation className="w-3.5 h-3.5 text-teal-700 dark:text-[#00c4cc] shrink-0" />
                         <span className="truncate">{project.presentationLabel || 'Presentation'}</span>
                       </div>
-                      <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
+                      <ExternalLink className="w-3.5 h-3.5 text-teal-800 dark:text-[#5fe3e8] opacity-70 group-hover:opacity-100 shrink-0 ml-1.5" />
                     </a>
                   )}
 
@@ -454,13 +454,13 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3 py-2 rounded-xl bg-[#ff0000]/20 hover:bg-[#ff0000]/30 border border-[#ff0000]/50 text-[#ff7070] text-xs font-semibold shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-red-600/15 dark:bg-red-500/20 hover:bg-red-600/25 dark:hover:bg-red-500/30 backdrop-blur-md border border-red-600/40 dark:border-red-500/50 text-red-950 dark:text-red-300 text-xs font-semibold shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
                     >
-                      <div className="flex items-center gap-2">
-                        <Play className="w-3.5 h-3.5 text-[#ff0000] fill-[#ff0000]" />
-                        <span>{project.videoLabel || 'Video Demo'}</span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Play className="w-3.5 h-3.5 text-red-600 dark:text-red-400 fill-red-600 dark:fill-red-400 shrink-0" />
+                        <span className="truncate">{project.videoLabel || 'Video Demo'}</span>
                       </div>
-                      <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
+                      <ExternalLink className="w-3.5 h-3.5 text-red-800 dark:text-red-300 opacity-70 group-hover:opacity-100 shrink-0 ml-1.5" />
                     </a>
                   )}
 
@@ -469,13 +469,13 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.posterUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/50 text-indigo-300 text-xs font-semibold shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-indigo-600/15 dark:bg-indigo-500/20 hover:bg-indigo-600/25 dark:hover:bg-indigo-500/30 backdrop-blur-md border border-indigo-600/40 dark:border-indigo-400/50 text-indigo-950 dark:text-indigo-300 text-xs font-semibold shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer no-underline"
                     >
-                      <div className="flex items-center gap-2">
-                        <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>{project.posterLabel || 'Poster'}</span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <ImageIcon className="w-3.5 h-3.5 text-indigo-700 dark:text-indigo-400 shrink-0" />
+                        <span className="truncate">{project.posterLabel || 'Poster'}</span>
                       </div>
-                      <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0" />
+                      <ExternalLink className="w-3.5 h-3.5 text-indigo-800 dark:text-indigo-300 opacity-70 group-hover:opacity-100 shrink-0 ml-1.5" />
                     </a>
                   )}
                 </div>
