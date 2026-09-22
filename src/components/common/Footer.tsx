@@ -39,48 +39,50 @@ export const Footer = memo(function Footer({ className = '' }: FooterProps) {
           </div>
 
           {/* Col 2: Navigation Links */}
-          <div className="space-y-2.5">
-            <h4 className="font-sans text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 font-semibold">
+          <div className="space-y-3">
+            <h4 className="font-sans text-xs sm:text-[13px] uppercase tracking-wider text-stone-500 dark:text-stone-400 font-semibold">
               Navigation
             </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs font-serif italic text-stone-800 dark:text-stone-300">
-              <a href="/#" className="hover:text-amber-900 dark:hover:text-[#FFD88A] transition-colors">Home</a>
-              <a href="/#timeline" className="hover:text-amber-900 dark:hover:text-[#FFD88A] transition-colors">Timeline</a>
-              <a href="/#projects" className="hover:text-amber-900 dark:hover:text-[#FFD88A] transition-colors">Projects</a>
-              <a href="/#archive" className="hover:text-amber-900 dark:hover:text-[#FFD88A] transition-colors">Archive</a>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:text-base font-serif italic text-stone-900 dark:text-stone-200">
+              <a href="/#" className="hover:text-amber-800 dark:hover:text-[#FFD88A] hover:translate-x-0.5 transition-all">Home</a>
+              <a href="/#timeline" className="hover:text-amber-800 dark:hover:text-[#FFD88A] hover:translate-x-0.5 transition-all">Timeline</a>
+              <a href="/#projects" className="hover:text-amber-800 dark:hover:text-[#FFD88A] hover:translate-x-0.5 transition-all">Projects</a>
+              <a href="/#archive" className="hover:text-amber-800 dark:hover:text-[#FFD88A] hover:translate-x-0.5 transition-all">Archive</a>
+              <a href="/#certificates" className="hover:text-amber-800 dark:hover:text-[#FFD88A] hover:translate-x-0.5 transition-all">Certificates</a>
+              <a href="/#connect" className="hover:text-amber-800 dark:hover:text-[#FFD88A] hover:translate-x-0.5 transition-all">Connect</a>
             </div>
           </div>
 
           {/* Col 3: Social & Connect */}
-          <div className="space-y-2.5">
-            <h4 className="font-sans text-xs uppercase tracking-widest text-stone-500 dark:text-stone-400 font-semibold">
+          <div className="space-y-3">
+            <h4 className="font-sans text-xs sm:text-[13px] uppercase tracking-wider text-stone-500 dark:text-stone-400 font-semibold">
               Connect
             </h4>
-            <div className="flex flex-wrap gap-2 pt-0.5">
+            <div className="flex flex-wrap gap-2.5 pt-0.5">
               <a
                 href="https://github.com/AxelS27"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-100 transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs sm:text-sm font-sans font-medium text-stone-900 dark:text-stone-100 transition-all hover:scale-105"
               >
                 <span>GitHub</span>
-                <ArrowUpRight className="w-3 h-3 text-stone-500 dark:text-stone-400" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
               </a>
               <a
                 href="https://linkedin.com/in/farrell-axel"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-100 transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs sm:text-sm font-sans font-medium text-stone-900 dark:text-stone-100 transition-all hover:scale-105"
               >
                 <span>LinkedIn</span>
-                <ArrowUpRight className="w-3 h-3 text-stone-500 dark:text-stone-400" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
               </a>
               <a
                 href="mailto:contact@liemaxels.com"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs font-sans font-medium text-stone-900 dark:text-stone-100 transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/10 text-xs sm:text-sm font-sans font-medium text-stone-900 dark:text-stone-100 transition-all hover:scale-105"
               >
                 <span>Email</span>
-                <ArrowUpRight className="w-3 h-3 text-stone-500 dark:text-stone-400" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
               </a>
             </div>
           </div>
