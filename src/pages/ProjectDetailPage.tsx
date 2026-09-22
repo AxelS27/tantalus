@@ -339,15 +339,15 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       </div>
 
                       {/* Image Counter (Right) */}
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-amber-800 dark:text-[#FFD88A] font-mono text-xs font-semibold">
+                      <div className="flex items-center gap-1.5 shrink-0 text-xs font-sans font-semibold text-stone-900 dark:text-stone-100">
+                        <span className="font-mono font-bold">
                           {String(activeMediaIndex + 1).padStart(2, '0')}
                         </span>
-                        <span className="text-stone-400 dark:text-stone-500 font-mono text-xs">/</span>
-                        <span className="text-stone-500 dark:text-stone-400 font-mono text-xs">
+                        <span className="font-mono font-bold opacity-60">/</span>
+                        <span className="font-mono font-bold">
                           {String(allMedia.length).padStart(2, '0')}
                         </span>
-                        <span className="text-stone-500 dark:text-stone-400 text-xs ml-0.5">Images</span>
+                        <span className="ml-0.5 font-semibold">Images</span>
                       </div>
                     </div>
                   )}
@@ -509,14 +509,14 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           {project.content && project.content.length > 0 && (
             <section className="pt-8 border-t border-stone-200 dark:border-white/20 font-sans">
               <h2
-                className="text-xl sm:text-2xl font-semibold text-stone-950 dark:text-white tracking-tight mb-5"
+                className="text-xl sm:text-2xl font-bold text-stone-950 dark:text-white tracking-tight mb-5"
               >
                 About the Project
               </h2>
 
               {/* Seamless Cohesive Article Flow in Crisp Sans-Serif */}
               <div
-                className="space-y-4 sm:space-y-5 text-sm sm:text-base text-stone-700 dark:text-stone-200 leading-relaxed font-normal max-w-4xl"
+                className="space-y-4 sm:space-y-5 text-sm sm:text-base text-stone-900 dark:text-stone-100 leading-relaxed font-medium sm:font-normal max-w-4xl"
               >
                 {project.content.map((paragraph, idx) => (
                   <p key={idx}>
