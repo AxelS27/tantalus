@@ -201,16 +201,16 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   }
 
   return (
-    <div className="relative min-h-screen w-full text-white selection:bg-[#E8C582]/40 selection:text-white font-sans overflow-x-hidden">
+    <div className="relative min-h-screen w-full text-stone-900 dark:text-white selection:bg-[#E8C582]/40 selection:text-white font-sans overflow-x-hidden">
       
       {/* Fixed Classical Artwork Background with Subtle Vignette */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#FAF8F5] dark:bg-[#121110]">
         <img
           src="/project-detail-bg.png"
           alt="Project Detail Background"
-          className="w-full h-full object-cover object-center scale-105"
+          className="w-full h-full object-cover object-center scale-105 opacity-80 dark:opacity-90"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/35 to-black/45 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#FAF8F5]/90 via-[#FAF8F5]/50 to-[#FAF8F5]/65 dark:from-black/75 dark:via-black/45 dark:to-black/55 pointer-events-none" />
       </div>
 
       {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
@@ -248,9 +248,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         </div>
       </header>
 
-      {/* Main Center Editorial Canvas Panel (Darkened Translucent Frosted Glass) */}
+      {/* Main Center Editorial Canvas Panel (Theme-Adaptive Frosted Glass) */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
-        <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-black/65 backdrop-blur-2xl border border-white/20 shadow-[0_24px_80px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
+        <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-[#FAF8F5]/85 dark:bg-black/65 backdrop-blur-2xl border border-white/80 dark:border-white/20 shadow-[0_24px_80px_rgba(40,30,20,0.12),inset_0_1px_1.5px_rgba(255,255,255,0.9)] dark:shadow-[0_24px_80px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
         
           {/* ================= 1. WIDE FLUID HERO SECTION (Visual Left + Specs/Actions Right) ================= */}
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -263,7 +263,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   <div
                     ref={visualStageRef}
                     onClick={() => openLightbox(activeMediaIndex)}
-                    className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/40 backdrop-blur-xl border border-white/25 group cursor-pointer shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-white/40 transition-colors duration-200"
+                    className="relative w-full h-[230px] sm:h-[280px] md:h-[320px] lg:h-[330px] rounded-2xl overflow-hidden bg-black/5 dark:bg-black/40 backdrop-blur-xl border border-stone-300/70 dark:border-white/25 group cursor-pointer shadow-[0_16px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.6)] hover:border-amber-700/40 dark:hover:border-white/40 transition-colors duration-200"
                   >
                     {/* Ambient Blur Backdrop */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -315,7 +315,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
                   {/* Media Stage Controls & Progress Indicator (Centered Dots) */}
                   {allMedia.length > 1 && (
-                    <div className="relative flex items-center justify-between px-2 pt-2.5 text-xs text-stone-300 font-sans select-none">
+                    <div className="relative flex items-center justify-between px-2 pt-2.5 text-xs text-stone-600 dark:text-stone-300 font-sans select-none">
                       {/* Left Balanced Spacer */}
                       <div className="w-16 hidden sm:block pointer-events-none" />
 
@@ -327,8 +327,8 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                             onClick={() => setActiveMediaIndex(idx)}
                             className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                               idx === activeMediaIndex
-                                ? 'w-6 bg-[#FFD88A] shadow-sm'
-                                : 'w-1.5 bg-white/25 hover:bg-white/50'
+                                ? 'w-6 bg-amber-700 dark:bg-[#FFD88A] shadow-xs'
+                                : 'w-1.5 bg-stone-300 dark:bg-white/25 hover:bg-stone-400 dark:hover:bg-white/50'
                             }`}
                             title={`Image ${idx + 1}`}
                           />
@@ -337,14 +337,14 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
                       {/* Image Counter (Right) */}
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-[#FFD88A] font-mono text-xs font-semibold">
+                        <span className="text-amber-800 dark:text-[#FFD88A] font-mono text-xs font-semibold">
                           {String(activeMediaIndex + 1).padStart(2, '0')}
                         </span>
-                        <span className="text-stone-500 font-mono text-xs">/</span>
-                        <span className="text-stone-400 font-mono text-xs">
+                        <span className="text-stone-400 dark:text-stone-500 font-mono text-xs">/</span>
+                        <span className="text-stone-500 dark:text-stone-400 font-mono text-xs">
                           {String(allMedia.length).padStart(2, '0')}
                         </span>
-                        <span className="text-stone-400 text-xs ml-0.5">Images</span>
+                        <span className="text-stone-500 dark:text-stone-400 text-xs ml-0.5">Images</span>
                       </div>
                     </div>
                   )}
@@ -358,21 +358,21 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               {/* Direct Metadata List (Clean Modern Sans Typography) */}
               <div className="space-y-2.5 pb-2">
                 {project.role && (
-                  <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <span className="text-stone-400 font-medium text-xs sm:text-sm">Role:</span>
-                    <span className="text-sm sm:text-base text-[#FFD88A] font-semibold">{project.role}</span>
+                  <div className="flex items-baseline gap-2.5 text-stone-900 dark:text-stone-100">
+                    <span className="text-stone-500 dark:text-stone-400 font-medium text-xs sm:text-sm">Role:</span>
+                    <span className="text-sm sm:text-base text-amber-800 dark:text-[#FFD88A] font-semibold">{project.role}</span>
                   </div>
                 )}
                 {project.client && (
-                  <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <span className="text-stone-400 font-medium text-xs sm:text-sm">Client:</span>
-                    <span className="text-sm sm:text-base text-stone-100 font-normal">{project.client}</span>
+                  <div className="flex items-baseline gap-2.5 text-stone-900 dark:text-stone-100">
+                    <span className="text-stone-500 dark:text-stone-400 font-medium text-xs sm:text-sm">Client:</span>
+                    <span className="text-sm sm:text-base text-stone-800 dark:text-stone-100 font-normal">{project.client}</span>
                   </div>
                 )}
                 {(project.date || project.year) && (
-                  <div className="flex items-baseline gap-2.5 text-stone-100" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                    <span className="text-stone-400 font-medium text-xs sm:text-sm">Date:</span>
-                    <span className="font-mono text-sm sm:text-base font-semibold text-[#FFD88A]">{project.date || project.year}</span>
+                  <div className="flex items-baseline gap-2.5 text-stone-900 dark:text-stone-100">
+                    <span className="text-stone-500 dark:text-stone-400 font-medium text-xs sm:text-sm">Date:</span>
+                    <span className="font-mono text-sm sm:text-base font-semibold text-amber-800 dark:text-[#FFD88A]">{project.date || project.year}</span>
                   </div>
                 )}
               </div>
@@ -382,7 +382,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 
                 {/* Left Column: Action Buttons */}
                 <div className="space-y-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 block mb-1">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-1">
                     Links & Resources
                   </span>
 
@@ -406,10 +406,10 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       href={project.paperUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-amber-900/35 hover:bg-amber-900/50 border border-amber-500/40 text-[#FFD88A] font-semibold text-xs tracking-wide shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
+                      className="group flex items-center justify-between px-3.5 py-2 rounded-xl bg-amber-900/10 dark:bg-amber-900/35 hover:bg-amber-900/20 dark:hover:bg-amber-900/50 border border-amber-600/30 dark:border-amber-500/40 text-amber-900 dark:text-[#FFD88A] font-semibold text-xs tracking-wide shadow-xs hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 cursor-pointer no-underline"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <FileText className="w-3.5 h-3.5 text-[#FFD88A] shrink-0" />
+                        <FileText className="w-3.5 h-3.5 text-amber-800 dark:text-[#FFD88A] shrink-0" />
                         <span className="truncate">{project.paperLabel || 'Research Paper'}</span>
                       </div>
                       <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 shrink-0 ml-1.5" />
@@ -480,14 +480,14 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 {/* Right Column: Technologies */}
                 {project.tags && project.tags.length > 0 && (
                   <div className="space-y-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 block mb-1">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 block mb-1">
                       Technologies
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {project.tags.map((tag, idx) => (
                         <span
                           key={idx}
-                          className="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-white/10 hover:bg-white/15 border border-white/20 text-stone-100 shadow-sm transition-colors"
+                          className="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 border border-black/10 dark:border-white/20 text-stone-800 dark:text-stone-100 shadow-xs transition-colors"
                         >
                           {tag}
                         </span>
@@ -504,18 +504,16 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
           {/* ================= 2. ESSAY TREATISE (Clean Sans-Serif Body for Effortless Reading) ================= */}
           {project.content && project.content.length > 0 && (
-            <section className="pt-8 border-t border-white/20 max-w-4xl font-sans">
+            <section className="pt-8 border-t border-stone-200 dark:border-white/20 max-w-4xl font-sans">
               <h2
-                className="text-xl sm:text-2xl font-semibold text-white tracking-tight mb-5"
-                style={{ textShadow: '0 2px 10px rgba(0,0,0,0.9)' }}
+                className="text-xl sm:text-2xl font-semibold text-stone-950 dark:text-white tracking-tight mb-5"
               >
                 About the Project
               </h2>
 
               {/* Seamless Cohesive Article Flow in Crisp Sans-Serif */}
               <div
-                className="space-y-4 sm:space-y-5 text-sm sm:text-base text-stone-200 leading-relaxed font-normal"
-                style={{ textShadow: '0 1px 4px rgba(0,0,0,0.85)' }}
+                className="space-y-4 sm:space-y-5 text-sm sm:text-base text-stone-700 dark:text-stone-200 leading-relaxed font-normal"
               >
                 {project.content.map((paragraph, idx) => (
                   <p key={idx}>
@@ -527,7 +525,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           )}
 
           {/* ================= 3. CONTINUUM OF WORKS (Typographic Bottom Links) ================= */}
-          <nav className="pt-8 border-t border-white/20 font-sans">
+          <nav className="pt-8 border-t border-stone-200 dark:border-white/20 font-sans">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12">
               {/* Previous Work */}
               {prevProject ? (
@@ -541,7 +539,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   }}
                   className="group flex items-center gap-4 cursor-pointer no-underline text-inherit"
                 >
-                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/40 border border-white/25 shrink-0 shadow-md">
+                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200 dark:border-white/25 shrink-0 shadow-md">
                     <img
                       src={getAssetUrl(prevProject.thumbnail)}
                       alt={prevProject.title}
@@ -549,11 +547,11 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-xs font-semibold text-stone-400 flex items-center gap-1 group-hover:text-[#FFD88A] transition-colors" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
-                      <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform text-[#FFD88A]" />
+                    <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 flex items-center gap-1 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] transition-colors">
+                      <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform text-amber-700 dark:text-[#FFD88A]" />
                       <span>Previous Project</span>
                     </span>
-                    <h4 className="text-sm sm:text-base text-white truncate font-medium pt-0.5 group-hover:underline" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                    <h4 className="text-sm sm:text-base text-stone-900 dark:text-white truncate font-medium pt-0.5 group-hover:underline">
                       {prevProject.title}
                     </h4>
                   </div>
@@ -573,15 +571,15 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                   className="group flex items-center justify-end gap-4 cursor-pointer no-underline text-inherit text-right"
                 >
                   <div className="min-w-0 flex-1">
-                    <span className="text-xs font-semibold text-stone-400 flex items-center justify-end gap-1 group-hover:text-[#FFD88A] transition-colors" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                    <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 flex items-center justify-end gap-1 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] transition-colors">
                       <span>Next Project</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-[#FFD88A]" />
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-amber-700 dark:text-[#FFD88A]" />
                     </span>
-                    <h4 className="text-sm sm:text-base text-white truncate font-medium pt-0.5 group-hover:underline" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.9)' }}>
+                    <h4 className="text-sm sm:text-base text-stone-900 dark:text-white truncate font-medium pt-0.5 group-hover:underline">
                       {nextProject.title}
                     </h4>
                   </div>
-                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/40 border border-white/25 shrink-0 order-first sm:order-last shadow-md">
+                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200 dark:border-white/25 shrink-0 order-first sm:order-last shadow-md">
                     <img
                       src={getAssetUrl(nextProject.thumbnail)}
                       alt={nextProject.title}
