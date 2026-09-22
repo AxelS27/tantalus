@@ -123,13 +123,6 @@ body {
   --tw-backdrop-blur: blur(4px);
 }
 
-/* Blur readback is expensive while its entire ancestor is translating. The
-   translucent surfaces remain intact and full blur returns after the glide. */
-.canvas-world--moving [class*="backdrop-blur"] {
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-
 .canvas-world--moving .skeleton-shimmer::after {
   animation-play-state: paused;
 }
