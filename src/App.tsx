@@ -323,8 +323,8 @@ export default function App() {
       }
     } else if (activeTab === 'connect') {
       if (e.deltaY < -25) {
-        // Scrolling up glides North to Timeline
-        triggerSectionChange('timeline');
+        // Scrolling up glides back to Archive Hub
+        triggerSectionChange('archive');
       }
     }
   };
