@@ -258,15 +258,7 @@ export default function App() {
     setTransitionTarget(null);
   }, [transitionTarget]);
 
-  const handleStoryBookHome = useCallback(
-    () => triggerSectionChange('home'),
-    [triggerSectionChange],
-  );
-  const handleStoryBookArchive = useCallback(
-    () => triggerSectionChange('archive'),
-    [triggerSectionChange],
-  );
-  const handleStoryBookBottom = useCallback(
+  const handleStoryBookTop = useCallback(
     () => triggerSectionChange('archive'),
     [triggerSectionChange],
   );
@@ -538,14 +530,12 @@ export default function App() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/20 pointer-events-none" />
               </div>
 
-              {/* Interactive Story Folio Book (Code-Split with Suspense) */}
+              {/* Story Book Section (Code-Split with Suspense) */}
               {visitedTabs.has('storybook') && (
                 <Suspense fallback={<StoryBookSkeleton />}>
                   <StoryBook
                     isActive={isSectionRendered('storybook')}
-                    onReachArchive={handleStoryBookArchive}
-                    onReachHome={handleStoryBookHome}
-                    onReachBottom={handleStoryBookBottom}
+                    onReachTop={handleStoryBookTop}
                   />
                 </Suspense>
               )}
