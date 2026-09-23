@@ -15,6 +15,7 @@ import ProjectsGridSkeleton from './components/skeletons/ProjectsGridSkeleton';
 import ArchiveHubSkeleton from './components/skeletons/ArchiveHubSkeleton';
 import CertificatesCoverflowSkeleton from './components/skeletons/CertificatesCoverflowSkeleton';
 import ConnectHubSkeleton from './components/skeletons/ConnectHubSkeleton';
+import StoryBookSkeleton from './components/skeletons/StoryBookSkeleton';
 import ProjectDetailSkeleton from './components/skeletons/ProjectDetailSkeleton';
 import type { ArchiveAppId } from './components/ArchiveHub';
 import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
@@ -26,6 +27,9 @@ const TimelineRoller = lazy(() =>
 );
 const ProjectsGrid = lazy(() =>
   import('./components/ProjectsGrid').then((m) => ({ default: m.ProjectsGrid }))
+);
+const StoryBook = lazy(() =>
+  import('./components/StoryBook').then((m) => ({ default: m.StoryBook }))
 );
 const ArchiveHub = lazy(() =>
   import('./components/ArchiveHub').then((m) => ({ default: m.ArchiveHub }))
@@ -40,7 +44,7 @@ const ProjectDetailPage = lazy(() =>
   import('./pages/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage }))
 );
 
-const validTabs: NavItem[] = ['home', 'timeline', 'projects', 'archive', 'certificates', 'connect'];
+const validTabs: NavItem[] = ['home', 'storybook', 'timeline', 'projects', 'archive', 'certificates', 'connect'];
 
 interface RouteInfo {
   tab: NavItem;
@@ -73,6 +77,9 @@ const getRouteInfo = (): RouteInfo => {
   }
   if (hash === 'connect' || hash === 'archive/connect') {
     return { tab: 'connect', projectId: null };
+  }
+  if (hash === 'storybook' || hash === 'story') {
+    return { tab: 'storybook', projectId: null };
   }
   if (hash.startsWith('archive') || hash.includes('settings')) {
     return { tab: 'archive', projectId: null };
@@ -131,6 +138,7 @@ export default function App() {
 
     const titleMap: Record<NavItem, string> = {
       home: 'AxelS27 - Home',
+      storybook: 'AxelS27 - Story Book',
       timeline: 'AxelS27 - Timeline',
       projects: 'AxelS27 - Projects',
       archive: 'AxelS27 - Archive',
@@ -212,8 +220,13 @@ export default function App() {
     if (newTab === 'home') {
       prefetchSection('timeline');
       prefetchSection('archive');
+      prefetchSection('storybook');
+    } else if (newTab === 'storybook') {
+      prefetchSection('timeline');
+      prefetchSection('projects');
     } else if (newTab === 'timeline') {
       prefetchSection('projects');
+      prefetchSection('storybook');
     } else if (newTab === 'projects') {
       prefetchSection('archive');
       prefetchSection('certificates');
@@ -245,6 +258,14 @@ export default function App() {
     setTransitionTarget(null);
   }, [transitionTarget]);
 
+  const handleStoryBookHome = useCallback(
+    () => triggerSectionChange('home'),
+    [triggerSectionChange],
+  );
+  const handleStoryBookBottom = useCallback(
+    () => triggerSectionChange('timeline'),
+    [triggerSectionChange],
+  );
   const handleTimelineEnd = useCallback(
     () => triggerSectionChange('projects'),
     [triggerSectionChange],
@@ -324,6 +345,12 @@ export default function App() {
     if (activeTab === 'home') {
       if (e.deltaY > 25) {
         triggerSectionChange('timeline');
+      } else if (e.deltaY < -25) {
+        triggerSectionChange('storybook');
+      }
+    } else if (activeTab === 'storybook') {
+      if (e.deltaY > 25) {
+        triggerSectionChange('home');
       }
     } else if (activeTab === 'certificates') {
       if (e.deltaY < -25) {
@@ -341,6 +368,8 @@ export default function App() {
   // Map each tab to 2D camera coordinates with GPU-accelerated percentage matrices
   const getCameraCoordinates = () => {
     switch (activeTab) {
+      case 'storybook':
+        return { x: '-100%', y: '100%' };
       case 'timeline':
         return { x: '-100%', y: '0%' };
       case 'projects':
@@ -481,6 +510,40 @@ export default function App() {
                   </span>
                 </div>
               </div>
+            </div>
+
+            {/* ================= STORY BOOK SECTION (North-East: +100vw, -100vh) ================= */}
+            <div className="spatial-section absolute left-[100vw] top-[-100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+              {/* Background Image with Ambient Parallax */}
+              <div
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('storybook') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
+              >
+                <img
+                  src={getAssetUrl('/images/tantalize/storybook.png')}
+                  onError={(e) => {
+                    e.currentTarget.src = '/storybook.png';
+                  }}
+                  sizes="106vw"
+                  alt="Story Book Background"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/20 pointer-events-none" />
+              </div>
+
+              {/* Interactive Story Folio Book (Code-Split with Suspense) */}
+              {visitedTabs.has('storybook') && (
+                <Suspense fallback={<StoryBookSkeleton />}>
+                  <StoryBook
+                    isActive={isSectionRendered('storybook')}
+                    onReachHome={handleStoryBookHome}
+                    onReachBottom={handleStoryBookBottom}
+                  />
+                </Suspense>
+              )}
             </div>
 
             {/* ================= 2. TIMELINE SECTION (East: +100vw, 0) ================= */}

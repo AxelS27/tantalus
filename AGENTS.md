@@ -23,6 +23,7 @@ Navigation functions like a cinematic camera gliding across a 2D coordinate plan
 Tantalize/
 ├── public/
 │   ├── home.png           # Center quadrant (0, 0) - Tantalus reaching for fruit
+│   ├── storybook.png      # North-East quadrant (+100vw, -100vh) - Grand Library & Chronicles
 │   ├── timeline.png       # East quadrant (+100vw, 0) - Coastal Greek cliff & temple
 │   ├── projects.png       # South quadrant (0, +100vh) - Mountain valley & clouds
 │   ├── archives.png       # West quadrant (-100vw, 0) - Classical Greek bridge & gorge
@@ -31,6 +32,7 @@ Tantalize/
 ├── src/
 │   ├── components/
 │   │   ├── Navbar.tsx         # Apple-grade frosted glass floating navigation capsule
+│   │   ├── StoryBook.tsx      # Illuminated Renaissance storybook & chronicles
 │   │   └── TimelineRoller.tsx # Cylindrical 3D vertical roller carousel
 │   ├── App.tsx            # 2D Spatial camera, global wheel navigation, URL hash router
 │   ├── index.css          # Tailwind v4 theme, warm canvas variables & typography
@@ -63,6 +65,9 @@ Tantalize/
 The world operates on a 2D continuous coordinate plane:
 
 ```text
+                                                 [ STORYBOOK (+100vw, -100vh) ]
+                                                   (Grand Library & Study)
+
 [ ARCHIVE (-100vw, 0) ]          [ HOME (0, 0) ]          [ TIMELINE (+100vw, 0) ]
   (Greek Bridge & Gorge)              (Tantalus in Lake)        (Cliff Temple & Sea)
 
@@ -72,7 +77,7 @@ The world operates on a 2D continuous coordinate plane:
 
 * **Seamless Edge Blending**: Each artwork applies a radial feather mask (`radial-gradient(ellipse 96% 92% ...)`) so that transitions between quadrants dissolve into a continuous panoramic atmosphere without hard square seams.
 * **Camera Easing**: 1.6s cinematic glide (`ease: [0.22, 1, 0.36, 1]`) with zero jitter.
-* **URL Hash Router**: Deep links (`#home`, `#timeline`, `#projects`, `#certificate`) sync bidirectionally with browser history and canvas positioning.
+* **URL Hash Router**: Deep links (`#home`, `#story`, `#timeline`, `#projects`, `#certificate`) sync bidirectionally with browser history and canvas positioning.
 
 ---
 

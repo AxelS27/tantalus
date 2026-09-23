@@ -2,15 +2,16 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 import { getPrefetchProps, type PrefetchSectionKey } from '../lib/prefetch';
 
-export type NavItem = 'home' | 'timeline' | 'projects' | 'archive' | 'certificates' | 'connect';
+export type NavItem = 'home' | 'storybook' | 'timeline' | 'projects' | 'archive' | 'certificates' | 'connect';
 
 interface NavbarProps {
   activeTab?: NavItem;
   onTabChange?: (tab: NavItem) => void;
 }
 
-const mainNavItems: { id: 'home' | 'timeline' | 'projects'; label: string }[] = [
+const mainNavItems: { id: 'home' | 'storybook' | 'timeline' | 'projects'; label: string }[] = [
   { id: 'home', label: 'Home' },
+  { id: 'storybook', label: 'Story' },
   { id: 'timeline', label: 'Timeline' },
   { id: 'projects', label: 'Projects' },
 ];

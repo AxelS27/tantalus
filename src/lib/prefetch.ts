@@ -17,6 +17,7 @@ import { projectPages } from '../data/projects';
 export type PrefetchSectionKey =
   | 'timeline'
   | 'projects'
+  | 'storybook'
   | 'archive'
   | 'certificates'
   | 'connect';
@@ -26,6 +27,7 @@ export type CanvasBackgroundKey = PrefetchSectionKey | 'home';
 const sectionLoaders: Record<PrefetchSectionKey, () => Promise<unknown>> = {
   timeline: () => import('../components/TimelineRoller'),
   projects: () => import('../components/ProjectsGrid'),
+  storybook: () => import('../components/StoryBook'),
   archive: () => import('../components/ArchiveHub'),
   certificates: () => import('../components/CertificatesCoverflow'),
   connect: () => import('../components/ConnectHub'),
@@ -40,6 +42,7 @@ const backgroundPaths: Record<CanvasBackgroundKey, string> = {
   home: '/images/tantalize/home.webp',
   timeline: '/images/tantalize/timeline.webp',
   projects: '/images/tantalize/projects.webp',
+  storybook: '/images/tantalize/storybook.png',
   archive: '/images/tantalize/archives.webp',
   certificates: '/images/tantalize/certificates.webp',
   connect: '/images/tantalize/connect.webp',
