@@ -145,8 +145,10 @@ export const ArchiveHub = memo(function ArchiveHub({
     if (typeof window !== 'undefined') {
       prefetchSection('certificates');
       prefetchSection('connect');
+      prefetchSection('storybook');
       prefetchSectionBackground('certificates');
       prefetchSectionBackground('connect');
+      prefetchSectionBackground('storybook');
     }
   }, []);
 

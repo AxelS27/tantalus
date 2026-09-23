@@ -9,9 +9,8 @@ interface NavbarProps {
   onTabChange?: (tab: NavItem) => void;
 }
 
-const mainNavItems: { id: 'home' | 'storybook' | 'timeline' | 'projects'; label: string }[] = [
+const mainNavItems: { id: 'home' | 'timeline' | 'projects'; label: string }[] = [
   { id: 'home', label: 'Home' },
-  { id: 'storybook', label: 'Story' },
   { id: 'timeline', label: 'Timeline' },
   { id: 'projects', label: 'Projects' },
 ];
@@ -29,8 +28,13 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
     onTabChange?.(id);
   };
 
-  const isSubApp = activeTab === 'certificates' || activeTab === 'connect';
-  const subAppLabel = activeTab === 'certificates' ? 'Certificates' : 'Connect';
+  const isSubApp = activeTab === 'certificates' || activeTab === 'connect' || activeTab === 'storybook';
+  const subAppLabel =
+    activeTab === 'certificates'
+      ? 'Certificates'
+      : activeTab === 'connect'
+        ? 'Connect'
+        : 'Story Book';
 
   return (
     <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex flex-col items-center">

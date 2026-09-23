@@ -140,12 +140,14 @@ interface StoryBookProps {
   isActive?: boolean;
   onReachBottom?: () => void;
   onReachHome?: () => void;
+  onReachArchive?: () => void;
 }
 
 export const StoryBook = memo(function StoryBook({
   isActive = true,
   onReachBottom,
   onReachHome,
+  onReachArchive,
 }: StoryBookProps) {
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [viewMode, setViewMode] = useState<'folio' | 'scroll'>('folio');
@@ -154,21 +156,33 @@ export const StoryBook = memo(function StoryBook({
 
   const chapter = STORY_CHAPTERS[currentChapterIndex];
 
+  const handleBack = useCallback(() => {
+    if (onReachArchive) {
+      onReachArchive();
+    } else if (onReachHome) {
+      onReachHome();
+    }
+  }, [onReachArchive, onReachHome]);
+
   const handleNextChapter = useCallback(() => {
     if (currentChapterIndex < STORY_CHAPTERS.length - 1) {
       setCurrentChapterIndex((prev) => prev + 1);
     } else {
-      onReachBottom?.();
+      if (onReachBottom) {
+        onReachBottom();
+      } else {
+        handleBack();
+      }
     }
-  }, [currentChapterIndex, onReachBottom]);
+  }, [currentChapterIndex, onReachBottom, handleBack]);
 
   const handlePrevChapter = useCallback(() => {
     if (currentChapterIndex > 0) {
       setCurrentChapterIndex((prev) => prev - 1);
     } else {
-      onReachHome?.();
+      handleBack();
     }
-  }, [currentChapterIndex, onReachHome]);
+  }, [currentChapterIndex, handleBack]);
 
   // Keyboard navigation when StoryBook is active
   useEffect(() => {
@@ -186,13 +200,13 @@ export const StoryBook = memo(function StoryBook({
         handlePrevChapter();
       } else if (e.key === 'Escape' || e.key === 'Home') {
         e.preventDefault();
-        onReachHome?.();
+        handleBack();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isActive, handleNextChapter, handlePrevChapter, onReachHome]);
+  }, [isActive, handleNextChapter, handlePrevChapter, handleBack]);
 
   // Handle wheel events inside the StoryBook card
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
@@ -274,14 +288,14 @@ export const StoryBook = memo(function StoryBook({
               )}
             </button>
 
-            {/* Quick Glide Home Button */}
+            {/* Quick Glide Back to Archive Hub Button */}
             <button
-              onClick={onReachHome}
-              title="Return to Home Center"
+              onClick={handleBack}
+              title="Return to Archive Hub"
               className="px-3 py-1.5 rounded-full bg-amber-500/15 hover:bg-amber-500/25 dark:bg-amber-400/15 dark:hover:bg-amber-400/25 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs font-sans tracking-wide uppercase font-medium flex items-center gap-1.5 transition-all duration-200 cursor-pointer"
             >
               <Compass className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Home</span>
+              <span className="hidden sm:inline">Archive</span>
             </button>
           </div>
         </div>

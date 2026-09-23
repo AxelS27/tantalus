@@ -78,7 +78,7 @@ const getRouteInfo = (): RouteInfo => {
   if (hash === 'connect' || hash === 'archive/connect') {
     return { tab: 'connect', projectId: null };
   }
-  if (hash === 'storybook' || hash === 'story') {
+  if (hash === 'storybook' || hash === 'story' || hash === 'archive/storybook') {
     return { tab: 'storybook', projectId: null };
   }
   if (hash.startsWith('archive') || hash.includes('settings')) {
@@ -262,8 +262,12 @@ export default function App() {
     () => triggerSectionChange('home'),
     [triggerSectionChange],
   );
+  const handleStoryBookArchive = useCallback(
+    () => triggerSectionChange('archive'),
+    [triggerSectionChange],
+  );
   const handleStoryBookBottom = useCallback(
-    () => triggerSectionChange('timeline'),
+    () => triggerSectionChange('archive'),
     [triggerSectionChange],
   );
   const handleTimelineEnd = useCallback(
@@ -291,6 +295,8 @@ export default function App() {
       triggerSectionChange('certificates', true, true);
     } else if (appId === 'connect') {
       triggerSectionChange('connect', true, true);
+    } else if (appId === 'storybook') {
+      triggerSectionChange('storybook', true, true);
     }
   }, [triggerSectionChange]);
   const handleCertificatesTop = useCallback(
@@ -345,12 +351,10 @@ export default function App() {
     if (activeTab === 'home') {
       if (e.deltaY > 25) {
         triggerSectionChange('timeline');
-      } else if (e.deltaY < -25) {
-        triggerSectionChange('storybook');
       }
     } else if (activeTab === 'storybook') {
-      if (e.deltaY > 25) {
-        triggerSectionChange('home');
+      if (e.deltaY < -25) {
+        triggerSectionChange('archive');
       }
     } else if (activeTab === 'certificates') {
       if (e.deltaY < -25) {
@@ -539,6 +543,7 @@ export default function App() {
                 <Suspense fallback={<StoryBookSkeleton />}>
                   <StoryBook
                     isActive={isSectionRendered('storybook')}
+                    onReachArchive={handleStoryBookArchive}
                     onReachHome={handleStoryBookHome}
                     onReachBottom={handleStoryBookBottom}
                   />
