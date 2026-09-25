@@ -19,7 +19,7 @@ import {
   Sparkles,
   Scroll,
 } from 'lucide-react';
-import { storybooksData, type StoryBookItem } from '../data/storybooks';
+import { storybooksData, type StoryBookItem } from '../data/storybooks/index';
 
 export interface StoryBookProps {
   isActive?: boolean;
@@ -128,7 +128,7 @@ const BookCard = memo(function BookCard({
             <div className="absolute inset-3 border border-amber-900/10 dark:border-amber-100/10 rounded-r-xl pointer-events-none" />
             <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-[#8A7B6E] dark:text-[#8E8478] uppercase border-b border-amber-900/10 dark:border-amber-100/10 pb-1.5 z-10">
               <span>{book.volume}</span>
-              <span>Folio I</span>
+              <span>Page 01</span>
             </div>
 
             <div className="flex flex-col items-center text-center gap-2.5 my-auto z-10 py-4">
@@ -268,6 +268,11 @@ export type NovelPageData =
       pageNumber: number;
     }
   | {
+      type: 'frontispiece';
+      book: StoryBookItem;
+      pageNumber: number;
+    }
+  | {
       type: 'toc';
       bookTitle: string;
       subtitle: string;
@@ -276,6 +281,7 @@ export type NovelPageData =
     }
   | {
       type: 'chapter-title-leaf';
+      chapterId: string;
       chapterNumber: string;
       chapterTitle: string;
       subtitle: string;
@@ -285,15 +291,20 @@ export type NovelPageData =
       pageNumber: number;
     }
   | {
-      type: 'narrative';
+      type: 'chapter-narrative';
+      chapterId: string;
       chapterNumber: string;
       chapterTitle: string;
+      subtitle: string;
+      motif: string;
       paragraphs: string[];
       isFirstPageOfChapter: boolean; // only page 1 gets drop-cap
+      isLastPageOfChapter: boolean;
       pageNumber: number;
     }
   | {
       type: 'finis';
+      book: StoryBookItem;
       pageNumber: number;
     };
 
@@ -345,21 +356,23 @@ export const StoryBook = memo(function StoryBook({
   }, [selectedIndex]);
 
   // =========================================================================
-  // CONTINUOUS NOVEL PAGINATOR:
-  // Maximizes page space: Each chapter's complete text fills the facing page
-  // from top to bottom completely without leaving empty bottom half-pages!
+  // CONTINUOUS OPTIMAL NOVEL PAGINATOR:
+  // 1. Each new chapter starts with a dedicated Title Leaf on the facing page.
+  // 2. The narrative pages maximize available vertical space from top to bottom
+  //    using continuous sentence-level flow, with zero empty waste and zero overflow.
   // =========================================================================
-  const spreads: NovelSpread[] = useMemo(() => {
+  const { spreads, chapterPageMap } = useMemo(() => {
     const allPages: NovelPageData[] = [];
-    const chapterPageMap: { chapterId: string; number: string; title: string; motif: string; pageNumber: number }[] = [];
+    const chapterMap: { chapterId: string; number: string; title: string; motif: string; pageNumber: number }[] = [];
 
-    // Page 0: Inside Cover (Blank)
+    // Page 0: Inside Frontispiece / Ex Libris (Left page of Front Matter)
     allPages.push({
-      type: 'blank-cover',
+      type: 'frontispiece',
+      book: currentBook,
       pageNumber: 0,
     });
 
-    // Page 1: TOC placeholder
+    // Page 1: Table of Contents Placeholder (Right page of Front Matter)
     allPages.push({
       type: 'toc',
       bookTitle: currentBook?.title || '',
@@ -370,45 +383,98 @@ export const StoryBook = memo(function StoryBook({
 
     let pageCounter = 2;
 
+    // Full narrative capacity budget (calibrated for balanced editorial font size & vertical page fill)
+    const NARRATIVE_CHAR_BUDGET = 880;
+
     if (currentBook && currentBook.chapters && currentBook.chapters.length > 0) {
       currentBook.chapters.forEach((ch) => {
-        const titleLeafPageNum = pageCounter++;
-        chapterPageMap.push({
+        // Dedicated Chapter Title Leaf page
+        const titleLeafPage = pageCounter++;
+        chapterMap.push({
           chapterId: ch.id,
           number: ch.number,
           title: ch.title,
           motif: ch.motif,
-          pageNumber: titleLeafPageNum,
+          pageNumber: titleLeafPage,
         });
 
-        // 1. Dedicated Chapter Title Leaf
         allPages.push({
           type: 'chapter-title-leaf',
+          chapterId: ch.id,
           chapterNumber: ch.number,
           chapterTitle: ch.title,
           subtitle: ch.subtitle,
           motif: ch.motif,
           theme: ch.theme,
           emblem: currentBook.emblem,
-          pageNumber: titleLeafPageNum,
+          pageNumber: titleLeafPage,
         });
 
-        // 2. Paginate chapter narrative paragraphs (5 paragraphs per page fits completely within height bounds!)
-        const MAX_PARAGRAPHS_PER_PAGE = 5;
-        const totalTextPages = Math.max(1, Math.ceil(ch.paragraphs.length / MAX_PARAGRAPHS_PER_PAGE));
+        // Narrative text pages (maximized packing with sentence-level splitting)
+        let isFirst = true;
+        let curParas: string[] = [];
+        let curChars = 0;
 
-        for (let pIdx = 0; pIdx < totalTextPages; pIdx++) {
-          const start = pIdx * MAX_PARAGRAPHS_PER_PAGE;
-          const pageParagraphs = ch.paragraphs.slice(start, start + MAX_PARAGRAPHS_PER_PAGE);
-
+        const flush = (isLast: boolean) => {
+          if (curParas.length === 0) return;
           allPages.push({
-            type: 'narrative',
+            type: 'chapter-narrative',
+            chapterId: ch.id,
             chapterNumber: ch.number,
             chapterTitle: ch.title,
-            paragraphs: pageParagraphs,
-            isFirstPageOfChapter: pIdx === 0, // only the first text page gets the drop-cap
+            subtitle: ch.subtitle,
+            motif: ch.motif,
+            paragraphs: [...curParas],
+            isFirstPageOfChapter: isFirst,
+            isLastPageOfChapter: isLast,
             pageNumber: pageCounter++,
           });
+          isFirst = false;
+          curParas = [];
+          curChars = 0;
+        };
+
+        for (let pIdx = 0; pIdx < ch.paragraphs.length; pIdx++) {
+          const rawPara = ch.paragraphs[pIdx].trim();
+          if (!rawPara) continue;
+
+          const paraCost = rawPara.length + 20;
+
+          if (curChars + paraCost <= NARRATIVE_CHAR_BUDGET) {
+            curParas.push(rawPara);
+            curChars += paraCost;
+          } else {
+            // Split paragraph into natural sentences so page is filled completely
+            const sentences = rawPara.match(/[^.!?]+[.!?]+(\s+|$)|[^.!?]+$/g) || [rawPara];
+            const fitSentences: string[] = [];
+            const remSentences: string[] = [];
+            let tempChars = curChars;
+
+            for (const s of sentences) {
+              if (tempChars + s.length <= NARRATIVE_CHAR_BUDGET || (fitSentences.length === 0 && curChars < NARRATIVE_CHAR_BUDGET * 0.45)) {
+                fitSentences.push(s);
+                tempChars += s.length;
+              } else {
+                remSentences.push(s);
+              }
+            }
+
+            if (fitSentences.length > 0) {
+              curParas.push(fitSentences.join(' ').trim());
+            }
+
+            flush(false);
+
+            if (remSentences.length > 0) {
+              const remText = remSentences.join(' ').trim();
+              curParas.push(remText);
+              curChars += remText.length + 20;
+            }
+          }
+        }
+
+        if (curParas.length > 0) {
+          flush(true);
         }
       });
     }
@@ -416,15 +482,16 @@ export const StoryBook = memo(function StoryBook({
     // Final Page: Finis
     allPages.push({
       type: 'finis',
+      book: currentBook,
       pageNumber: pageCounter++,
     });
 
-    // Update Page 1 (Table of Contents) with the calculated chapterPageMap
+    // Update Page 1 (Table of Contents) with the calculated chapterMap
     allPages[1] = {
       type: 'toc',
       bookTitle: currentBook?.title || '',
       subtitle: currentBook?.subtitle || '',
-      chapterPageMap,
+      chapterPageMap: chapterMap,
       pageNumber: 1,
     };
 
@@ -448,7 +515,7 @@ export const StoryBook = memo(function StoryBook({
       });
     }
 
-    return spreadList;
+    return { spreads: spreadList, chapterPageMap: chapterMap };
   }, [currentBook]);
 
   const currentSpread = useMemo(() => {
@@ -457,11 +524,11 @@ export const StoryBook = memo(function StoryBook({
         id: 'spread-fallback',
         spreadIndex: 0,
         leftPage: { type: 'blank-cover' as const, pageNumber: 0 },
-        rightPage: { type: 'finis' as const, pageNumber: 1 },
+        rightPage: { type: 'finis' as const, book: currentBook, pageNumber: 1 },
       };
     }
     return spreads[currentSpreadIndex] || spreads[0];
-  }, [spreads, currentSpreadIndex]);
+  }, [spreads, currentSpreadIndex, currentBook]);
 
   const clearSequenceTimers = () => {
     sequenceTimersRef.current.forEach((t) => window.clearTimeout(t));
@@ -769,7 +836,7 @@ export const StoryBook = memo(function StoryBook({
     [isCoverOpen, handleOpenSequence, settleToIndex],
   );
 
-  // Helper to render an individual novel page authentically
+  // Helper to render an individual novel page authentically with maximized content density
   const renderNovelPage = (page: NovelPageData | undefined, isLeft: boolean) => {
     if (!page || page.type === 'blank-cover') {
       return (
@@ -782,94 +849,127 @@ export const StoryBook = memo(function StoryBook({
       );
     }
 
+    // 1. FRONTISPIECE / HALF-TITLE PAGE (Pure Minimalist Title Page)
+    if (page.type === 'frontispiece') {
+      const book = page.book;
+      return (
+        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+          {/* Inner Paper Border Accent */}
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
+
+          {/* Pure Minimalist Book Title */}
+          <div className="flex-1 flex flex-col items-center justify-center text-center gap-2.5 min-h-0 py-6 px-4 z-10 my-auto">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] dark:text-white tracking-[0.2em] uppercase">
+              {book.title}
+            </h2>
+            {book.originalTitle && (
+              <p className="text-xs sm:text-sm font-serif italic text-amber-800/80 dark:text-amber-400/80 tracking-widest">
+                {book.originalTitle}
+              </p>
+            )}
+          </div>
+
+          {/* Uniform Centered Footer */}
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+            <span>{String(page.pageNumber).padStart(2, '0')}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // 2. TABLE OF CONTENTS / INDEX (Right page of Front Matter)
     if (page.type === 'toc') {
       return (
-        <div className="relative flex-1 p-8 sm:p-10 md:p-12 lg:p-14 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full">
-          {/* Top Fixed Spacer */}
-          <div className="h-4 flex-shrink-0" />
+        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+          {/* Inner Paper Border Accent */}
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
 
-          {/* Book Title & Table of Contents */}
-          <div className="flex-1 flex flex-col items-center justify-center text-center gap-1.5 min-h-0 py-2">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] dark:text-white tracking-wide">
-              {page.bookTitle}
-            </h2>
-            <p className="text-xs sm:text-sm font-serif italic text-amber-700 dark:text-amber-400">
-              {page.subtitle}
-            </p>
+          {/* Book Title & Clickable Index Table with Hierarchy & Dot Leaders */}
+          <div className="flex-1 flex flex-col justify-start min-h-0 py-2 px-2 sm:px-6 md:px-8 z-10 overflow-hidden">
+            <div className="text-center pb-3">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#1F1712] dark:text-white tracking-wide">
+                Table of Contents
+              </h3>
+              <p className="text-xs sm:text-sm font-serif italic text-amber-800/80 dark:text-amber-400/80 mt-0.5">
+                Chronicle of Thirteen Convergences
+              </p>
+              <div className="w-12 h-px bg-amber-600/30 mx-auto my-2" />
+            </div>
 
-            {/* Clickable Index Table with Accurate Page Numbers */}
-            <div className="w-full max-w-md mt-6 space-y-1.5">
+            {/* Clickable Index Table with Hierarchy, Dot Leaders & Larger Typography */}
+            <div className="w-full flex-1 flex flex-col justify-between py-1 space-y-1 overflow-hidden">
               {page.chapterPageMap?.map((item) => (
                 <button
                   key={item.chapterId}
                   onClick={() => handleJumpToChapterByPage(item.pageNumber)}
-                  className="group w-full flex items-baseline justify-between py-0.5 text-left hover:text-amber-700 dark:hover:text-amber-300 transition-colors cursor-pointer"
+                  className="group w-full flex items-baseline justify-between py-1 px-2 rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer"
                 >
-                  <div className="flex items-baseline gap-2.5 truncate pr-2">
-                    <span className="font-serif text-xs text-[#8A7B6E] dark:text-[#8E8478] w-16 flex-shrink-0 text-left">
+                  <div className="flex items-baseline gap-2.5 min-w-0 flex-1 pr-2">
+                    <span className="font-serif text-xs sm:text-[13px] md:text-sm text-[#8A7B6E] dark:text-[#8E8478] w-20 sm:w-24 md:w-28 flex-shrink-0 text-left uppercase tracking-wider font-medium">
                       {item.number}
                     </span>
-                    <span className="font-serif text-xs sm:text-[13px] text-[#2B231D] dark:text-[#DDD5CA] group-hover:underline truncate">
+                    <span className="font-serif font-medium text-xs sm:text-sm md:text-[14.5px] lg:text-[15px] text-[#241D17] dark:text-[#E2DAD0] group-hover:text-amber-800 dark:group-hover:text-amber-300 truncate">
                       {item.title}
                     </span>
+                    <span className="flex-1 border-b border-dotted border-[#8A7B6E]/40 dark:border-[#8E8478]/40 mx-2 mb-1 min-w-[24px]" />
                   </div>
-                  <span className="font-mono text-[11px] text-[#8A7B6E] dark:text-[#8E8478] flex-shrink-0">
-                    {item.pageNumber}
+                  <span className="font-mono text-xs sm:text-sm text-[#8A7B6E] dark:text-[#8E8478] group-hover:text-amber-800 dark:group-hover:text-amber-300 flex-shrink-0 tabular-nums font-semibold">
+                    {String(item.pageNumber).padStart(2, '0')}
                   </span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Fixed Height Bottom Page Number */}
-          <div className="h-6 flex-shrink-0 flex items-center justify-center text-xs font-serif text-[#8A7B6E] dark:text-[#8E8478]">
-            {page.pageNumber}
+          {/* Uniform Centered Footer */}
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+            <span>{String(page.pageNumber).padStart(2, '0')}</span>
           </div>
         </div>
       );
     }
 
+    // 3. DEDICATED CHAPTER TITLE LEAF (Pure, Clean & Simple)
     if (page.type === 'chapter-title-leaf') {
       return (
-        <div className="relative flex-1 p-8 sm:p-10 md:p-12 lg:p-14 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full">
-          {/* Top Fixed Spacer */}
-          <div className="h-4 flex-shrink-0" />
+        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+          {/* Inner Paper Border Accent */}
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
 
-          {/* Center Title Leaf (Dedicated Chapter Division Page) */}
-          <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 min-h-0 py-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-amber-600/30 dark:border-amber-400/30 flex items-center justify-center bg-amber-500/5 shadow-xs mb-1">
-              {renderEmblemIcon(page.emblem, 'w-8 h-8 sm:w-10 sm:h-10 text-amber-700 dark:text-amber-300')}
-            </div>
-
-            <span className="text-xs font-serif tracking-[0.25em] text-amber-800 dark:text-amber-400 uppercase font-semibold">
+          {/* Pure & Minimalist Center Chapter Division */}
+          <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
+            <span className="text-xs sm:text-sm font-serif tracking-[0.35em] text-amber-800 dark:text-amber-400 uppercase font-semibold">
               {page.chapterNumber}
             </span>
 
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] dark:text-white tracking-wide">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] dark:text-white tracking-wide max-w-md leading-snug">
               {page.chapterTitle}
             </h3>
 
-            <p className="text-xs sm:text-sm font-serif italic text-[#7A695A] dark:text-[#A89E92] max-w-xs leading-relaxed mt-1">
-              {page.subtitle}
-            </p>
+            {page.subtitle && (
+              <p className="text-xs sm:text-sm font-serif italic text-[#7A695A] dark:text-[#A89E92] max-w-xs leading-relaxed mt-1">
+                {page.subtitle}
+              </p>
+            )}
           </div>
 
-          {/* Fixed Height Bottom Page Number */}
-          <div className="h-6 flex-shrink-0 flex items-center justify-center text-xs font-serif text-[#8A7B6E] dark:text-[#8E8478]">
-            {page.pageNumber}
+          {/* Uniform Centered Footer */}
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+            <span>{String(page.pageNumber).padStart(2, '0')}</span>
           </div>
         </div>
       );
     }
 
-    if (page.type === 'narrative') {
+    // 4. MAXIMIZED NARRATIVE TEXT PAGE (Continuous full-height text flow)
+    if (page.type === 'chapter-narrative') {
       return (
-        <div className="relative flex-1 p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full">
-          {/* Top Fixed Spacer */}
-          <div className="h-2 flex-shrink-0" />
+        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+          {/* Inner Paper Border Accent */}
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
 
-          {/* Narrative Text Body (Zero overflow, strict height containment!) */}
-          <div className="flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 overflow-hidden">
+          {/* Narrative Text Body (Balanced, highly legible editorial font) */}
+          <div className="flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 px-2 sm:px-4 md:px-6 overflow-hidden z-10">
             {page.paragraphs?.map((paragraph, pIdx) => {
               if (page.isFirstPageOfChapter && pIdx === 0 && paragraph.length > 0) {
                 const firstLetter = paragraph.charAt(0);
@@ -877,9 +977,9 @@ export const StoryBook = memo(function StoryBook({
                 return (
                   <p
                     key={pIdx}
-                    className="leading-[1.65] sm:leading-[1.7] text-justify font-serif font-light text-xs sm:text-sm md:text-[15px] lg:text-[15.5px] text-[#2B231D] dark:text-[#DDD5CA]"
+                    className="leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] dark:text-[#F3ECE0] hyphens-auto"
                   >
-                    <span className="float-left text-4xl sm:text-5xl leading-[0.8] pr-2.5 pt-0.5 font-serif font-bold text-amber-800 dark:text-[#E8C582] select-none">
+                    <span className="float-left text-5xl sm:text-6xl md:text-7xl leading-[0.8] pr-3 pt-1 font-serif font-bold text-amber-800 dark:text-[#E8C582] select-none">
                       {firstLetter}
                     </span>
                     {restOfParagraph}
@@ -889,8 +989,8 @@ export const StoryBook = memo(function StoryBook({
               return (
                 <p
                   key={pIdx}
-                  className={`leading-[1.65] sm:leading-[1.7] text-justify font-serif font-light text-xs sm:text-sm md:text-[15px] lg:text-[15.5px] text-[#2B231D] dark:text-[#DDD5CA] ${
-                    pIdx > 0 || !page.isFirstPageOfChapter ? 'indent-5 sm:indent-7' : ''
+                  className={`leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] dark:text-[#F3ECE0] hyphens-auto ${
+                    pIdx > 0 || !page.isFirstPageOfChapter ? 'indent-6 sm:indent-8' : ''
                   }`}
                 >
                   {paragraph}
@@ -899,32 +999,52 @@ export const StoryBook = memo(function StoryBook({
             })}
           </div>
 
-          {/* Fixed Height Bottom Page Number */}
-          <div className="h-5 flex-shrink-0 flex items-center justify-center text-[11px] sm:text-xs font-serif text-[#8A7B6E] dark:text-[#8E8478]">
-            {page.pageNumber}
+          {/* Uniform Centered Footer */}
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+            <span>{String(page.pageNumber).padStart(2, '0')}</span>
           </div>
         </div>
       );
     }
 
-    // Finis Page
+    // 5. FINIS PAGE (Pure Video & Quote)
+    if (page.type === 'finis') {
+      return (
+        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+          {/* Inner Paper Border Accent */}
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
+
+          {/* Center Showcase: Pure Video & Quote */}
+          <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
+            {/* Cinematic Animated Winged Man Painting */}
+            <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] aspect-[16/9] rounded-xl overflow-hidden border border-amber-900/20 dark:border-amber-400/20 shadow-xl bg-black/10">
+              <video
+                src="/Winged_man_flying_toward_sun_20260923081626.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+            </div>
+
+            <p className="text-sm sm:text-base md:text-[17px] font-serif italic text-[#3D3126] dark:text-[#E8DFC8] max-w-md leading-relaxed px-2 mt-2">
+              "Icarus died smiling, for to fall is to have once soared"
+            </p>
+          </div>
+
+          {/* Uniform Centered Footer */}
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+            <span>{String(page.pageNumber).padStart(2, '0')}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // Fallback blank parchment
     return (
-      <div className="relative flex-1 p-8 sm:p-10 md:p-12 lg:p-14 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full">
-        <div className="h-4 flex-shrink-0" />
-
-        <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 min-h-0 py-8">
-          <span className="text-3xl font-serif italic text-amber-800 dark:text-[#E8C582]">
-            FINIS
-          </span>
-          <p className="text-xs sm:text-sm font-serif italic text-[#7A695A] dark:text-[#A89E92] max-w-xs leading-relaxed">
-            {currentBook?.epigraph?.quote || ''}
-          </p>
-        </div>
-
-        <div className="h-6 flex-shrink-0 flex items-center justify-center text-xs font-serif text-[#8A7B6E] dark:text-[#8E8478]">
-          {page.pageNumber}
-        </div>
-      </div>
+      <div className="relative flex-1 p-8 overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full" />
     );
   };
 
@@ -1042,31 +1162,18 @@ export const StoryBook = memo(function StoryBook({
               {/* Back to Shelf Button */}
               <button
                 onClick={handleCloseSequence}
-                className="group flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 hover:bg-black/70 text-amber-100 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
+                className="group flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:-translate-x-0.5" />
                 <span>Return to Shelf</span>
               </button>
 
-              {/* Center Book Title Badge */}
-              <div className="flex items-center gap-2.5 font-serif text-sm sm:text-base text-amber-200/90 tracking-wider">
-                <span className="font-bold">{currentBook?.title || 'StoryBook'}</span>
-                <span className="opacity-40">•</span>
-                <span className="italic text-amber-400">
-                  {currentSpread?.leftPage?.type === 'blank-cover'
-                    ? 'Front Matter'
-                    : currentSpread?.leftPage?.type === 'chapter-title-leaf'
-                    ? currentSpread.leftPage.chapterNumber
-                    : `Spread ${currentSpreadIndex + 1}`}
-                </span>
-              </div>
-
               {/* Table of Contents Drawer Trigger */}
               <button
                 onClick={() => setIsTocOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 hover:bg-black/70 text-amber-100 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
               >
-                <List className="w-4 h-4 text-amber-300" />
+                <List className="w-4 h-4 text-amber-700 dark:text-amber-300" />
                 <span className="hidden sm:inline">Index</span>
               </button>
             </motion.div>
@@ -1101,7 +1208,7 @@ export const StoryBook = memo(function StoryBook({
               </div>
             </div>
 
-            {/* ================= BOTTOM SPREAD PAGE-TURN NAVIGATION ================= */}
+            {/* ================= BOTTOM SPREAD PAGE-TURN NAVIGATION (Theme-standardized) ================= */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1113,28 +1220,28 @@ export const StoryBook = memo(function StoryBook({
               <button
                 onClick={handlePrevSpread}
                 disabled={currentSpreadIndex === 0}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/50 hover:bg-black/70 text-amber-100 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-serif disabled:opacity-20 disabled:pointer-events-none transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif disabled:opacity-20 disabled:pointer-events-none transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span>Turn Left</span>
               </button>
 
               {/* Progress Indicator / Spread Counter */}
-              <div className="flex items-center gap-2 font-serif text-xs sm:text-sm text-amber-200/80">
+              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF8F5]/40 dark:bg-[#161412]/50 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/40 dark:border-white/15 text-stone-900 dark:text-amber-200/90 font-serif text-xs sm:text-sm shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.6)]">
                 <span className="font-mono">
                   {currentSpreadIndex === 0
                     ? 'Front Matter'
                     : `Spread ${currentSpreadIndex}`}
                 </span>
                 <span>/</span>
-                <span className="font-mono">{spreads.length - 1} Spreads</span>
+                <span className="font-mono">{Math.max(1, spreads.length - 1)} Spreads</span>
               </div>
 
               {/* Next Spread Button */}
               <button
                 onClick={handleNextSpread}
-                disabled={currentSpreadIndex === spreads.length - 1}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-semibold text-xs sm:text-sm font-serif disabled:opacity-20 disabled:pointer-events-none transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
+                disabled={currentSpreadIndex >= spreads.length - 1}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-medium text-xs sm:text-sm font-serif disabled:opacity-20 disabled:pointer-events-none transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[0_8px_24px_-4px_rgba(216,160,72,0.4)] border border-amber-400/30"
               >
                 <span>Turn Right</span>
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -1199,23 +1306,28 @@ export const StoryBook = memo(function StoryBook({
                   </span>
                 </button>
 
-                {currentBook && currentBook.chapters && currentBook.chapters.map((ch, idx) => {
-                  const targetPageNumber = (idx + 1) * 2;
+                {chapterPageMap.map((ch) => {
+                  const targetSpreadIdx = Math.floor(ch.pageNumber / 2);
+                  const isCurrentChapter = currentSpreadIndex === targetSpreadIdx;
                   return (
                     <button
-                      key={ch.id}
-                      onClick={() => handleJumpToChapterByPage(targetPageNumber)}
-                      className="w-full text-left p-3 rounded-xl transition-all flex flex-col gap-1 border cursor-pointer bg-white/40 dark:bg-white/5 border-transparent hover:border-black/5 dark:hover:border-white/5 text-[#4A3F35] dark:text-[#C5BBAF]"
+                      key={ch.chapterId}
+                      onClick={() => handleJumpToChapterByPage(ch.pageNumber)}
+                      className={`w-full text-left p-3 rounded-xl transition-all flex flex-col gap-1 border cursor-pointer ${
+                        isCurrentChapter
+                          ? 'bg-amber-500/15 border-amber-500/40 text-amber-950 dark:text-amber-200 shadow-sm'
+                          : 'bg-white/40 dark:bg-white/5 border-transparent hover:border-black/5 dark:hover:border-white/5 text-[#4A3F35] dark:text-[#C5BBAF]'
+                      }`}
                     >
                       <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-[#8A7B6E] dark:text-[#8E8478]">
                         <span>{ch.number}</span>
-                        <span>Motif: {ch.motif}</span>
+                        <span>{String(ch.pageNumber).padStart(2, '0')}</span>
                       </div>
                       <span className="font-serif font-semibold text-sm leading-snug">
                         {ch.title}
                       </span>
                       <span className="text-xs font-serif italic text-[#7A695A] dark:text-[#A89E92] line-clamp-1">
-                        {ch.subtitle}
+                        Motif: {ch.motif}
                       </span>
                     </button>
                   );
