@@ -18,8 +18,34 @@ import {
   List,
   Sparkles,
   Scroll,
+  Bookmark,
+  BookmarkCheck,
 } from 'lucide-react';
 import { storybooksData, type StoryBookItem } from '../data/storybooks/index';
+
+const BOOKMARK_STORAGE_KEY_PREFIX = 'tantalize_storybook_bookmark_';
+
+const getSavedBookmarkSpread = (bookId: string): number => {
+  try {
+    const saved = localStorage.getItem(`${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (typeof parsed?.spreadIndex === 'number') {
+        return parsed.spreadIndex;
+      }
+    }
+  } catch {}
+  return 0;
+};
+
+const saveBookmarkSpread = (bookId: string, spreadIndex: number) => {
+  try {
+    localStorage.setItem(
+      `${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`,
+      JSON.stringify({ spreadIndex, updatedAt: Date.now() }),
+    );
+  } catch {}
+};
 
 export interface StoryBookProps {
   isActive?: boolean;
@@ -32,6 +58,7 @@ interface BookCardProps {
   position: MotionValue<number>;
   selectedIndex: number;
   isCoverOpen: boolean;
+  bookmarkSpread?: number;
   onSelect: (book: StoryBookItem, index: number, isCenter: boolean) => void;
 }
 
@@ -58,6 +85,7 @@ const BookCard = memo(function BookCard({
   position,
   selectedIndex,
   isCoverOpen,
+  bookmarkSpread = 0,
   onSelect,
 }: BookCardProps) {
   const x = useTransform(position, (current) => (index - current) * 300);
@@ -124,23 +152,23 @@ const BookCard = memo(function BookCard({
           <div className="absolute bottom-0 left-2 right-2 h-3 bg-gradient-to-t from-[#C8B898] via-[#EFE6D5] to-[#DFD3BE] rounded-b-md border-t border-amber-900/20 shadow-inner" />
 
           {/* Clean Antique Parchment Sheet */}
-          <div className="relative w-[calc(100%-14px)] h-[calc(100%-14px)] rounded-r-2xl bg-[#FAF6EE] dark:bg-[#1C1816] p-6 flex flex-col justify-between text-[#2B231D] dark:text-[#EAE3D9] shadow-inner overflow-hidden">
-            <div className="absolute inset-3 border border-amber-900/10 dark:border-amber-100/10 rounded-r-xl pointer-events-none" />
-            <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-[#8A7B6E] dark:text-[#8E8478] uppercase border-b border-amber-900/10 dark:border-amber-100/10 pb-1.5 z-10">
+          <div className="relative w-[calc(100%-14px)] h-[calc(100%-14px)] rounded-r-2xl bg-[#FAF6EE] p-6 flex flex-col justify-between text-[#2B231D] shadow-inner overflow-hidden">
+            <div className="absolute inset-3 border border-amber-900/10 rounded-r-xl pointer-events-none" />
+            <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-[#8A7B6E] uppercase border-b border-amber-900/10 pb-1.5 z-10">
               <span>{book.volume}</span>
               <span>Page 01</span>
             </div>
 
             <div className="flex flex-col items-center text-center gap-2.5 my-auto z-10 py-4">
-              <div className="w-14 h-14 rounded-full border border-amber-600/30 dark:border-amber-400/30 flex items-center justify-center bg-amber-500/10 shadow-xs">
-                {renderEmblemIcon(book.emblem, 'w-7 h-7 text-amber-700 dark:text-amber-300')}
+              <div className="w-14 h-14 rounded-full border border-amber-600/30 flex items-center justify-center bg-amber-500/10 shadow-xs">
+                {renderEmblemIcon(book.emblem, 'w-7 h-7 text-amber-700')}
               </div>
-              <h4 className="text-xl sm:text-2xl font-serif font-bold tracking-wide text-[#1F1712] dark:text-white">
+              <h4 className="text-xl sm:text-2xl font-serif font-bold tracking-wide text-[#1F1712]">
                 {book.title}
               </h4>
             </div>
 
-            <div className="flex items-center justify-between text-[9px] font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-1.5 z-10">
+            <div className="flex items-center justify-between text-[9px] font-mono text-[#8A7B6E] border-t border-amber-900/10 pt-1.5 z-10">
               <span>{book.totalChapters} Chapters</span>
               <span>{book.author}</span>
             </div>
@@ -222,9 +250,18 @@ const BookCard = memo(function BookCard({
             </div>
 
             {isCenter && (
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 text-[10px] font-serif tracking-wider uppercase text-amber-200 bg-amber-950/90 px-3 py-1 rounded-full border border-amber-400/40 backdrop-blur-md shadow-lg group-hover:scale-105 transition-transform">
-                <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
-                <span>{book.isAvailable ? 'Click to Read' : 'Coming Soon'}</span>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 text-[10px] font-serif tracking-wider uppercase text-amber-200 bg-amber-950/90 px-3 py-1 rounded-full border border-amber-400/40 backdrop-blur-md shadow-lg group-hover:scale-105 transition-transform">
+                {bookmarkSpread > 0 ? (
+                  <>
+                    <Bookmark className="w-3 h-3 text-amber-300 fill-amber-400/40" />
+                    <span>Resume Reading</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
+                    <span>{book.isAvailable ? 'Click to Read' : 'Coming Soon'}</span>
+                  </>
+                )}
               </div>
             )}
 
@@ -350,10 +387,21 @@ export const StoryBook = memo(function StoryBook({
 
   const currentBook: StoryBookItem = storybooksData[selectedIndex] || storybooksData[0];
 
-  // Reset spread index whenever active book changes
+  // Persistent Reading Bookmark State (Manual Put / Take off Bookmark)
+  const [savedBookmarkSpread, setSavedBookmarkSpread] = useState<number>(() =>
+    getSavedBookmarkSpread(currentBook?.id || 'adoketos'),
+  );
+  const [showBookmarkToast, setShowBookmarkToast] = useState(false);
+  const [bookmarkToastMessage, setBookmarkToastMessage] = useState('Bookmark Placed');
+  const [isTogglingBookmarkAction, setIsTogglingBookmarkAction] = useState(false);
+
+  // Sync bookmark from storage when active book changes
   useEffect(() => {
-    setCurrentSpreadIndex(0);
-  }, [selectedIndex]);
+    if (currentBook?.id) {
+      const saved = getSavedBookmarkSpread(currentBook.id);
+      setSavedBookmarkSpread(saved);
+    }
+  }, [currentBook?.id]);
 
   // =========================================================================
   // CONTINUOUS OPTIMAL NOVEL PAGINATOR:
@@ -530,9 +578,52 @@ export const StoryBook = memo(function StoryBook({
     return spreads[currentSpreadIndex] || spreads[0];
   }, [spreads, currentSpreadIndex, currentBook]);
 
+  // 3D Physical Page Turn States
+  const [turnAnimation, setTurnAnimation] = useState<{
+    direction: 'forward' | 'backward';
+    fromSpreadIdx: number;
+    toSpreadIdx: number;
+    durationSec?: number;
+  } | null>(null);
+  const isFlippingRef = useRef(false);
+  const flipTimerRef = useRef<number | null>(null);
+
+  const isCurrentSpreadBookmarked =
+    savedBookmarkSpread > 0 &&
+    (turnAnimation ? turnAnimation.toSpreadIdx === savedBookmarkSpread : currentSpreadIndex === savedBookmarkSpread);
+
+  // Toggle Bookmark: Put Bookmark / Take off Bookmark
+  const handleToggleBookmark = useCallback(() => {
+    if (!currentBook?.id) return;
+
+    setIsTogglingBookmarkAction(true);
+
+    if (isCurrentSpreadBookmarked) {
+      // Take off Bookmark
+      saveBookmarkSpread(currentBook.id, 0);
+      setSavedBookmarkSpread(0);
+      setBookmarkToastMessage('Bookmark Removed');
+      setShowBookmarkToast(true);
+      window.setTimeout(() => setShowBookmarkToast(false), 2000);
+      window.setTimeout(() => setIsTogglingBookmarkAction(false), 500);
+    } else {
+      // Put Bookmark on this page
+      saveBookmarkSpread(currentBook.id, currentSpreadIndex);
+      setSavedBookmarkSpread(currentSpreadIndex);
+      setBookmarkToastMessage('Bookmark Placed');
+      setShowBookmarkToast(true);
+      window.setTimeout(() => setShowBookmarkToast(false), 2000);
+      window.setTimeout(() => setIsTogglingBookmarkAction(false), 500);
+    }
+  }, [currentBook?.id, currentSpreadIndex, isCurrentSpreadBookmarked]);
+
   const clearSequenceTimers = () => {
     sequenceTimersRef.current.forEach((t) => window.clearTimeout(t));
     sequenceTimersRef.current = [];
+    if (flipTimerRef.current) {
+      window.clearTimeout(flipTimerRef.current);
+      flipTimerRef.current = null;
+    }
   };
 
   useEffect(() => {
@@ -578,13 +669,14 @@ export const StoryBook = memo(function StoryBook({
     }
   }, [selectedIndex, settleToIndex]);
 
-  // Unified Opening Sequence
+  // Unified Opening Sequence with Resume from Bookmark
   const handleOpenSequence = useCallback((book: StoryBookItem) => {
     if (!book.isAvailable) return;
     clearSequenceTimers();
 
+    const savedSpread = getSavedBookmarkSpread(book.id);
     setIsCoverOpen(true);
-    setCurrentSpreadIndex(0); // Start at Spread 0 (Table of Contents)
+    setCurrentSpreadIndex(savedSpread < spreads.length ? savedSpread : 0);
 
     const t1 = window.setTimeout(() => {
       setIsZoomingPaper(true);
@@ -595,7 +687,7 @@ export const StoryBook = memo(function StoryBook({
     }, 1450);
 
     sequenceTimersRef.current = [t1, t2];
-  }, []);
+  }, [spreads.length]);
 
   // Unified Closing Sequence
   const handleCloseSequence = useCallback(() => {
@@ -615,31 +707,80 @@ export const StoryBook = memo(function StoryBook({
     sequenceTimersRef.current = [t1, t2];
   }, []);
 
-  // Turn to Next Spread
-  const handleNextSpread = useCallback(() => {
-    if (currentSpreadIndex < spreads.length - 1) {
-      setCurrentSpreadIndex((prev) => prev + 1);
-    }
-  }, [currentSpreadIndex, spreads.length]);
-
-  // Turn to Previous Spread
-  const handlePrevSpread = useCallback(() => {
-    if (currentSpreadIndex > 0) {
-      setCurrentSpreadIndex((prev) => prev - 1);
-    }
-  }, [currentSpreadIndex]);
-
-  // Jump to specific chapter spread from Table of Contents
+  // Jump to specific chapter spread with Sequential Multi-Page Flip Animation
   const handleJumpToChapterByPage = useCallback(
     (pageNumber: number) => {
       const targetSpreadIdx = Math.floor(pageNumber / 2);
-      if (targetSpreadIdx >= 0 && targetSpreadIdx < spreads.length) {
-        setCurrentSpreadIndex(targetSpreadIdx);
-        setIsTocOpen(false);
-      }
+      if (targetSpreadIdx < 0 || targetSpreadIdx >= spreads.length) return;
+
+      setIsTocOpen(false);
+
+      if (targetSpreadIdx === currentSpreadIndex) return;
+      if (isFlippingRef.current) return;
+
+      const diff = targetSpreadIdx - currentSpreadIndex;
+      const step = diff > 0 ? 1 : -1;
+      const totalSteps = Math.abs(diff);
+
+      // Adaptive tempo: smooth 550ms for 1 step (turn left/right), fast rhythmic riffle for distant chapters
+      const stepDurationMs = totalSteps === 1 ? 550 : Math.max(140, Math.min(240, 1100 / totalSteps));
+      const stepDurationSec = stepDurationMs / 1000;
+
+      let currentStep = 0;
+      let curIdx = currentSpreadIndex;
+
+      const stepRiffle = () => {
+        if (currentStep >= totalSteps) {
+          isFlippingRef.current = false;
+          setTurnAnimation(null);
+          return;
+        }
+
+        const fromIdx = curIdx;
+        const toIdx = curIdx + step;
+        curIdx = toIdx;
+        currentStep++;
+
+        isFlippingRef.current = true;
+        setTurnAnimation({
+          direction: step > 0 ? 'forward' : 'backward',
+          fromSpreadIdx: fromIdx,
+          toSpreadIdx: toIdx,
+          durationSec: stepDurationSec,
+        });
+
+        if (flipTimerRef.current) window.clearTimeout(flipTimerRef.current);
+        flipTimerRef.current = window.setTimeout(() => {
+          setCurrentSpreadIndex(toIdx);
+          if (currentStep < totalSteps) {
+            stepRiffle();
+          } else {
+            requestAnimationFrame(() => {
+              setTurnAnimation(null);
+              isFlippingRef.current = false;
+            });
+          }
+        }, stepDurationMs);
+      };
+
+      stepRiffle();
     },
-    [spreads.length],
+    [currentSpreadIndex, spreads.length],
   );
+
+  // Turn to Next Spread with 3D Page Turn Animation (Unified with Index Engine)
+  const handleNextSpread = useCallback(() => {
+    if (currentSpreadIndex < spreads.length - 1) {
+      handleJumpToChapterByPage((currentSpreadIndex + 1) * 2);
+    }
+  }, [currentSpreadIndex, spreads.length, handleJumpToChapterByPage]);
+
+  // Turn to Previous Spread with 3D Page Turn Animation (Unified with Index Engine)
+  const handlePrevSpread = useCallback(() => {
+    if (currentSpreadIndex > 0) {
+      handleJumpToChapterByPage((currentSpreadIndex - 1) * 2);
+    }
+  }, [currentSpreadIndex, handleJumpToChapterByPage]);
 
   // Global window pointerup/cancel listener
   useEffect(() => {
@@ -718,7 +859,7 @@ export const StoryBook = memo(function StoryBook({
 
   // Wheel listener: SCROLL = FLIP NOVEL PAGE! (Zero vertical scroll)
   const handleWheel = (e: React.WheelEvent) => {
-    if (!isActive) return;
+    if (!isActive || isTocOpen) return;
     e.stopPropagation();
 
     const now = Date.now();
@@ -841,10 +982,10 @@ export const StoryBook = memo(function StoryBook({
     if (!page || page.type === 'blank-cover') {
       return (
         <div
-          style={{ backgroundColor: currentBook?.coverColor || '#2B1612' }}
-          className={`relative flex-1 ${
+          style={{ backgroundColor: currentBook?.coverColor || '#2B1612', transform: 'translateZ(0)' }}
+          className={`relative w-full h-full ${
             isLeft ? 'rounded-l-2xl' : 'rounded-r-2xl'
-          } overflow-hidden bg-gradient-to-br from-black/20 via-transparent to-black/40 h-full`}
+          } overflow-hidden bg-gradient-to-br from-black/20 via-transparent to-black/40`}
         />
       );
     }
@@ -853,24 +994,27 @@ export const StoryBook = memo(function StoryBook({
     if (page.type === 'frontispiece') {
       const book = page.book;
       return (
-        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+        <div
+          style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
+          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+        >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Pure Minimalist Book Title */}
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-2.5 min-h-0 py-6 px-4 z-10 my-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] dark:text-white tracking-[0.2em] uppercase">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] tracking-[0.2em] uppercase">
               {book.title}
             </h2>
             {book.originalTitle && (
-              <p className="text-xs sm:text-sm font-serif italic text-amber-800/80 dark:text-amber-400/80 tracking-widest">
+              <p className="text-xs sm:text-sm font-serif italic text-amber-800/80 tracking-widest">
                 {book.originalTitle}
               </p>
             )}
           </div>
 
           {/* Uniform Centered Footer */}
-          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] border-t border-amber-900/10 pt-2.5 z-10 flex-shrink-0">
             <span>{String(page.pageNumber).padStart(2, '0')}</span>
           </div>
         </div>
@@ -880,17 +1024,20 @@ export const StoryBook = memo(function StoryBook({
     // 2. TABLE OF CONTENTS / INDEX (Right page of Front Matter)
     if (page.type === 'toc') {
       return (
-        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+        <div
+          style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
+          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+        >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Book Title & Clickable Index Table with Hierarchy & Dot Leaders */}
           <div className="flex-1 flex flex-col justify-start min-h-0 py-2 px-2 sm:px-6 md:px-8 z-10 overflow-hidden">
             <div className="text-center pb-3">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#1F1712] dark:text-white tracking-wide">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#1F1712] tracking-wide">
                 Table of Contents
               </h3>
-              <p className="text-xs sm:text-sm font-serif italic text-amber-800/80 dark:text-amber-400/80 mt-0.5">
+              <p className="text-xs sm:text-sm font-serif italic text-amber-800/80 mt-0.5">
                 Chronicle of Thirteen Convergences
               </p>
               <div className="w-12 h-px bg-amber-600/30 mx-auto my-2" />
@@ -898,31 +1045,38 @@ export const StoryBook = memo(function StoryBook({
 
             {/* Clickable Index Table with Hierarchy, Dot Leaders & Larger Typography */}
             <div className="w-full flex-1 flex flex-col justify-between py-1 space-y-1 overflow-hidden">
-              {page.chapterPageMap?.map((item) => (
-                <button
-                  key={item.chapterId}
-                  onClick={() => handleJumpToChapterByPage(item.pageNumber)}
-                  className="group w-full flex items-baseline justify-between py-1 px-2 rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer"
-                >
-                  <div className="flex items-baseline gap-2.5 min-w-0 flex-1 pr-2">
-                    <span className="font-serif text-xs sm:text-[13px] md:text-sm text-[#8A7B6E] dark:text-[#8E8478] w-20 sm:w-24 md:w-28 flex-shrink-0 text-left uppercase tracking-wider font-medium">
-                      {item.number}
+              {page.chapterPageMap?.map((item) => {
+                const chSpreadIdx = Math.floor(item.pageNumber / 2);
+                const isBookmarked = savedBookmarkSpread > 0 && chSpreadIdx === savedBookmarkSpread;
+                return (
+                  <button
+                    key={item.chapterId}
+                    onClick={() => handleJumpToChapterByPage(item.pageNumber)}
+                    className="group w-full flex items-baseline justify-between py-1 px-2 rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-baseline gap-2.5 min-w-0 flex-1 pr-2">
+                      <span className="font-serif text-xs sm:text-[13px] md:text-sm text-[#8A7B6E] w-20 sm:w-24 md:w-28 flex-shrink-0 text-left uppercase tracking-wider font-medium">
+                        {item.number}
+                      </span>
+                      <span className="font-serif font-medium text-xs sm:text-sm md:text-[14.5px] lg:text-[15px] text-[#241D17] group-hover:text-amber-800 truncate flex items-center gap-1.5">
+                        {item.title}
+                        {isBookmarked && (
+                          <Bookmark className="w-3.5 h-3.5 text-amber-700 fill-amber-500/30 flex-shrink-0" />
+                        )}
+                      </span>
+                      <span className="flex-1 border-b border-dotted border-[#8A7B6E]/40 mx-2 mb-1 min-w-[24px]" />
+                    </div>
+                    <span className="font-mono text-xs sm:text-sm text-[#8A7B6E] group-hover:text-amber-800 flex-shrink-0 tabular-nums font-semibold">
+                      {String(item.pageNumber).padStart(2, '0')}
                     </span>
-                    <span className="font-serif font-medium text-xs sm:text-sm md:text-[14.5px] lg:text-[15px] text-[#241D17] dark:text-[#E2DAD0] group-hover:text-amber-800 dark:group-hover:text-amber-300 truncate">
-                      {item.title}
-                    </span>
-                    <span className="flex-1 border-b border-dotted border-[#8A7B6E]/40 dark:border-[#8E8478]/40 mx-2 mb-1 min-w-[24px]" />
-                  </div>
-                  <span className="font-mono text-xs sm:text-sm text-[#8A7B6E] dark:text-[#8E8478] group-hover:text-amber-800 dark:group-hover:text-amber-300 flex-shrink-0 tabular-nums font-semibold">
-                    {String(item.pageNumber).padStart(2, '0')}
-                  </span>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Uniform Centered Footer */}
-          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] border-t border-amber-900/10 pt-2.5 z-10 flex-shrink-0">
             <span>{String(page.pageNumber).padStart(2, '0')}</span>
           </div>
         </div>
@@ -932,29 +1086,32 @@ export const StoryBook = memo(function StoryBook({
     // 3. DEDICATED CHAPTER TITLE LEAF (Pure, Clean & Simple)
     if (page.type === 'chapter-title-leaf') {
       return (
-        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+        <div
+          style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
+          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+        >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Pure & Minimalist Center Chapter Division */}
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
-            <span className="text-xs sm:text-sm font-serif tracking-[0.35em] text-amber-800 dark:text-amber-400 uppercase font-semibold">
+            <span className="text-xs sm:text-sm font-serif tracking-[0.35em] text-amber-800 uppercase font-semibold">
               {page.chapterNumber}
             </span>
 
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] dark:text-white tracking-wide max-w-md leading-snug">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] tracking-wide max-w-md leading-snug">
               {page.chapterTitle}
             </h3>
 
             {page.subtitle && (
-              <p className="text-xs sm:text-sm font-serif italic text-[#7A695A] dark:text-[#A89E92] max-w-xs leading-relaxed mt-1">
+              <p className="text-xs sm:text-sm font-serif italic text-[#7A695A] max-w-xs leading-relaxed mt-1">
                 {page.subtitle}
               </p>
             )}
           </div>
 
           {/* Uniform Centered Footer */}
-          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] border-t border-amber-900/10 pt-2.5 z-10 flex-shrink-0">
             <span>{String(page.pageNumber).padStart(2, '0')}</span>
           </div>
         </div>
@@ -964,9 +1121,12 @@ export const StoryBook = memo(function StoryBook({
     // 4. MAXIMIZED NARRATIVE TEXT PAGE (Continuous full-height text flow)
     if (page.type === 'chapter-narrative') {
       return (
-        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+        <div
+          style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
+          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+        >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Narrative Text Body (Balanced, highly legible editorial font) */}
           <div className="flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 px-2 sm:px-4 md:px-6 overflow-hidden z-10">
@@ -977,9 +1137,9 @@ export const StoryBook = memo(function StoryBook({
                 return (
                   <p
                     key={pIdx}
-                    className="leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] dark:text-[#F3ECE0] hyphens-auto"
+                    className="leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto"
                   >
-                    <span className="float-left text-5xl sm:text-6xl md:text-7xl leading-[0.8] pr-3 pt-1 font-serif font-bold text-amber-800 dark:text-[#E8C582] select-none">
+                    <span className="float-left text-5xl sm:text-6xl md:text-7xl leading-[0.8] pr-3 pt-1 font-serif font-bold text-amber-800 select-none">
                       {firstLetter}
                     </span>
                     {restOfParagraph}
@@ -989,7 +1149,7 @@ export const StoryBook = memo(function StoryBook({
               return (
                 <p
                   key={pIdx}
-                  className={`leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] dark:text-[#F3ECE0] hyphens-auto ${
+                  className={`leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto ${
                     pIdx > 0 || !page.isFirstPageOfChapter ? 'indent-6 sm:indent-8' : ''
                   }`}
                 >
@@ -1000,7 +1160,7 @@ export const StoryBook = memo(function StoryBook({
           </div>
 
           {/* Uniform Centered Footer */}
-          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] border-t border-amber-900/10 pt-2.5 z-10 flex-shrink-0">
             <span>{String(page.pageNumber).padStart(2, '0')}</span>
           </div>
         </div>
@@ -1010,14 +1170,17 @@ export const StoryBook = memo(function StoryBook({
     // 5. FINIS PAGE (Pure Video & Quote)
     if (page.type === 'finis') {
       return (
-        <div className="relative flex-1 p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] h-full text-[#2B231D] dark:text-[#EAE3D9]">
+        <div
+          style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
+          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+        >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 dark:border-amber-100/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Center Showcase: Pure Video & Quote */}
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
             {/* Cinematic Animated Winged Man Painting */}
-            <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] aspect-[16/9] rounded-xl overflow-hidden border border-amber-900/20 dark:border-amber-400/20 shadow-xl bg-black/10">
+            <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] aspect-[16/9] rounded-xl overflow-hidden border border-amber-900/20 shadow-xl bg-black/10">
               <video
                 src="/Winged_man_flying_toward_sun_20260923081626.mp4"
                 autoPlay
@@ -1029,13 +1192,13 @@ export const StoryBook = memo(function StoryBook({
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            <p className="text-sm sm:text-base md:text-[17px] font-serif italic text-[#3D3126] dark:text-[#E8DFC8] max-w-md leading-relaxed px-2 mt-2">
+            <p className="text-sm sm:text-base md:text-[17px] font-serif italic text-[#3D3126] max-w-md leading-relaxed px-2 mt-2">
               "Icarus died smiling, for to fall is to have once soared"
             </p>
           </div>
 
           {/* Uniform Centered Footer */}
-          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] dark:text-[#8E8478] border-t border-amber-900/10 dark:border-amber-100/10 pt-2.5 z-10 flex-shrink-0">
+          <div className="flex items-center justify-center text-[11px] sm:text-xs font-mono text-[#8A7B6E] border-t border-amber-900/10 pt-2.5 z-10 flex-shrink-0">
             <span>{String(page.pageNumber).padStart(2, '0')}</span>
           </div>
         </div>
@@ -1104,6 +1267,7 @@ export const StoryBook = memo(function StoryBook({
               position={position}
               selectedIndex={selectedIndex}
               isCoverOpen={selectedIndex === index && isCoverOpen}
+              bookmarkSpread={savedBookmarkSpread}
               onSelect={handleCardSelect}
             />
           ))}
@@ -1168,14 +1332,41 @@ export const StoryBook = memo(function StoryBook({
                 <span>Return to Shelf</span>
               </button>
 
-              {/* Table of Contents Drawer Trigger */}
-              <button
-                onClick={() => setIsTocOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
-              >
-                <List className="w-4 h-4 text-amber-700 dark:text-amber-300" />
-                <span className="hidden sm:inline">Index</span>
-              </button>
+              {/* Right Action Group: Bookmark & Index Drawer Trigger */}
+              <div className="flex items-center gap-2">
+                {/* Put / Take off Bookmark Trigger */}
+                <button
+                  onClick={handleToggleBookmark}
+                  title={isCurrentSpreadBookmarked ? 'Take off Bookmark' : 'Put Bookmark'}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full backdrop-blur-2xl backdrop-saturate-[180%] border text-xs font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)] ${
+                    isCurrentSpreadBookmarked
+                      ? 'bg-red-950/40 text-amber-200 border-amber-400/50 shadow-[0_0_15px_rgba(216,160,72,0.3)]'
+                      : 'bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 border-white/60 dark:border-white/20'
+                  }`}
+                >
+                  {isCurrentSpreadBookmarked ? (
+                    <BookmarkCheck className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Bookmark className="w-4 h-4 text-stone-600 dark:text-amber-200/80" />
+                  )}
+                  <span className="hidden sm:inline">
+                    {showBookmarkToast
+                      ? bookmarkToastMessage
+                      : isCurrentSpreadBookmarked
+                      ? 'Take off Bookmark'
+                      : 'Put Bookmark'}
+                  </span>
+                </button>
+
+                {/* Table of Contents Drawer Trigger */}
+                <button
+                  onClick={() => setIsTocOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
+                >
+                  <List className="w-4 h-4 text-amber-700 dark:text-amber-300" />
+                  <span className="hidden sm:inline">Index</span>
+                </button>
+              </div>
             </motion.div>
 
             {/* ================= DUAL-PAGE SPREAD PHYSICAL BOOK CONTAINER ================= */}
@@ -1186,25 +1377,225 @@ export const StoryBook = memo(function StoryBook({
               <div className="absolute inset-2 border border-amber-400/40 rounded-2xl pointer-events-none" />
 
               {/* ================= OPEN PARCHMENT SPREAD ================= */}
-              <div className="relative w-full h-full flex flex-col md:flex-row rounded-2xl overflow-hidden bg-[#FAF6EE] dark:bg-[#1A1614] text-[#2B231D] dark:text-[#EAE3D9] shadow-inner">
-                
-                {/* LEFT PAGE */}
-                {renderNovelPage(currentSpread?.leftPage, true)}
+              <div
+                style={{ perspective: '2800px', transformStyle: 'preserve-3d' }}
+                className="relative w-full h-full flex flex-col md:flex-row rounded-2xl bg-[#FAF6EE] text-[#2B231D] shadow-inner overflow-hidden"
+              >
+                {!turnAnimation ? (
+                  <>
+                    {/* IDLE LEFT PAGE */}
+                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                      {renderNovelPage(currentSpread?.leftPage, true)}
+                    </div>
 
-                {/* CENTER BOOK SPINE CREASE & GUTTER */}
-                <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-10 -translate-x-1/2 bg-gradient-to-r from-black/20 via-black/5 to-black/20 pointer-events-none z-20 shadow-inner" />
+                    {/* IDLE RIGHT PAGE */}
+                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                      {renderNovelPage(currentSpread?.rightPage, false)}
+                    </div>
+                  </>
+                ) : turnAnimation.direction === 'forward' ? (
+                  <>
+                    {/* BASE LEFT PAGE (Current Spread Left Page) */}
+                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                      {renderNovelPage(spreads[turnAnimation.fromSpreadIdx]?.leftPage, true)}
+                    </div>
 
-                {/* Silk Ribbon Bookmark */}
-                <motion.div
-                  initial={{ y: -60, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.35, duration: 0.5 }}
-                  className="hidden md:block absolute left-1/2 top-0 w-5 h-36 -translate-x-1/2 bg-gradient-to-b from-red-800 via-red-900 to-red-950 rounded-b-sm shadow-md border-t border-amber-400/40 pointer-events-none z-30"
-                />
+                    {/* BASE RIGHT PAGE (Upcoming Spread Right Page, already prepared underneath) */}
+                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                      {renderNovelPage(spreads[turnAnimation.toSpreadIdx]?.rightPage, false)}
+                    </div>
 
-                {/* RIGHT PAGE */}
-                {renderNovelPage(currentSpread?.rightPage, false)}
+                    {/* 3D TURNING LEAF (Rotates around center spine from 0deg to -180deg) */}
+                    <motion.div
+                      key={`turn-forward-${turnAnimation.fromSpreadIdx}-${turnAnimation.toSpreadIdx}`}
+                      initial={{ rotateY: 0 }}
+                      animate={{ rotateY: -180 }}
+                      transition={{
+                        duration: turnAnimation.durationSec ?? 0.68,
+                        ease: turnAnimation.durationSec && turnAnimation.durationSec < 0.4 ? 'easeInOut' : [0.16, 1, 0.3, 1],
+                      }}
+                      onAnimationComplete={() => {
+                        if (!turnAnimation.durationSec) {
+                          setCurrentSpreadIndex(turnAnimation.toSpreadIdx);
+                          requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                              setTurnAnimation(null);
+                              isFlippingRef.current = false;
+                            });
+                          });
+                        }
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: '50%',
+                        width: '50%',
+                        transformOrigin: 'left center',
+                        transformStyle: 'preserve-3d',
+                        zIndex: 30,
+                        transform: 'translate3d(0, 0, 0.1px)',
+                        willChange: 'transform',
+                      }}
+                      className="hidden md:block pointer-events-none"
+                    >
+                      {/* FRONT FACE OF TURNING LEAF (From Right Page) */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                          transform: 'rotateY(0deg)',
+                        }}
+                        className="w-full h-full flex flex-col overflow-hidden bg-[#FAF6EE]"
+                      >
+                        {renderNovelPage(spreads[turnAnimation.fromSpreadIdx]?.rightPage, false)}
+                        {/* Dynamic shadow shading overlay as leaf lifts */}
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0.25, 0] }}
+                          transition={{ duration: turnAnimation.durationSec ?? 0.68, ease: 'easeInOut' }}
+                          className="absolute inset-0 bg-gradient-to-r from-black/25 via-black/10 to-transparent pointer-events-none"
+                        />
+                      </div>
 
+                      {/* BACK FACE OF TURNING LEAF (Upcoming Left Page Landing on Left Side - NON MIRRORED) */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          transform: 'rotateY(180deg)',
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                        className="w-full h-full flex flex-col overflow-hidden bg-[#FAF6EE]"
+                      >
+                        {renderNovelPage(spreads[turnAnimation.toSpreadIdx]?.leftPage, true)}
+                        {/* Dynamic landing shadow overlay as leaf settles */}
+                        <motion.div
+                          initial={{ opacity: 0.25 }}
+                          animate={{ opacity: [0.25, 0] }}
+                          transition={{ duration: turnAnimation.durationSec ?? 0.68, ease: 'easeOut' }}
+                          className="absolute inset-0 bg-gradient-to-l from-black/25 via-black/10 to-transparent pointer-events-none"
+                        />
+                      </div>
+                    </motion.div>
+                  </>
+                ) : (
+                  <>
+                    {/* BASE LEFT PAGE (Upcoming Spread Left Page, already prepared underneath) */}
+                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                      {renderNovelPage(spreads[turnAnimation.toSpreadIdx]?.leftPage, true)}
+                    </div>
+
+                    {/* BASE RIGHT PAGE (Current Spread Right Page) */}
+                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                      {renderNovelPage(spreads[turnAnimation.fromSpreadIdx]?.rightPage, false)}
+                    </div>
+
+                    {/* 3D TURNING LEAF (Rotates around center spine from 0deg to 180deg) */}
+                    <motion.div
+                      key={`turn-backward-${turnAnimation.fromSpreadIdx}-${turnAnimation.toSpreadIdx}`}
+                      initial={{ rotateY: 0 }}
+                      animate={{ rotateY: 180 }}
+                      transition={{
+                        duration: turnAnimation.durationSec ?? 0.68,
+                        ease: turnAnimation.durationSec && turnAnimation.durationSec < 0.4 ? 'easeInOut' : [0.16, 1, 0.3, 1],
+                      }}
+                      onAnimationComplete={() => {
+                        if (!turnAnimation.durationSec) {
+                          setCurrentSpreadIndex(turnAnimation.toSpreadIdx);
+                          requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                              setTurnAnimation(null);
+                              isFlippingRef.current = false;
+                            });
+                          });
+                        }
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        width: '50%',
+                        transformOrigin: 'right center',
+                        transformStyle: 'preserve-3d',
+                        zIndex: 30,
+                        transform: 'translate3d(0, 0, 0.1px)',
+                        willChange: 'transform',
+                      }}
+                      className="hidden md:block pointer-events-none"
+                    >
+                      {/* FRONT FACE (Turning Left Page) */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                          transform: 'rotateY(0deg)',
+                        }}
+                        className="w-full h-full flex flex-col overflow-hidden bg-[#FAF6EE]"
+                      >
+                        {renderNovelPage(spreads[turnAnimation.fromSpreadIdx]?.leftPage, true)}
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0.25, 0] }}
+                          transition={{ duration: turnAnimation.durationSec ?? 0.68, ease: 'easeInOut' }}
+                          className="absolute inset-0 bg-gradient-to-l from-black/25 via-black/10 to-transparent pointer-events-none"
+                        />
+                      </div>
+
+                      {/* BACK FACE (Upcoming Right Page Landing on Right Side - NON MIRRORED) */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          transform: 'rotateY(180deg)',
+                          backfaceVisibility: 'hidden',
+                          WebkitBackfaceVisibility: 'hidden',
+                        }}
+                        className="w-full h-full flex flex-col overflow-hidden bg-[#FAF6EE]"
+                      >
+                        {renderNovelPage(spreads[turnAnimation.toSpreadIdx]?.rightPage, false)}
+                        <motion.div
+                          initial={{ opacity: 0.25 }}
+                          animate={{ opacity: [0.25, 0] }}
+                          transition={{ duration: turnAnimation.durationSec ?? 0.68, ease: 'easeOut' }}
+                          className="absolute inset-0 bg-gradient-to-r from-black/25 via-black/10 to-transparent pointer-events-none"
+                        />
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+
+                {/* Subtle Center Book Spine Crease & Natural Fold Shadow (Ultra-refined, zero blocky occlusion) */}
+                <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-amber-900/15 pointer-events-none z-40" />
+                <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-6 -translate-x-1/2 bg-gradient-to-r from-black/[0.04] via-transparent to-black/[0.04] pointer-events-none z-40" />
+
+                {/* Physical Silk Ribbon Bookmark in Center Spine (Real-time, zero-delay rendering) */}
+                <AnimatePresence>
+                  {isCurrentSpreadBookmarked && (
+                    <motion.div
+                      key="center-ribbon-bookmark"
+                      initial={isTogglingBookmarkAction ? { y: -70, opacity: 0 } : false}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -70, opacity: 0 }}
+                      transition={
+                        isTogglingBookmarkAction
+                          ? { duration: 0.45, ease: [0.16, 1, 0.3, 1] }
+                          : { duration: 0 }
+                      }
+                      onClick={handleToggleBookmark}
+                      title="Click to take off bookmark"
+                      className="hidden md:flex absolute top-0 left-1/2 -translate-x-1/2 w-5 sm:w-6 h-48 sm:h-56 bg-gradient-to-b from-red-800 via-red-900 to-red-950 rounded-b-sm shadow-[0_6px_16px_rgba(0,0,0,0.45)] border-x border-b border-amber-400/50 z-45 cursor-pointer group items-end justify-center pb-2 transition-transform hover:scale-105"
+                    >
+                      <div className="w-2 h-2 rotate-45 border-r border-b border-amber-400/80 bg-amber-400/30 group-hover:scale-125 transition-transform" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
@@ -1254,7 +1645,10 @@ export const StoryBook = memo(function StoryBook({
       {/* ================= SLIDE-OVER TABLE OF CONTENTS (DRAWER) ================= */}
       <AnimatePresence>
         {isTocOpen && isReaderSpread && (
-          <div className="fixed inset-0 z-50 flex justify-end">
+          <div
+            onWheel={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-50 flex justify-end"
+          >
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1285,13 +1679,13 @@ export const StoryBook = memo(function StoryBook({
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto py-4 space-y-2 no-scrollbar">
+              <div
+                onWheel={(e) => e.stopPropagation()}
+                className="flex-1 overflow-y-auto py-4 space-y-2 no-scrollbar overscroll-contain"
+              >
                 {/* Front Matter Button */}
                 <button
-                  onClick={() => {
-                    setCurrentSpreadIndex(0);
-                    setIsTocOpen(false);
-                  }}
+                  onClick={() => handleJumpToChapterByPage(0)}
                   className={`w-full text-left p-3 rounded-xl transition-all flex flex-col gap-1 border cursor-pointer ${
                     currentSpreadIndex === 0
                       ? 'bg-amber-500/15 border-amber-500/40 text-amber-950 dark:text-amber-200 shadow-sm'
@@ -1309,6 +1703,7 @@ export const StoryBook = memo(function StoryBook({
                 {chapterPageMap.map((ch) => {
                   const targetSpreadIdx = Math.floor(ch.pageNumber / 2);
                   const isCurrentChapter = currentSpreadIndex === targetSpreadIdx;
+                  const isBookmarkedChapter = savedBookmarkSpread > 0 && targetSpreadIdx === savedBookmarkSpread;
                   return (
                     <button
                       key={ch.chapterId}
@@ -1320,7 +1715,15 @@ export const StoryBook = memo(function StoryBook({
                       }`}
                     >
                       <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-[#8A7B6E] dark:text-[#8E8478]">
-                        <span>{ch.number}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span>{ch.number}</span>
+                          {isBookmarkedChapter && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-800 dark:text-amber-300 bg-amber-500/20 px-1.5 py-0.2 rounded">
+                              <Bookmark className="w-2.5 h-2.5 fill-amber-500/40" />
+                              <span>Saved</span>
+                            </span>
+                          )}
+                        </div>
                         <span>{String(ch.pageNumber).padStart(2, '0')}</span>
                       </div>
                       <span className="font-serif font-semibold text-sm leading-snug">
