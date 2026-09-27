@@ -1,0 +1,553 @@
+[
+  {
+    "id": "one-piece",
+    "title": "One Piece",
+    "type": "Anime",
+    "category": "anime",
+    "seasons": 1,
+    "episodes": 1100,
+    "axelRating": 4.8,
+    "userRating": 4.7,
+    "genres": [
+      "Action",
+      "Adventure",
+      "Fantasy"
+    ],
+    "reviewUrl": "https://myanimelist.net/anime/21/One_Piece",
+    "image": "/images/watchlist/one-piece.webp",
+    "notes": "A young pirate captain, Monkey D. Luffy, and his diverse crew set sail across the grand seas to find the legendary One Piece treasure and become the Pirate King.",
+    "watchOrder": 1
+  },
+  {
+    "id": "dr-stone",
+    "title": "Dr. Stone",
+    "type": "Anime",
+    "category": "anime",
+    "seasons": 3,
+    "episodes": 57,
+    "axelRating": 4.8,
+    "userRating": 4.5,
+    "genres": [
+      "Sci-Fi",
+      "Adventure",
+      "Comedy"
+    ],
+    "reviewUrl": "https://myanimelist.net/anime/38691/Dr_Stone",
+    "image": "/images/watchlist/dr-stone.webp",
+    "notes": "Thousands of years after a mysterious phenomenon turns all of humanity to stone, a genius high school student wakes up and vows to rebuild civilization using science.",
+    "watchOrder": 2
+  },
+  {
+    "id": "demon-slayer",
+    "title": "Demon Slayer",
+    "type": "Anime",
+    "category": "anime",
+    "seasons": 4,
+    "episodes": 55,
+    "axelRating": 4.8,
+    "userRating": 4.5,
+    "genres": [
+      "Action",
+      "Fantasy",
+      "Historical"
+    ],
+    "reviewUrl": "https://myanimelist.net/anime/38000/Kimetsu_no_Yaiba",
+    "image": "/images/watchlist/demon-slayer.webp",
+    "notes": "After his family is brutally attacked by demons and his sister is transformed into one, a kind-hearted boy trains to become a demon slayer to cure his sister and avenge his family.",
+    "watchOrder": 3
+  },
+  {
+    "id": "kobayashi-no-maid",
+    "title": "Miss Kobayashi's Dragon Maid",
+    "type": "Anime",
+    "category": "anime",
+    "seasons": 2,
+    "episodes": 26,
+    "axelRating": 4.5,
+    "userRating": 4.3,
+    "genres": [
+      "Slice of Life",
+      "Comedy",
+      "Fantasy"
+    ],
+    "reviewUrl": "https://myanimelist.net/anime/33206/Kobayashi-san_Chi_no_Maid_Dragon",
+    "image": "/images/watchlist/kobayashi-no-maid.webp",
+    "notes": "An ordinary office worker's life is turned upside down when a powerful, shapeshifting dragon she saved the previous night arrives at her apartment to work as her maid.",
+    "watchOrder": 4
+  },
+  {
+    "id": "kimi-no-nawa",
+    "title": "Your Name.",
+    "type": "Anime",
+    "category": "anime",
+    "duration": "106 mins",
+    "axelRating": 4.9,
+    "userRating": 4.8,
+    "genres": [
+      "Romance",
+      "Drama",
+      "Fantasy"
+    ],
+    "reviewUrl": "https://myanimelist.net/anime/32281/Kimi_no_Na_wa",
+    "image": "/images/watchlist/kimi-no-nawa.webp",
+    "notes": "Two high school students, a girl in a rural town and a boy in Tokyo, wake up to discover they have mysteriously swapped bodies, sparking a deep and supernatural connection.",
+    "watchOrder": 5
+  },
+  {
+    "id": "shigatsu-wa-kimi-no-uso",
+    "title": "Your Lie in April",
+    "type": "Anime",
+    "category": "anime",
+    "seasons": 1,
+    "episodes": 22,
+    "axelRating": 4.7,
+    "userRating": 4.7,
+    "genres": [
+      "Drama",
+      "Romance",
+      "Music"
+    ],
+    "reviewUrl": "https://myanimelist.net/anime/23273/Shigatsu_wa_Kimi_no_Uso",
+    "image": "/images/watchlist/shigatsu-wa-kimi-no-uso.webp",
+    "notes": "A former piano prodigy who lost the ability to hear his own music after his mother's death meets a free-spirited violinist who helps him face the piano once again.",
+    "watchOrder": 6
+  },
+  {
+    "id": "tenki-no-ko",
+    "title": "Weathering with You",
+    "type": "Anime",
+    "category": "anime",
+    "duration": "112 mins",
+    "axelRating": 4.7,
+    "userRating": 4.5,
+    "genres": [
+      "Drama",
+      "Fantasy",
+      "Romance"
+    ],
+    "reviewUrl": "https://myanimelist.net/anime/38826/Tenki_no_Ko",
+    "image": "/images/watchlist/tenki-no-ko.webp",
+    "notes": "A high school runaway in a rain-soaked Tokyo meets an orphan girl who possesses the mysterious ability to clear the weather and summon the sun.",
+    "watchOrder": 7
+  },
+  {
+    "id": "spy-x-family",
+    "title": "Spy x Family",
+    "type": "Anime",
+    "category": "anime",
+    "seasons": 2,
+    "episodes": 37,
+    "axelRating": 4.75,
+    "userRating": 4.6,
+    "genres": [
+      "Comedy",
+      "Action",
+      "Spy"
+    ],
+    "reviewUrl": "https://myanimelist.net/anime/50265/Spy_x_Family",
+    "image": "/images/watchlist/spy-x-family.webp",
+    "notes": "A master spy must construct a fake family for a mission, unaware that the wife he marries is a professional assassin and the daughter he adopts is a telepath who knows their secrets.",
+    "watchOrder": 8
+  },
+  {
+    "id": "business-proposal",
+    "title": "Business Proposal",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 12,
+    "axelRating": 4.99,
+    "userRating": 4.7,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "Office"
+    ],
+    "reviewUrl": "https://asianwiki.com/Business_Proposal",
+    "image": "/images/watchlist/business-proposal.webp",
+    "notes": "An employee goes on a blind date in place of her friend to scare away the suitor, only to discover he is her company's CEO, who then makes her a marriage proposal.",
+    "watchOrder": 9
+  },
+  {
+    "id": "whats-wrong-with-secretary-kim",
+    "title": "What's Wrong with Secretary Kim",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.7,
+    "userRating": 4.6,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "Office"
+    ],
+    "reviewUrl": "https://asianwiki.com/What%27s_Wrong_With_Secretary_Kim",
+    "image": "/images/watchlist/whats-wrong-with-secretary-kim.webp",
+    "notes": "A narcissistic vice-chairman of a major corporation is thrown into a panic when his highly capable secretary of nine years announces her resignation.",
+    "watchOrder": 10
+  },
+  {
+    "id": "shooting-stars",
+    "title": "Shooting Stars",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.5,
+    "userRating": 4.3,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "Showbiz"
+    ],
+    "reviewUrl": "https://asianwiki.com/Sh**ting_Stars",
+    "image": "/images/watchlist/shooting-stars.webp",
+    "notes": "A romantic comedy about the hardworking PR team, managers, and reporters who clean up the messes made by top stars in the entertainment industry.",
+    "watchOrder": 11
+  },
+  {
+    "id": "king-the-land",
+    "title": "King the Land",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.9,
+    "userRating": 4.4,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "Hotel"
+    ],
+    "reviewUrl": "https://asianwiki.com/King_the_Land",
+    "image": "/images/watchlist/king-the-land.webp",
+    "notes": "An heir to a luxury hotel conglomerate who cannot stand fake smiles clashes with a cheerful employee who is known as the hotel's smile queen.",
+    "watchOrder": 12
+  },
+  {
+    "id": "hometown-cha-cha-cha",
+    "title": "Hometown Cha-Cha-Cha",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.5,
+    "userRating": 4.7,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "Slice of Life"
+    ],
+    "reviewUrl": "https://asianwiki.com/Hometown_Cha-Cha-Cha",
+    "image": "/images/watchlist/hometown-cha-cha-cha.webp",
+    "notes": "A big-city dentist opens a practice in a close-knit seaside village, where she crosses paths with a charming, multitalented handyman who helps the residents.",
+    "watchOrder": 13
+  },
+  {
+    "id": "bitch-x-rich",
+    "title": "Bitch x Rich",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 2,
+    "episodes": 16,
+    "axelRating": 4.4,
+    "userRating": 4.1,
+    "genres": [
+      "Drama",
+      "Mystery",
+      "Thriller"
+    ],
+    "reviewUrl": "https://asianwiki.com/Bitch_X_Rich",
+    "image": "/images/watchlist/bitch-x-rich.webp",
+    "notes": "A poor high school student becomes the sole witness to a murder at an elite high school and transfers there, clashing with the school's most powerful queen bee.",
+    "watchOrder": 14
+  },
+  {
+    "id": "true-beauty",
+    "title": "True Beauty",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.9,
+    "userRating": 4.5,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "School"
+    ],
+    "reviewUrl": "https://asianwiki.com/True_Beauty",
+    "image": "/images/watchlist/true-beauty.webp",
+    "notes": "A high school girl who is bullied for her appearance masters the art of makeup, transforming herself into a goddess and catching the eye of two popular boys.",
+    "watchOrder": 15
+  },
+  {
+    "id": "lovely-runner",
+    "title": "Lovely Runner",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.88,
+    "userRating": 4.8,
+    "genres": [
+      "Romance",
+      "Time Travel",
+      "Fantasy"
+    ],
+    "reviewUrl": "https://asianwiki.com/Lovely_Runner",
+    "image": "/images/watchlist/lovely-runner.webp",
+    "notes": "A passionate fan is devastated by the sudden death of her favorite idol star, only to find herself traveled back in time to their high school days, determined to save him.",
+    "watchOrder": 16
+  },
+  {
+    "id": "my-demon",
+    "title": "My Demon",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.85,
+    "userRating": 4.5,
+    "genres": [
+      "Romance",
+      "Fantasy",
+      "Comedy"
+    ],
+    "reviewUrl": "https://asianwiki.com/My_Demon",
+    "image": "/images/watchlist/my-demon.webp",
+    "notes": "A ruthless demon loses his powers after becoming entangled with a cold, arrogant chaebol heiress, and they enter into a contract marriage to protect each other.",
+    "watchOrder": 17
+  },
+  {
+    "id": "crash-landing-on-you",
+    "title": "Crash Landing On You",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.6,
+    "userRating": 4.8,
+    "genres": [
+      "Romance",
+      "Drama",
+      "Military"
+    ],
+    "reviewUrl": "https://asianwiki.com/Crash_Landing_on_You",
+    "image": "/images/watchlist/crash-landing-on-you.webp",
+    "notes": "A South Korean heiress accidentally paraglides into North Korea during a storm, where she is found and protected by a handsome North Korean army officer.",
+    "watchOrder": 18
+  },
+  {
+    "id": "my-man-is-cupid",
+    "title": "My Man Is Cupid",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.5,
+    "userRating": 4.2,
+    "genres": [
+      "Romance",
+      "Fantasy",
+      "Mystery"
+    ],
+    "reviewUrl": "https://asianwiki.com/My_Man_is_Cupid",
+    "image": "/images/watchlist/my-man-is-cupid.webp",
+    "notes": "A love fairy accidentally shoots himself with his own arrow and falls in love with a veterinary surgeon whose previous relationships always end in tragedy.",
+    "watchOrder": 19
+  },
+  {
+    "id": "bon-appetit-your-majesty",
+    "title": "Bon Appetit Your Majesty",
+    "type": "Cdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 24,
+    "axelRating": 4.92,
+    "userRating": 4,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "Historical"
+    ],
+    "reviewUrl": "https://mydramalist.com/743845-bon-appetit-your-majesty",
+    "image": "/images/watchlist/bon-appetit-your-majesty.webp",
+    "notes": "A modern-day chef travels back in time to the palace kitchen, winning the heart and stomach of the cold emperor through culinary excellence.",
+    "watchOrder": 20
+  },
+  {
+    "id": "genie-make-a-wish",
+    "title": "Genie Make A Wish",
+    "type": "Cdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 24,
+    "axelRating": 4.86,
+    "userRating": 4.1,
+    "genres": [
+      "Romance",
+      "Fantasy",
+      "Comedy"
+    ],
+    "reviewUrl": "https://mydramalist.com/712399-make-a-wish",
+    "image": "/images/watchlist/genie-make-a-wish.webp",
+    "notes": "A young man saves a white cat, who turns out to be a cat spirit from another planet, who must fulfill one of his wishes before returning home.",
+    "watchOrder": 21
+  },
+  {
+    "id": "hierarchy",
+    "title": "Hierarchy",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 7,
+    "axelRating": 4.2,
+    "userRating": 4,
+    "genres": [
+      "Drama",
+      "Mystery",
+      "School"
+    ],
+    "reviewUrl": "https://asianwiki.com/Hierarchy",
+    "image": "/images/watchlist/hierarchy.webp",
+    "notes": "An elite high school ruled by the top 0.01% of students is shaken when a mysterious transfer student arrives with a hidden vengeance.",
+    "watchOrder": 22
+  },
+  {
+    "id": "can-this-love-be-translated",
+    "title": "Can This Love Be Translated",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 10,
+    "axelRating": 4.9,
+    "userRating": 4.3,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "Showbiz"
+    ],
+    "reviewUrl": "https://mydramalist.com/754231-can-this-love-be-translated",
+    "image": "/images/watchlist/can-this-love-be-translated.webp",
+    "notes": "A romantic comedy about a multilingual translator who falls into a complicated romance with a top global superstar who has completely opposite love languages.",
+    "watchOrder": 23
+  },
+  {
+    "id": "alchemy-of-souls",
+    "title": "Alchemy of Souls",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 2,
+    "episodes": 30,
+    "axelRating": 4.9,
+    "userRating": 4.8,
+    "genres": [
+      "Action",
+      "Fantasy",
+      "Romance",
+      "Historical"
+    ],
+    "reviewUrl": "https://asianwiki.com/Alchemy_of_Souls",
+    "image": "/images/watchlist/alchemy-of-souls.webp",
+    "notes": "A powerful elite warrior mage whose soul is trapped in the body of a weak servant girl becomes the secret teacher to a troublemaking young noble.",
+    "watchOrder": 24
+  },
+  {
+    "id": "resident-playbooks",
+    "title": "Resident Playbooks",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 12,
+    "axelRating": 4.75,
+    "userRating": 4.4,
+    "genres": [
+      "Medical",
+      "Slice of Life",
+      "Drama"
+    ],
+    "reviewUrl": "https://mydramalist.com/751761-wise-resident-life",
+    "image": "/images/watchlist/resident-playbooks.webp",
+    "notes": "A heartwarming slice-of-life medical drama following the daily lives, friendships, and realistic struggles of young obstetrics and gynecology residents.",
+    "watchOrder": 25
+  },
+  {
+    "id": "18-again",
+    "title": "18 Again",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.6,
+    "userRating": 4.7,
+    "genres": [
+      "Drama",
+      "Fantasy",
+      "Family"
+    ],
+    "reviewUrl": "https://asianwiki.com/18_Again",
+    "image": "/images/watchlist/18-again.webp",
+    "notes": "A middle-aged man on the brink of divorce suddenly finds himself transformed back into his handsome 18-year-old body, getting a second chance to fix his life.",
+    "watchOrder": 26
+  },
+  {
+    "id": "pursuit-of-jade",
+    "title": "Pursuit of Jade",
+    "type": "Cdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 24,
+    "axelRating": 4.95,
+    "userRating": 3.9,
+    "genres": [
+      "Romance",
+      "Historical",
+      "Business"
+    ],
+    "reviewUrl": "https://mydramalist.com/760409-zhu-yu",
+    "image": "/images/watchlist/pursuit-of-jade.webp",
+    "notes": "An historical fantasy romance about a determined noblewoman who enters the jade trade to restore her family's honor, finding love and danger along the way.",
+    "watchOrder": 27
+  },
+  {
+    "id": "sold-out-on-you",
+    "title": "Sold Out on You",
+    "type": "Cdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 80,
+    "axelRating": 4.5,
+    "userRating": 3.8,
+    "genres": [
+      "Romance",
+      "Drama",
+      "Revenge"
+    ],
+    "reviewUrl": "https://mydramalist.com/761000-sold-out-on-you",
+    "image": "/images/watchlist/sold-out-on-you.webp",
+    "notes": "A dramatic modern romance of betrayal and revenge where a billionaire heiress hides her identity to test her fiancé, only to find true love with a quiet bodyguard.",
+    "watchOrder": 28
+  },
+  {
+    "id": "spooky-in-love",
+    "title": "Spooky in Love",
+    "type": "Kdrama",
+    "category": "drama",
+    "seasons": 1,
+    "episodes": 16,
+    "axelRating": 4.95,
+    "userRating": 4.8,
+    "genres": [
+      "Romance",
+      "Comedy",
+      "Supernatural",
+      "Mystery"
+    ],
+    "reviewUrl": "https://mydramalist.com/798802-chilling-romance",
+    "image": "/images/watchlist/spooky-in-love.webp",
+    "notes": "An investigative occult romance drama where a ghost-seeing heiress and an ace prosecutor discover that a single touch unlocks their power as a duo to crack unsolved murders.",
+    "watchOrder": 29
+  }
+]

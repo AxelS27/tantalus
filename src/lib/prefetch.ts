@@ -32,6 +32,7 @@ const sectionLoaders: Partial<Record<PrefetchSectionKey, () => Promise<unknown>>
   storybook: () => import('../components/StoryBook'),
   archive: () => import('../components/ArchiveHub'),
   repertoire: () => import('../components/RepertoireGrid'),
+  watchlist: () => import('../components/WatchlistGrid'),
   certificates: () => import('../components/CertificatesCoverflow'),
   connect: () => import('../components/ConnectHub'),
 };

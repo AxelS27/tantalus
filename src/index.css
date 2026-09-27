@@ -41,23 +41,23 @@ body {
 
 /* Dark thumbs with transparent tracks so artwork stays unobstructed. */
 .project-detail-scroll-container,
-.repertoire-scroll-container {
+.archive-gallery-scroll-container {
   scrollbar-width: auto;
   scrollbar-color: #111111 transparent;
 }
 
 .project-detail-scroll-container::-webkit-scrollbar,
-.repertoire-scroll-container::-webkit-scrollbar {
+.archive-gallery-scroll-container::-webkit-scrollbar {
   width: 12px;
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-track,
-.repertoire-scroll-container::-webkit-scrollbar-track {
+.archive-gallery-scroll-container::-webkit-scrollbar-track {
   background: transparent;
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-thumb,
-.repertoire-scroll-container::-webkit-scrollbar-thumb {
+.archive-gallery-scroll-container::-webkit-scrollbar-thumb {
   background: #111111;
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -65,7 +65,7 @@ body {
 }
 
 .project-detail-scroll-container::-webkit-scrollbar-thumb:hover,
-.repertoire-scroll-container::-webkit-scrollbar-thumb:hover {
+.archive-gallery-scroll-container::-webkit-scrollbar-thumb:hover {
   background-color: #333333;
 }
 

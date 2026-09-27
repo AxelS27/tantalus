@@ -37,6 +37,9 @@ const ArchiveHub = lazy(() =>
 const RepertoireGrid = lazy(() =>
   import('./components/RepertoireGrid').then((m) => ({ default: m.RepertoireGrid }))
 );
+const WatchlistGrid = lazy(() =>
+  import('./components/WatchlistGrid').then((m) => ({ default: m.WatchlistGrid }))
+);
 const CertificatesCoverflow = lazy(() =>
   import('./components/CertificatesCoverflow').then((m) => ({ default: m.CertificatesCoverflow }))
 );
@@ -312,6 +315,10 @@ export default function App() {
     () => triggerSectionChange('archive'),
     [triggerSectionChange],
   );
+  const handleWatchlistTop = useCallback(
+    () => triggerSectionChange('archive'),
+    [triggerSectionChange],
+  );
   const handleCertificatesTop = useCallback(
     () => triggerSectionChange('archive'),
     [triggerSectionChange],
@@ -366,10 +373,6 @@ export default function App() {
         triggerSectionChange('timeline');
       }
     } else if (activeTab === 'storybook') {
-      if (e.deltaY < -25) {
-        triggerSectionChange('archive');
-      }
-    } else if (activeTab === 'watchlist') {
       if (e.deltaY < -25) {
         triggerSectionChange('archive');
       }
@@ -714,6 +717,14 @@ export default function App() {
                   className="w-full h-full object-cover object-center pointer-events-none"
                 />
               </div>
+              {visitedTabs.has('watchlist') && (
+                <Suspense fallback={null}>
+                  <WatchlistGrid
+                    isActive={isSectionRendered('watchlist')}
+                    onReachTop={handleWatchlistTop}
+                  />
+                </Suspense>
+              )}
             </div>
 
             {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
