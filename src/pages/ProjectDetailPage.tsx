@@ -201,17 +201,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   }
 
   return (
-    <div className="relative min-h-screen w-full text-stone-900 dark:text-white selection:bg-[#E8C582]/40 selection:text-white font-sans overflow-x-hidden">
-      
-      {/* Fixed Classical Artwork Background */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#FAF8F5] dark:bg-[#121110]">
-        <img
-          src="/project-detail-bg.png"
-          alt="Project Detail Background"
-          className="w-full h-full object-cover object-center scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/20 pointer-events-none" />
-      </div>
+    <div className="relative min-h-screen w-full text-stone-900 dark:text-white selection:bg-[#E8C582]/40 selection:text-white font-sans overflow-x-clip">
 
       {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
       <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 sm:px-8 max-w-5xl">

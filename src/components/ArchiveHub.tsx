@@ -146,6 +146,8 @@ export const ArchiveHub = memo(function ArchiveHub({
       prefetchSection('certificates');
       prefetchSection('connect');
       prefetchSection('storybook');
+      prefetchSection('repertoire');
+      prefetchSection('watchlist');
       prefetchSectionBackground('certificates');
       prefetchSectionBackground('connect');
       prefetchSectionBackground('storybook');
@@ -378,7 +380,7 @@ export const ArchiveHub = memo(function ArchiveHub({
             const partedX = isLeftHalf ? -190 : 190;
             const partedRotate = isLeftHalf ? -9 : 9;
             const prefetchProps =
-              app.id === 'certificates' || app.id === 'connect'
+              app.id === 'certificates' || app.id === 'connect' || app.id === 'repertoire' || app.id === 'watchlist'
                 ? getPrefetchProps(app.id as PrefetchSectionKey)
                 : {};
 

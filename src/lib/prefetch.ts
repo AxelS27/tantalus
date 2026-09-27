@@ -19,16 +19,19 @@ export type PrefetchSectionKey =
   | 'projects'
   | 'storybook'
   | 'archive'
+  | 'repertoire'
+  | 'watchlist'
   | 'certificates'
   | 'connect';
 
 export type CanvasBackgroundKey = PrefetchSectionKey | 'home';
 
-const sectionLoaders: Record<PrefetchSectionKey, () => Promise<unknown>> = {
+const sectionLoaders: Partial<Record<PrefetchSectionKey, () => Promise<unknown>>> = {
   timeline: () => import('../components/TimelineRoller'),
   projects: () => import('../components/ProjectsGrid'),
   storybook: () => import('../components/StoryBook'),
   archive: () => import('../components/ArchiveHub'),
+  repertoire: () => import('../components/RepertoireGrid'),
   certificates: () => import('../components/CertificatesCoverflow'),
   connect: () => import('../components/ConnectHub'),
 };
@@ -44,6 +47,8 @@ const backgroundPaths: Record<CanvasBackgroundKey, string> = {
   projects: '/images/tantalize/projects.webp',
   storybook: '/images/tantalize/storybook.png',
   archive: '/images/tantalize/archives.webp',
+  repertoire: '/repertoire.png',
+  watchlist: '/watchlist.png',
   certificates: '/images/tantalize/certificates.webp',
   connect: '/images/tantalize/connect.webp',
 };
@@ -54,11 +59,14 @@ export function prefetchSectionBackground(key: CanvasBackgroundKey): void {
 
   prefetchedBackgrounds.add(key);
   const image = new Image();
-  const source = getAssetUrl(backgroundPaths[key]);
-  const stem = source.slice(0, -5);
+  const isLocalArtwork = key === 'repertoire' || key === 'watchlist';
+  const source = isLocalArtwork ? backgroundPaths[key] : getAssetUrl(backgroundPaths[key]);
   image.decoding = 'async';
-  image.srcset = `${stem}-960.webp 960w, ${stem}-1280.webp 1280w, ${source} 1672w`;
-  image.sizes = '106vw';
+  if (!isLocalArtwork) {
+    const stem = source.slice(0, -5);
+    image.srcset = `${stem}-960.webp 960w, ${stem}-1280.webp 1280w, ${source} 1672w`;
+    image.sizes = '106vw';
+  }
   image.src = source;
   image.decode?.().catch(() => {
     prefetchedBackgrounds.delete(key);
@@ -116,16 +124,13 @@ export function prefetchSection(key: PrefetchSectionKey): void {
   if (key === 'projects') {
     prefetchProjectThumbnails(0);
   }
-  if (prefetchedSections.has(key)) return;
-  prefetchedSections.add(key);
-
   const loader = sectionLoaders[key];
-  if (loader) {
-    loader().catch(() => {
-      // If failed, allow retry later
-      prefetchedSections.delete(key);
-    });
-  }
+  if (!loader || prefetchedSections.has(key)) return;
+  prefetchedSections.add(key);
+  loader().catch(() => {
+    // If failed, allow retry later
+    prefetchedSections.delete(key);
+  });
 }
 
 /**

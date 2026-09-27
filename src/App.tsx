@@ -34,6 +34,9 @@ const StoryBook = lazy(() =>
 const ArchiveHub = lazy(() =>
   import('./components/ArchiveHub').then((m) => ({ default: m.ArchiveHub }))
 );
+const RepertoireGrid = lazy(() =>
+  import('./components/RepertoireGrid').then((m) => ({ default: m.RepertoireGrid }))
+);
 const CertificatesCoverflow = lazy(() =>
   import('./components/CertificatesCoverflow').then((m) => ({ default: m.CertificatesCoverflow }))
 );
@@ -44,7 +47,7 @@ const ProjectDetailPage = lazy(() =>
   import('./pages/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage }))
 );
 
-const validTabs: NavItem[] = ['home', 'storybook', 'timeline', 'projects', 'archive', 'certificates', 'connect'];
+const validTabs: NavItem[] = ['home', 'storybook', 'timeline', 'projects', 'archive', 'repertoire', 'watchlist', 'certificates', 'connect'];
 
 interface RouteInfo {
   tab: NavItem;
@@ -72,6 +75,12 @@ const getRouteInfo = (): RouteInfo => {
     }
   }
 
+  if (hash === 'repertoire' || hash === 'archive/repertoire') {
+    return { tab: 'repertoire', projectId: null };
+  }
+  if (hash === 'watchlist' || hash === 'archive/watchlist') {
+    return { tab: 'watchlist', projectId: null };
+  }
   if (hash === 'certificates' || hash === 'certificate' || hash === 'archive/certificates') {
     return { tab: 'certificates', projectId: null };
   }
@@ -142,6 +151,8 @@ export default function App() {
       timeline: 'AxelS27 - Timeline',
       projects: 'AxelS27 - Projects',
       archive: 'AxelS27 - Archive',
+      repertoire: 'AxelS27 - Repertoire',
+      watchlist: 'AxelS27 - Watchlist',
       certificates: 'AxelS27 - Certificates',
       connect: 'AxelS27 - Connect',
     };
@@ -233,6 +244,8 @@ export default function App() {
     } else if (newTab === 'archive') {
       prefetchSection('projects');
       prefetchSection('certificates');
+      prefetchSection('repertoire');
+      prefetchSection('watchlist');
     }
 
     if (immediate) {
@@ -289,8 +302,16 @@ export default function App() {
       triggerSectionChange('connect', true, true);
     } else if (appId === 'storybook') {
       triggerSectionChange('storybook', true, true);
+    } else if (appId === 'repertoire') {
+      triggerSectionChange('repertoire', true, true);
+    } else if (appId === 'watchlist') {
+      triggerSectionChange('watchlist', true, true);
     }
   }, [triggerSectionChange]);
+  const handleRepertoireTop = useCallback(
+    () => triggerSectionChange('archive'),
+    [triggerSectionChange],
+  );
   const handleCertificatesTop = useCallback(
     () => triggerSectionChange('archive'),
     [triggerSectionChange],
@@ -348,6 +369,10 @@ export default function App() {
       if (e.deltaY < -25) {
         triggerSectionChange('archive');
       }
+    } else if (activeTab === 'watchlist') {
+      if (e.deltaY < -25) {
+        triggerSectionChange('archive');
+      }
     } else if (activeTab === 'certificates') {
       if (e.deltaY < -25) {
         // Scrolling up glides back to Archive Hub
@@ -372,6 +397,10 @@ export default function App() {
         return { x: '0%', y: '-100%' };
       case 'archive':
         return { x: '100%', y: '0%' };
+      case 'repertoire':
+        return { x: '100%', y: '100%' };
+      case 'watchlist':
+        return { x: '0%', y: '100%' };
       case 'certificates':
         return { x: '100%', y: '-100%' };
       case 'connect':
@@ -394,14 +423,20 @@ export default function App() {
   return (
     <ErrorBoundary>
       {activeProjectId ? (
-        <div className="project-detail-scroll-container fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-[#FAF8F5] dark:bg-[#121110] z-50">
-          <Suspense fallback={<ProjectDetailSkeleton />}>
-            <ProjectDetailPage
-              projectId={activeProjectId}
-              onBack={handleBackToProjects}
-              onSelectProject={handleSelectProject}
-            />
-          </Suspense>
+        <div className="fixed inset-0 z-50 bg-[#FAF8F5] dark:bg-[#121110]">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+            <img src="/project-detail-bg.png" alt="" className="w-full h-full object-cover object-center scale-105" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/20" />
+          </div>
+          <div className="project-detail-scroll-container absolute inset-0 z-10 overflow-y-scroll overflow-x-hidden">
+            <Suspense fallback={<ProjectDetailSkeleton />}>
+              <ProjectDetailPage
+                projectId={activeProjectId}
+                onBack={handleBackToProjects}
+                onSelectProject={handleSelectProject}
+              />
+            </Suspense>
+          </div>
         </div>
       ) : (
         <div
@@ -637,6 +672,48 @@ export default function App() {
                   />
                 </Suspense>
               )}
+            </div>
+
+            {/* ================= REPERTOIRE SECTION (North-West: -100vw, -100vh) ================= */}
+            <div className="spatial-section absolute left-[-100vw] top-[-100vh] w-screen h-screen overflow-hidden z-10">
+              <div
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('repertoire') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
+              >
+                <img
+                  src="/repertoire.png"
+                  alt="Repertoire concert hall background"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
+                />
+              </div>
+              {visitedTabs.has('repertoire') && (
+                <Suspense fallback={null}>
+                  <RepertoireGrid
+                    isActive={isSectionRendered('repertoire')}
+                    onReachTop={handleRepertoireTop}
+                  />
+                </Suspense>
+              )}
+            </div>
+
+            {/* ================= WATCHLIST SECTION (North: 0, -100vh) ================= */}
+            <div className="spatial-section absolute left-0 top-[-100vh] w-screen h-screen overflow-hidden z-10">
+              <div
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                  isBackgroundLive('watchlist') ? 'ambient-canvas-background--live' : ''
+                } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
+              >
+                <img
+                  src="/watchlist.png"
+                  alt="Watchlist theater background"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover object-center pointer-events-none"
+                />
+              </div>
             </div>
 
             {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}

@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 import { getPrefetchProps, type PrefetchSectionKey } from '../lib/prefetch';
 
-export type NavItem = 'home' | 'storybook' | 'timeline' | 'projects' | 'archive' | 'certificates' | 'connect';
+export type NavItem = 'home' | 'storybook' | 'timeline' | 'projects' | 'archive' | 'repertoire' | 'watchlist' | 'certificates' | 'connect';
 
 interface NavbarProps {
   activeTab?: NavItem;
@@ -28,13 +28,17 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
     onTabChange?.(id);
   };
 
-  const isSubApp = activeTab === 'certificates' || activeTab === 'connect' || activeTab === 'storybook';
+  const isSubApp = activeTab === 'certificates' || activeTab === 'connect' || activeTab === 'storybook' || activeTab === 'repertoire' || activeTab === 'watchlist';
   const subAppLabel =
     activeTab === 'certificates'
       ? 'Certificates'
       : activeTab === 'connect'
         ? 'Connect'
-        : 'Story Book';
+        : activeTab === 'repertoire'
+          ? 'Repertoire'
+          : activeTab === 'watchlist'
+            ? 'Watchlist'
+            : 'Story Book';
 
   return (
     <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex flex-col items-center">

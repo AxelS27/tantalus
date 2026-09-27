@@ -24,7 +24,7 @@ export const Footer = memo(function Footer({ className = '' }: FooterProps) {
       <footer
         className={`relative w-full bg-[#FAF8F5]/90 dark:bg-[#121110]/95 backdrop-blur-2xl backdrop-saturate-[180%] border-t border-stone-200/80 dark:border-stone-800/80 shadow-[0_-12px_40px_rgba(0,0,0,0.06)] dark:shadow-[0_-12px_40px_rgba(0,0,0,0.25)] px-6 sm:px-12 md:px-16 pt-10 pb-12 select-text z-20 ${className}`}
       >
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 border-b border-stone-300/60 dark:border-stone-800 pb-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 border-b border-stone-300/60 dark:border-stone-800 pb-8">
           {/* Col 1: Identity */}
           <div className="space-y-2">
             <h3 className="font-serif italic text-2xl sm:text-3xl text-stone-950 dark:text-stone-100 font-semibold leading-tight">
@@ -54,7 +54,7 @@ export const Footer = memo(function Footer({ className = '' }: FooterProps) {
           </div>
 
           {/* Col 3: Social & Connect */}
-          <div className="space-y-3">
+          <div className="space-y-3 md:col-span-2 lg:col-span-1">
             <h4 className="font-sans text-xs sm:text-[13px] uppercase tracking-wider text-stone-500 dark:text-stone-400 font-semibold">
               Connect
             </h4>
