@@ -16,7 +16,7 @@ export const DEFAULT_SETTINGS: PortfolioSettings = {
   reducedMotion: false,
   ambientParallax: true,
   interactiveTilt: true,
-  isAudioEnabled: false,
+  isAudioEnabled: true,
   volume: 30,
   playbackMode: 'shuffle',
   musicOrder: [...DEFAULT_MUSIC_ORDER],
