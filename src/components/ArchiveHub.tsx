@@ -16,8 +16,13 @@ import {
   X,
   Minus,
   Check,
+  ChevronUp,
+  ChevronDown,
+  SkipForward,
 } from 'lucide-react';
 import Footer from './common/Footer';
+import { MUSIC_TRACKS, type MusicTrackId } from '../lib/music';
+import type { MusicStatus } from '../hooks/useBackgroundMusic';
 import {
   type PortfolioSettings,
   DEFAULT_SETTINGS,
@@ -103,6 +108,10 @@ interface ArchiveHubProps {
   onAppSelect?: (appId: ArchiveAppId) => void;
   settings?: PortfolioSettings;
   onUpdateSettings?: (newSettings: Partial<PortfolioSettings>) => void;
+  musicStatus?: MusicStatus;
+  currentTrackId?: MusicTrackId | null;
+  onSkipTrack?: () => void;
+  onRetryPlayback?: () => void;
 }
 
 export const ArchiveHub = memo(function ArchiveHub({
@@ -111,6 +120,10 @@ export const ArchiveHub = memo(function ArchiveHub({
   onAppSelect,
   settings: externalSettings,
   onUpdateSettings,
+  musicStatus = 'off',
+  currentTrackId = null,
+  onSkipTrack,
+  onRetryPlayback,
 }: ArchiveHubProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isAtTopRef = useRef<boolean>(true);
@@ -138,6 +151,14 @@ export const ArchiveHub = memo(function ArchiveHub({
         return updated;
       });
     }
+  };
+
+  const moveTrack = (index: number, direction: -1 | 1) => {
+    const order = [...activeSettings.musicOrder];
+    const destination = index + direction;
+    if (destination < 0 || destination >= order.length) return;
+    [order[index], order[destination]] = [order[destination], order[index]];
+    handleSettingChange({ musicOrder: order });
   };
 
   // Eagerly prefetch destination sections and backgrounds in advance
@@ -260,6 +281,9 @@ export const ArchiveHub = memo(function ArchiveHub({
   const closeSettings = () => {
     updateSuctionPosition();
     setIsSettingsOpen(false);
+    if (window.location.hash.includes('settings')) {
+      window.history.replaceState(null, '', '#archive');
+    }
   };
 
   // Sync suction coordinate on resize and scroll
@@ -339,6 +363,7 @@ export const ArchiveHub = memo(function ArchiveHub({
   // Dedicated wheel listener: allows normal vertical page scroll.
   // Requires user to truly rest at the top before an intentional second scroll-up triggers handoff to Projects.
   const handleWheel = (e: React.WheelEvent) => {
+    if (isSettingsOpen) return;
     const container = containerRef.current;
     if (!container) return;
 
@@ -364,7 +389,7 @@ export const ArchiveHub = memo(function ArchiveHub({
       onScroll={handleScroll}
       onWheel={isActive ? handleWheel : undefined}
       aria-hidden={!isActive}
-      className={`relative w-full h-full overflow-y-auto overflow-x-hidden select-text scroll-smooth no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-opacity duration-300 ${
+      className={`relative w-full h-full ${isSettingsOpen ? 'overflow-y-hidden' : 'overflow-y-auto'} overflow-x-hidden select-text scroll-smooth no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-opacity duration-300 ${
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
@@ -456,7 +481,10 @@ export const ArchiveHub = memo(function ArchiveHub({
         createPortal(
           <AnimatePresence>
             {isSettingsOpen && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 select-none">
+              <div
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 select-none"
+                onWheel={(event) => event.stopPropagation()}
+              >
                 {/* Soft Ambient Backdrop */}
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -499,7 +527,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                     transformOrigin: '50% 100%',
                     willChange: 'transform, clip-path',
                   }}
-                  className="relative w-full max-w-xl sm:max-w-2xl md:max-w-3xl h-[520px] sm:h-[580px] rounded-2xl sm:rounded-3xl bg-[#FAF8F5]/92 dark:bg-[#1A1816]/95 hover:bg-[#FAF8F5]/96 dark:hover:bg-[#1A1816]/98 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/80 dark:border-stone-700/80 shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,1),0_28px_70px_-10px_rgba(0,0,0,0.38)] flex flex-col overflow-hidden text-stone-900 dark:text-stone-100"
+                  className="relative w-full max-w-xl sm:max-w-2xl md:max-w-3xl h-[520px] sm:h-[580px] max-h-[calc(100dvh-2rem)] rounded-2xl sm:rounded-3xl bg-[#FAF8F5]/92 dark:bg-[#1A1816]/95 hover:bg-[#FAF8F5]/96 dark:hover:bg-[#1A1816]/98 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/80 dark:border-stone-700/80 shadow-[inset_0_1.5px_2px_0_rgba(255,255,255,1),0_28px_70px_-10px_rgba(0,0,0,0.38)] flex flex-col overflow-hidden text-stone-900 dark:text-stone-100"
                 >
                   {/* Window Titlebar */}
                   <div className="h-13 px-5 flex items-center justify-between border-b border-stone-200/60 dark:border-stone-800 bg-white/40 dark:bg-stone-900/60 backdrop-blur-md flex-shrink-0">
@@ -536,9 +564,9 @@ export const ArchiveHub = memo(function ArchiveHub({
                   </div>
 
                   {/* Main Body: Sidebar + Detail Pane */}
-                  <div className="flex-1 flex overflow-hidden">
+                  <div className="flex-1 min-h-0 flex flex-col sm:flex-row overflow-hidden">
                     {/* Sidebar Navigation */}
-                    <div className="w-44 sm:w-52 border-r border-stone-200/60 dark:border-stone-800 p-3 space-y-1.5 bg-black/[0.02] dark:bg-stone-950/20 flex-shrink-0">
+                    <div className="w-full sm:w-52 flex sm:block gap-1 sm:space-y-1.5 border-b sm:border-b-0 sm:border-r border-stone-200/60 dark:border-stone-800 p-2 sm:p-3 bg-black/[0.02] dark:bg-stone-950/20 flex-shrink-0">
                       {[
                         { id: 'appearance', label: 'Appearance', icon: Palette },
                         { id: 'audio', label: 'Ambience', icon: Volume2 },
@@ -551,14 +579,21 @@ export const ArchiveHub = memo(function ArchiveHub({
                         return (
                           <button
                             key={tab.id}
-                            onClick={() => setActiveSettingsTab(tab.id as any)}
-                            className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-sans font-medium transition-all cursor-pointer ${
+                            onClick={() => setActiveSettingsTab(tab.id as typeof activeSettingsTab)}
+                            aria-current={isActive ? 'page' : undefined}
+                            aria-label={tab.label}
+                            className={`group relative isolate w-full min-w-0 flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2.5 px-1 sm:px-3.5 py-1.5 sm:py-2.5 rounded-xl border border-transparent text-[10px] sm:text-[13px] font-sans font-medium text-left cursor-pointer ${
                               isActive
-                                ? 'bg-white/85 dark:bg-stone-800/90 text-stone-950 dark:text-white shadow-sm border border-white/80 dark:border-stone-700 font-semibold'
-                                : 'text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100 hover:bg-black/5 dark:hover:bg-white/5'
+                                ? 'text-stone-950 dark:text-white font-semibold'
+                                : 'text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-stone-100'
                             }`}
                           >
-                            <Icon className={`w-4 h-4 ${isActive ? 'text-amber-800 dark:text-amber-400' : 'text-stone-500 dark:text-stone-400'}`} />
+                            {isActive ? (
+                              <span key="selected" className="absolute inset-0 -z-10 rounded-xl bg-white/75 dark:bg-white/12 border border-white/80 dark:border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_2px_8px_rgba(40,30,20,0.08)] pointer-events-none" />
+                            ) : (
+                              <span key="hover" className="absolute inset-0 -z-10 rounded-xl bg-white/40 dark:bg-white/10 border border-white/60 dark:border-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none" />
+                            )}
+                            <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-amber-800 dark:text-amber-400' : 'text-stone-500 dark:text-stone-400 group-hover:text-amber-800 dark:group-hover:text-amber-400'}`} />
                             <span>{tab.label}</span>
                           </button>
                         );
@@ -566,7 +601,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                     </div>
 
                     {/* Content Pane */}
-                    <div className="flex-1 p-5 sm:p-7 overflow-y-auto space-y-5">
+                    <div className="settings-content-scroll flex-1 min-w-0 min-h-0 p-4 sm:p-7 overflow-y-auto overscroll-contain space-y-5">
                       {/* Tab 1: Appearance (Light & Dark Only) */}
                       {activeSettingsTab === 'appearance' && (
                         <div className="space-y-5">
@@ -649,19 +684,21 @@ export const ArchiveHub = memo(function ArchiveHub({
                               Acoustic Atmosphere
                             </h4>
                             <p className="text-xs font-sans text-stone-600 dark:text-stone-400">
-                              Configure ambient classical piano and sound aesthetics.
+                              A continuous collection of five piano pieces.
                             </p>
                           </div>
 
                           <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-white/80 dark:border-white/10 shadow-sm space-y-4">
                             <div className="flex items-center justify-between">
                               <div className="space-y-1">
-                                <span className="text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100">Background Ambience</span>
-                                <p className="text-xs font-sans text-stone-500 dark:text-stone-400">Soft Chopin Nocturne piano accompaniment</p>
+                                <span className="text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100">Background Music</span>
+                                <p className="text-xs font-sans text-stone-500 dark:text-stone-400">Piano pieces that continue as you explore</p>
                               </div>
                               <button
                                 onClick={() => handleSettingChange({ isAudioEnabled: !activeSettings.isAudioEnabled })}
-                                className={`w-12 h-6.5 rounded-full p-0.5 transition-colors cursor-pointer ${
+                                aria-label="Background music"
+                                aria-pressed={activeSettings.isAudioEnabled}
+                                className={`w-12 h-6.5 shrink-0 rounded-full p-0.5 transition-colors cursor-pointer ${
                                   activeSettings.isAudioEnabled ? 'bg-amber-800 dark:bg-amber-600' : 'bg-stone-300 dark:bg-stone-700'
                                 }`}
                               >
@@ -669,13 +706,44 @@ export const ArchiveHub = memo(function ArchiveHub({
                               </button>
                             </div>
 
-                            {/* Volume Slider */}
-                            <div className="space-y-2 pt-2 border-t border-stone-200/50 dark:border-stone-800">
+                            <div className="pt-3 border-t border-stone-200/50 dark:border-stone-800 space-y-1">
+                              <div className="flex items-center justify-between gap-2 text-[10px] uppercase tracking-widest font-sans text-stone-500 dark:text-stone-400">
+                                <span>Now Playing</span>
+                                {activeSettings.isAudioEnabled && <span role="status">{musicStatus === 'playing' ? 'Playing' : musicStatus === 'loading' ? 'Loading' : musicStatus === 'blocked' ? 'Paused by browser' : 'Unavailable'}</span>}
+                              </div>
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-xs font-sans font-medium text-stone-900 dark:text-stone-100 truncate">
+                                  {activeSettings.isAudioEnabled && currentTrackId
+                                    ? MUSIC_TRACKS.find((track) => track.id === currentTrackId)?.title
+                                    : activeSettings.isAudioEnabled ? 'Preparing playlist...' : 'Music is off'}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={onSkipTrack}
+                                  disabled={!activeSettings.isAudioEnabled || !onSkipTrack}
+                                  aria-label="Next track"
+                                  title="Next track"
+                                  className="p-1.5 rounded-lg text-stone-600 dark:text-stone-300 hover:bg-stone-200/70 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                >
+                                  <SkipForward className="w-4 h-4" />
+                                </button>
+                              </div>
+                              {activeSettings.isAudioEnabled && musicStatus === 'blocked' && (
+                                <button type="button" onClick={onRetryPlayback} className="text-xs text-amber-800 dark:text-amber-400 underline cursor-pointer">
+                                  Tap to start music
+                                </button>
+                              )}
+                              {activeSettings.isAudioEnabled && musicStatus === 'error' && (
+                                <p role="alert" className="text-xs text-red-700 dark:text-red-400">Music could not be played. Check your connection or try the next track.</p>
+                              )}
+                            </div>
+                            <div className="space-y-2 pt-3 border-t border-stone-200/50 dark:border-stone-800">
                               <div className="flex items-center justify-between text-xs font-sans text-stone-600 dark:text-stone-400">
-                                <span>Master Volume</span>
+                                <label htmlFor="music-volume">Music Volume</label>
                                 <span>{activeSettings.volume}%</span>
                               </div>
                               <input
+                                id="music-volume"
                                 type="range"
                                 min="0"
                                 max="100"
@@ -684,6 +752,45 @@ export const ArchiveHub = memo(function ArchiveHub({
                                 className="w-full h-2 bg-stone-300 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-amber-800 dark:accent-amber-600"
                               />
                             </div>
+                          </div>
+
+                          <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-white/80 dark:border-white/10 shadow-sm space-y-3">
+                            <div>
+                              <span className="text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100">Play Order</span>
+                              <p className="text-xs font-sans text-stone-500 dark:text-stone-400">
+                                {activeSettings.playbackMode === 'shuffle'
+                                  ? 'All five songs play once before reshuffling.'
+                                  : 'Arrange the order they play in.'}
+                              </p>
+                            </div>
+                            <div className="flex gap-1 p-1 rounded-xl bg-stone-200/60 dark:bg-stone-900/70" role="group" aria-label="Play order">
+                              {(['shuffle', 'sequential'] as const).map((mode) => (
+                                <button
+                                  key={mode}
+                                  type="button"
+                                  aria-pressed={activeSettings.playbackMode === mode}
+                                  onClick={() => handleSettingChange({ playbackMode: mode })}
+                                  className={`flex-1 py-1.5 rounded-lg text-xs font-sans font-medium cursor-pointer transition-colors ${activeSettings.playbackMode === mode ? 'bg-white dark:bg-stone-700 text-stone-950 dark:text-white shadow-sm' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'}`}
+                                >
+                                  {mode === 'shuffle' ? 'Shuffle' : 'In Order'}
+                                </button>
+                              ))}
+                            </div>
+                            {activeSettings.playbackMode === 'sequential' && (
+                              <ol className="space-y-1" aria-label="Music playlist">
+                                {activeSettings.musicOrder.map((id, index) => {
+                                  const track = MUSIC_TRACKS.find((item) => item.id === id);
+                                  return (
+                                    <li key={id} className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-sans ${currentTrackId === id && activeSettings.isAudioEnabled ? 'bg-amber-100/70 dark:bg-amber-900/20 text-amber-900 dark:text-amber-300' : 'text-stone-700 dark:text-stone-300'}`}>
+                                      <span className="w-4 shrink-0 text-stone-400 tabular-nums">{index + 1}.</span>
+                                      <span className="flex-1 truncate" title={track?.title}>{track?.title}</span>
+                                      <button type="button" onClick={() => moveTrack(index, -1)} disabled={index === 0} aria-label={`Move ${track?.title} up`} className="p-1 rounded hover:bg-stone-200 dark:hover:bg-white/10 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"><ChevronUp className="w-3.5 h-3.5" /></button>
+                                      <button type="button" onClick={() => moveTrack(index, 1)} disabled={index === activeSettings.musicOrder.length - 1} aria-label={`Move ${track?.title} down`} className="p-1 rounded hover:bg-stone-200 dark:hover:bg-white/10 disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"><ChevronDown className="w-3.5 h-3.5" /></button>
+                                    </li>
+                                  );
+                                })}
+                              </ol>
+                            )}
                           </div>
                         </div>
                       )}

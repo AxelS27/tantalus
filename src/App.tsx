@@ -20,6 +20,7 @@ import ProjectDetailSkeleton from './components/skeletons/ProjectDetailSkeleton'
 import type { ArchiveAppId } from './components/ArchiveHub';
 import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
 import { getProjectById } from './data/projects';
+import { useBackgroundMusic } from './hooks/useBackgroundMusic';
 
 // Lazy-loaded code-split section chunks
 const TimelineRoller = lazy(() =>
@@ -107,6 +108,7 @@ export default function App() {
   const activeTab = routeInfo.tab;
   const activeProjectId = routeInfo.projectId;
   const [settings, setSettings] = useState<PortfolioSettings>(getSavedSettings);
+  const music = useBackgroundMusic(settings);
   const [renderQuality] = useState(getRenderQuality);
   const prefersReducedMotion = useReducedMotion();
   const shouldReduceMotion = settings.reducedMotion || prefersReducedMotion;
@@ -670,6 +672,10 @@ export default function App() {
                     isActive={isSectionRendered('archive')}
                     settings={settings}
                     onUpdateSettings={handleUpdateSettings}
+                    musicStatus={music.status}
+                    currentTrackId={music.trackId}
+                    onSkipTrack={music.skipTrack}
+                    onRetryPlayback={music.retryPlayback}
                     onAppSelect={handleArchiveAppSelect}
                     onReachStart={handleArchiveStart}
                   />

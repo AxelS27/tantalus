@@ -1,3 +1,5 @@
+import { DEFAULT_MUSIC_ORDER, normalizeMusicOrder, type MusicTrackId, type PlaybackMode } from './music';
+
 export interface PortfolioSettings {
   theme: 'light' | 'dark';
   reducedMotion: boolean;
@@ -5,6 +7,8 @@ export interface PortfolioSettings {
   interactiveTilt: boolean;
   isAudioEnabled: boolean;
   volume: number;
+  playbackMode: PlaybackMode;
+  musicOrder: MusicTrackId[];
 }
 
 export const DEFAULT_SETTINGS: PortfolioSettings = {
@@ -13,14 +17,25 @@ export const DEFAULT_SETTINGS: PortfolioSettings = {
   ambientParallax: true,
   interactiveTilt: true,
   isAudioEnabled: false,
-  volume: 70,
+  volume: 30,
+  playbackMode: 'shuffle',
+  musicOrder: [...DEFAULT_MUSIC_ORDER],
 };
 
 export const getSavedSettings = (): PortfolioSettings => {
   if (typeof window === 'undefined') return DEFAULT_SETTINGS;
   try {
     const saved = localStorage.getItem('tantalize_portfolio_settings');
-    if (saved) return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        ...DEFAULT_SETTINGS,
+        ...parsed,
+        volume: Number.isFinite(parsed.volume) ? Math.max(0, Math.min(100, parsed.volume)) : DEFAULT_SETTINGS.volume,
+        playbackMode: parsed.playbackMode === 'sequential' ? 'sequential' : 'shuffle',
+        musicOrder: normalizeMusicOrder(parsed.musicOrder),
+      };
+    }
   } catch {}
   return DEFAULT_SETTINGS;
 };

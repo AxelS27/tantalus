@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+# Original MP3 masters are kept locally, outside Vite's public output.
+source-audio/
 *.local
 
 # Editor directories and files

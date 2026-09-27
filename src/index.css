@@ -39,6 +39,33 @@ body {
   scrollbar-width: none;
 }
 
+/* A quiet scrollbar for the scrollable Settings pane. */
+.settings-content-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(116, 95, 69, 0.38) transparent;
+}
+
+.settings-content-scroll::-webkit-scrollbar {
+  width: 7px;
+}
+
+.settings-content-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-content-scroll::-webkit-scrollbar-thumb {
+  background: rgba(116, 95, 69, 0.38);
+  border-radius: 999px;
+}
+
+.dark .settings-content-scroll {
+  scrollbar-color: rgba(245, 235, 215, 0.3) transparent;
+}
+
+.dark .settings-content-scroll::-webkit-scrollbar-thumb {
+  background: rgba(245, 235, 215, 0.3);
+}
+
 /* Dark thumbs with transparent tracks so artwork stays unobstructed. */
 .project-detail-scroll-container,
 .archive-gallery-scroll-container {
