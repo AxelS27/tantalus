@@ -1,5 +1,5 @@
 import { getAssetUrl } from './assets';
-import { getThumbnailUrl, getThumbnailSrcSet } from './thumbnails';
+import { getProjectCardImage, getProjectCardSrcSet } from './thumbnails';
 import { projectPages } from '../data/projects';
 
 /**
@@ -78,13 +78,13 @@ export function prefetchProjectThumbnails(pageIndex = 0): void {
   if (!page) return;
 
   page.forEach((project) => {
-    const thumbUrl = getThumbnailUrl(project.image);
+    const thumbUrl = getProjectCardImage(project.id, project.image);
     if (!thumbUrl || prefetchedProjectThumbnails.has(thumbUrl)) return;
     prefetchedProjectThumbnails.add(thumbUrl);
 
     const img = new Image();
     img.decoding = 'async';
-    const srcSet = getThumbnailSrcSet(project.image);
+    const srcSet = getProjectCardSrcSet(project.id);
     if (srcSet) {
       img.srcset = srcSet;
       img.sizes = '(max-width: 640px) 140px, 200px';

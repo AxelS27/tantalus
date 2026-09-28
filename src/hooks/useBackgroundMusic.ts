@@ -22,6 +22,8 @@ export function useBackgroundMusic(settings: PortfolioSettings) {
   if (!queueRef.current) queueRef.current = new MusicQueue(settings.musicOrder, settings.playbackMode);
 
   const preloadNext = useCallback(() => {
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (preloadRef.current || connection?.saveData) return;
     const id = queueRef.current!.next();
     const audio = new Audio();
     audio.preload = 'auto';
@@ -38,13 +40,14 @@ export function useBackgroundMusic(settings: PortfolioSettings) {
       if (audio === audioRef.current && !audio.paused) {
         failuresRef.current = 0;
         setStatus('playing');
+        preloadNext();
       }
     } catch (error) {
       if (audio !== audioRef.current || !settingsRef.current.isAudioEnabled) return;
       if (error instanceof DOMException && error.name === 'AbortError') return;
       setStatus(error instanceof DOMException && error.name === 'NotAllowedError' ? 'blocked' : 'error');
     }
-  }, []);
+  }, [preloadNext]);
 
   const advance = useCallback(() => {
     if (!settingsRef.current.isAudioEnabled) return;
@@ -57,14 +60,13 @@ export function useBackgroundMusic(settings: PortfolioSettings) {
     audio.src = sourceFor(id);
     currentRef.current = id;
     setTrackId(id);
-    preloadNext();
     void play();
-  }, [play, preloadNext]);
+  }, [play]);
   advanceRef.current = advance;
 
   useEffect(() => {
     const audio = new Audio();
-    audio.preload = 'auto';
+    audio.preload = 'none';
     audioRef.current = audio;
     const onEnded = () => advanceRef.current();
     const onError = () => {
@@ -84,6 +86,7 @@ export function useBackgroundMusic(settings: PortfolioSettings) {
       audio.pause();
       audio.removeAttribute('src');
       audioRef.current = null;
+      preloadRef.current?.audio.removeAttribute('src');
       preloadRef.current = null;
       currentRef.current = null;
       queueRef.current = new MusicQueue(settingsRef.current.musicOrder, settingsRef.current.playbackMode);
@@ -96,8 +99,9 @@ export function useBackgroundMusic(settings: PortfolioSettings) {
     if (previous.mode === settings.playbackMode && previous.order === settings.musicOrder) return;
     queueRef.current!.configure(settings.musicOrder, settings.playbackMode, currentRef.current, preloadRef.current?.id ?? null);
     configurationRef.current = { order: settings.musicOrder, mode: settings.playbackMode };
+    preloadRef.current?.audio.removeAttribute('src');
     preloadRef.current = null;
-    if (currentRef.current) preloadNext();
+    if (currentRef.current && audioRef.current && !audioRef.current.paused) preloadNext();
   }, [settings.musicOrder, settings.playbackMode, preloadNext]);
 
   useEffect(() => {
@@ -110,6 +114,8 @@ export function useBackgroundMusic(settings: PortfolioSettings) {
     if (!audio) return;
     if (!settings.isAudioEnabled) {
       audio.pause();
+      preloadRef.current?.audio.removeAttribute('src');
+      preloadRef.current = null;
       setStatus('off');
       return;
     }
@@ -118,7 +124,6 @@ export function useBackgroundMusic(settings: PortfolioSettings) {
       currentRef.current = id;
       setTrackId(id);
       audio.src = sourceFor(id);
-      preloadNext();
     }
     void play();
   }, [settings.isAudioEnabled, play, preloadNext]);

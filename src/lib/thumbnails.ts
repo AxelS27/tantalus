@@ -15,6 +15,27 @@ const DIRECT_THUMBNAIL_GROUPS: Record<string, ThumbnailGroup> = {
   certificates: 'certificates',
 };
 
+// Only use generated card variants where they are actually available in R2.
+const PROJECT_CARD_VARIANTS = new Set([
+  'computational-biology-cca',
+  'phylaxify',
+  'brightstar',
+  'nlp-gambling-detection',
+  'railroad-cv',
+]);
+
+export function getProjectCardImage(id: string, original: string): string {
+  return PROJECT_CARD_VARIANTS.has(id)
+    ? getAssetUrl(`/images/thumbnails/projects/${id}-320.webp`)
+    : original;
+}
+
+export function getProjectCardSrcSet(id: string): string | undefined {
+  if (!PROJECT_CARD_VARIANTS.has(id)) return undefined;
+  const base = getAssetUrl(`/images/thumbnails/projects/${id}`);
+  return `${base}-320.webp 320w, ${base}-640.webp 640w`;
+}
+
 interface ThumbnailMatch {
   group: ThumbnailGroup;
   localDirectory: string;
