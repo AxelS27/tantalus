@@ -539,20 +539,6 @@ export default function App() {
                   love to playing piano, coding, and watching movies
                 </p>
               </div>
-
-              {/* Colossal Diagonal Archival Watermark (Full-Screen Stamp) */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-15 overflow-hidden">
-                <div
-                  className="-rotate-12 transform-gpu text-center flex flex-col items-center justify-center"
-                  style={{
-                    WebkitTextStroke: '2px rgba(255, 255, 255, 0.22)',
-                  }}
-                >
-                  <span className="font-serif italic font-black text-[13vw] sm:text-[14vw] md:text-[15vw] leading-none tracking-[0.06em] text-white/10 dark:text-white/[0.07] uppercase select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.45)] whitespace-nowrap">
-                    NOT DONE YET
-                  </span>
-                </div>
-              </div>
             </div>
 
             {/* ================= STORY BOOK SECTION (North-East: +100vw, -100vh) ================= */}
