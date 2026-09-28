@@ -1,4 +1,21 @@
-[
+export interface WatchlistItem {
+  id: string;
+  title: string;
+  type: 'Anime' | 'Kdrama' | 'Cdrama';
+  category: 'anime' | 'drama';
+  seasons?: number;
+  episodes?: number;
+  duration?: string;
+  axelRating: number;
+  userRating: number;
+  genres: string[];
+  reviewUrl: string;
+  image: string;
+  notes: string;
+  watchOrder: number;
+}
+
+export const watchlistData: WatchlistItem[] = [
   {
     "id": "one-piece",
     "title": "One Piece",
@@ -550,4 +567,4 @@
     "notes": "An investigative occult romance drama where a ghost-seeing heiress and an ace prosecutor discover that a single touch unlocks their power as a duo to crack unsolved murders.",
     "watchOrder": 29
   }
-]
+];

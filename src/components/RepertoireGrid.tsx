@@ -1,14 +1,14 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import repertoire from '../data/repertoire.json';
+import { repertoireData } from '../data/repertoire';
 import { getAssetUrl } from '../lib/assets';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
 
 type Genre = 'All' | 'Romantic' | 'Classical' | 'Baroque' | 'OST & Soundtracks' | 'Studies';
 const genres: Genre[] = ['All', 'Romantic', 'Classical', 'Baroque', 'OST & Soundtracks', 'Studies'];
 // Preserve the original portfolio's curated order (popular pieces first, Studies last).
-const visibleRepertoire = repertoire
+const visibleRepertoire = repertoireData
   .filter((piece) => !/^epr-level-(?:[4-9]|10)$/.test(piece.id))
   .sort((a, b) => Number(a.genre === 'Studies') - Number(b.genre === 'Studies'));
 const pageSize = 15;

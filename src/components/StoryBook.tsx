@@ -22,6 +22,7 @@ import {
   BookmarkCheck,
 } from 'lucide-react';
 import { storybooksData, type StoryBookItem } from '../data/storybooks/index';
+import { getAssetUrl } from '../lib/assets';
 
 const BOOKMARK_STORAGE_KEY_PREFIX = 'tantalize_storybook_bookmark_';
 
@@ -1182,13 +1183,15 @@ export const StoryBook = memo(function StoryBook({
             {/* Cinematic Animated Winged Man Painting */}
             <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] aspect-[16/9] rounded-xl overflow-hidden border border-amber-900/20 shadow-xl bg-black/10">
               <video
-                src="/Winged_man_flying_toward_sun_20260923081626.mp4"
                 autoPlay
                 loop
                 muted
                 playsInline
+                preload="none"
                 className="w-full h-full object-cover"
-              />
+              >
+                <source src={getAssetUrl('/videos/storybook-icarus.webm')} type="video/webm" />
+              </video>
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
             </div>
 

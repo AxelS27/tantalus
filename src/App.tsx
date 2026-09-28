@@ -51,6 +51,13 @@ const ProjectDetailPage = lazy(() =>
   import('./pages/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage }))
 );
 
+// Serve the local copy if CDN artwork is temporarily unavailable.
+const fallbackToLocalArtwork = (image: HTMLImageElement, path: string) => {
+  if (image.src === new URL(path, window.location.href).href) return;
+  image.srcset = '';
+  image.src = path;
+};
+
 const validTabs: NavItem[] = ['home', 'storybook', 'timeline', 'projects', 'archive', 'repertoire', 'watchlist', 'certificates', 'connect'];
 
 interface RouteInfo {
@@ -430,7 +437,14 @@ export default function App() {
       {activeProjectId ? (
         <div className="fixed inset-0 z-50 bg-[#FAF8F5] dark:bg-[#121110]">
           <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-            <img src="/project-detail-bg.png" alt="" className="w-full h-full object-cover object-center scale-105" />
+            <img
+              src={getAssetUrl('/images/tantalize/project-detail-bg.webp')}
+              srcSet={`${getAssetUrl('/images/tantalize/project-detail-bg-960.webp')} 960w, ${getAssetUrl('/images/tantalize/project-detail-bg-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/project-detail-bg.webp')} 1672w`}
+              sizes="100vw"
+              onError={(e) => fallbackToLocalArtwork(e.currentTarget, '/images/tantalize/project-detail-bg.webp')}
+              alt=""
+              className="w-full h-full object-cover object-center scale-105"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/20" />
           </div>
           <div className="project-detail-scroll-container absolute inset-0 z-10 overflow-y-scroll overflow-x-hidden">
@@ -557,11 +571,10 @@ export default function App() {
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
                 <img
-                  src={getAssetUrl('/images/tantalize/storybook.png')}
-                  onError={(e) => {
-                    e.currentTarget.src = '/storybook.png';
-                  }}
+                  src={getAssetUrl('/images/tantalize/storybook.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/storybook-960.webp')} 960w, ${getAssetUrl('/images/tantalize/storybook-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/storybook.webp')} 1672w`}
                   sizes="106vw"
+                  onError={(e) => fallbackToLocalArtwork(e.currentTarget, '/images/tantalize/storybook.webp')}
                   alt="Story Book Background"
                   loading="lazy"
                   decoding="async"
@@ -691,7 +704,10 @@ export default function App() {
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
                 <img
-                  src="/repertoire.png"
+                  src={getAssetUrl('/images/tantalize/repertoire.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/repertoire-960.webp')} 960w, ${getAssetUrl('/images/tantalize/repertoire-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/repertoire.webp')} 1672w`}
+                  sizes="106vw"
+                  onError={(e) => fallbackToLocalArtwork(e.currentTarget, '/images/tantalize/repertoire.webp')}
                   alt="Repertoire concert hall background"
                   loading="lazy"
                   decoding="async"
@@ -716,7 +732,10 @@ export default function App() {
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
                 <img
-                  src="/watchlist.png"
+                  src={getAssetUrl('/images/tantalize/watchlist.webp')}
+                  srcSet={`${getAssetUrl('/images/tantalize/watchlist-960.webp')} 960w, ${getAssetUrl('/images/tantalize/watchlist-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/watchlist.webp')} 1672w`}
+                  sizes="106vw"
+                  onError={(e) => fallbackToLocalArtwork(e.currentTarget, '/images/tantalize/watchlist.webp')}
                   alt="Watchlist theater background"
                   loading="lazy"
                   decoding="async"

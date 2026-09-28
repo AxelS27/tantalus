@@ -1,4 +1,19 @@
-[
+export interface RepertoireItem {
+  id: string;
+  title: string;
+  composer: string;
+  origin: string;
+  genre: 'Romantic' | 'Classical' | 'Baroque' | 'OST & Soundtracks' | 'Studies';
+  category: 'classical' | 'anime' | 'movie' | 'drama' | 'other';
+  instrument: string;
+  axelRating: number;
+  isFavorite: boolean;
+  scoreUrl: string;
+  tags: string[];
+  image: string;
+}
+
+export const repertoireData: RepertoireItem[] = [
   {
     "id": "chopin-nocturne-op9-no2",
     "title": "Nocturne in E-flat Major, Op. 9 No. 2",
@@ -722,4 +737,4 @@
     ],
     "image": "/repertoire/epr-level-10.webp"
   }
-]
+];

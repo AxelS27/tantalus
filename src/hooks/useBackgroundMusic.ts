@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PortfolioSettings } from '../lib/settings';
 import { MUSIC_TRACKS, MusicQueue, type MusicTrackId } from '../lib/music';
+import { getAssetUrl } from '../lib/assets';
 
 export type MusicStatus = 'off' | 'loading' | 'playing' | 'blocked' | 'error';
 
-const sourceFor = (id: MusicTrackId) => `${import.meta.env.BASE_URL}music/${id}.m4a`;
+const sourceFor = (id: MusicTrackId) => getAssetUrl(`/music/${id}.m4a`);
 
 export function useBackgroundMusic(settings: PortfolioSettings) {
   const [trackId, setTrackId] = useState<MusicTrackId | null>(null);

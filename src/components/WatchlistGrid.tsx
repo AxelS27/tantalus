@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import watchlist from '../data/watchlist.json';
+import { watchlistData } from '../data/watchlist';
 import { getAssetUrl } from '../lib/assets';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
 
@@ -33,7 +33,7 @@ export const WatchlistGrid = memo(function WatchlistGrid({
 
   // Follow the viewing timeline from the original portfolio, most recently watched first.
   const filteredItems = useMemo(
-    () => (category === 'All' ? watchlist : watchlist.filter((item) => item.type === category))
+    () => (category === 'All' ? watchlistData : watchlistData.filter((item) => item.type === category))
       .slice()
       .sort((a, b) => b.watchOrder - a.watchOrder),
     [category],

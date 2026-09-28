@@ -46,10 +46,10 @@ const backgroundPaths: Record<CanvasBackgroundKey, string> = {
   home: '/images/tantalize/home.webp',
   timeline: '/images/tantalize/timeline.webp',
   projects: '/images/tantalize/projects.webp',
-  storybook: '/images/tantalize/storybook.png',
+  storybook: '/images/tantalize/storybook.webp',
   archive: '/images/tantalize/archives.webp',
-  repertoire: '/repertoire.png',
-  watchlist: '/watchlist.png',
+  repertoire: '/images/tantalize/repertoire.webp',
+  watchlist: '/images/tantalize/watchlist.webp',
   certificates: '/images/tantalize/certificates.webp',
   connect: '/images/tantalize/connect.webp',
 };
@@ -60,14 +60,11 @@ export function prefetchSectionBackground(key: CanvasBackgroundKey): void {
 
   prefetchedBackgrounds.add(key);
   const image = new Image();
-  const isLocalArtwork = key === 'repertoire' || key === 'watchlist';
-  const source = isLocalArtwork ? backgroundPaths[key] : getAssetUrl(backgroundPaths[key]);
+  const source = getAssetUrl(backgroundPaths[key]);
   image.decoding = 'async';
-  if (!isLocalArtwork) {
-    const stem = source.slice(0, -5);
-    image.srcset = `${stem}-960.webp 960w, ${stem}-1280.webp 1280w, ${source} 1672w`;
-    image.sizes = '106vw';
-  }
+  const stem = source.slice(0, -5);
+  image.srcset = `${stem}-960.webp 960w, ${stem}-1280.webp 1280w, ${source} 1672w`;
+  image.sizes = '106vw';
   image.src = source;
   image.decode?.().catch(() => {
     prefetchedBackgrounds.delete(key);
