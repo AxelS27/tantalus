@@ -374,8 +374,8 @@ export const TimelineRoller = memo(function TimelineRoller({
               maskImage: 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)',
               WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)',
             }}
-            className={`relative h-[440px] sm:h-[500px] w-[280px] sm:w-[330px] md:w-[370px] flex items-center justify-center perspective-[1200px] overflow-visible py-4 touch-none select-none ${
-              isDragging ? 'cursor-grabbing' : 'cursor-grab'
+            className={`relative h-[440px] sm:h-[500px] w-[280px] sm:w-[330px] md:w-[370px] flex items-center justify-center perspective-[1200px] overflow-visible py-4 touch-none ${
+              isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
             }`}
           >
             {timelineData.map((item, index) => (
