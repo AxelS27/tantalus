@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 import { getPrefetchProps, type PrefetchSectionKey } from '../lib/prefetch';
@@ -18,12 +19,23 @@ const mainNavItems: { id: 'home' | 'timeline' | 'projects'; label: string }[] = 
 // Unified calm spring physics matching page transition tempo
 const navbarSpring = {
   type: 'spring' as const,
-  stiffness: 140,
-  damping: 24,
-  mass: 1.1,
+  stiffness: 220,
+  damping: 28,
+  mass: 0.8,
+};
+
+// Fluid magnetic spring physics for sliding hover indicator
+const hoverSpring = {
+  type: 'spring' as const,
+  stiffness: 350,
+  damping: 32,
+  mass: 0.6,
 };
 
 export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+  const archivePrefetchProps = getPrefetchProps('archive');
+
   const handleSelect = (id: NavItem) => {
     onTabChange?.(id);
   };
@@ -52,10 +64,14 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
         className="pointer-events-auto transform-gpu flex flex-col items-center"
       >
         {/* Main Apple Frosted Glass Capsule (Strictly locked height: h-10 / h-11, width-only elasticity) */}
-        <div className="relative h-10 sm:h-11 flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300">
+        <div 
+          onMouseLeave={() => setHoveredTab(null)}
+          className="relative h-10 sm:h-11 flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300"
+        >
           {/* Main 3 Quadrant Tabs: Home, Timeline, Projects */}
           {mainNavItems.map((item) => {
             const isActive = activeTab === item.id;
+            const isHovered = hoveredTab === item.id;
             const prefetchProps = item.id === 'home' ? {} : getPrefetchProps(item.id as PrefetchSectionKey);
 
             return (
@@ -63,6 +79,12 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                 key={item.id}
                 onClick={() => handleSelect(item.id)}
                 {...prefetchProps}
+                onMouseEnter={() => {
+                  setHoveredTab(item.id);
+                  if ('onMouseEnter' in prefetchProps && typeof prefetchProps.onMouseEnter === 'function') {
+                    prefetchProps.onMouseEnter();
+                  }
+                }}
                 className={`group relative h-full flex items-center justify-center px-4 sm:px-5 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
                   isActive
                     ? 'text-stone-950 dark:text-stone-100 font-medium'
@@ -74,12 +96,17 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                   <motion.div
                     layoutId="activeNavPill"
                     transition={navbarSpring}
-                    className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
+                    className="absolute inset-0 rounded-full bg-white/70 dark:bg-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.85)]"
                   />
                 )}
 
-                {!isActive && (
-                  <div className="absolute inset-0 rounded-full bg-white/0 group-hover:bg-white/25 dark:group-hover:bg-white/10 border border-transparent group-hover:border-white/30 dark:group-hover:border-white/15 transition-all duration-250 ease-out" />
+                {/* Soft Magnetic Floating Hover Pill (Sliding smoothly between tabs) */}
+                {isHovered && !isActive && (
+                  <motion.div
+                    layoutId="hoverNavPill"
+                    transition={hoverSpring}
+                    className="absolute inset-0 rounded-full bg-white/25 dark:bg-white/10 pointer-events-none"
+                  />
                 )}
 
                 <span className="relative z-10 block pointer-events-none">
@@ -94,7 +121,11 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
             {/* Archive Button */}
             <button
               onClick={() => handleSelect('archive')}
-              {...getPrefetchProps('archive')}
+              {...archivePrefetchProps}
+              onMouseEnter={() => {
+                setHoveredTab('archive');
+                archivePrefetchProps.onMouseEnter();
+              }}
               className={`group relative h-full flex items-center justify-center px-4 sm:px-5 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
                 activeTab === 'archive'
                   ? 'text-stone-950 dark:text-stone-100 font-medium'
@@ -105,12 +136,17 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                 <motion.div
                   layoutId="activeNavPill"
                   transition={navbarSpring}
-                  className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
+                  className="absolute inset-0 rounded-full bg-white/70 dark:bg-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.85)]"
                 />
               )}
 
-              {activeTab !== 'archive' && (
-                <div className="absolute inset-0 rounded-full bg-white/0 group-hover:bg-white/25 dark:group-hover:bg-white/10 border border-transparent group-hover:border-white/30 dark:group-hover:border-white/15 transition-all duration-250 ease-out" />
+              {/* Soft Magnetic Floating Hover Pill for Archive */}
+              {hoveredTab === 'archive' && activeTab !== 'archive' && (
+                <motion.div
+                  layoutId="hoverNavPill"
+                  transition={hoverSpring}
+                  className="absolute inset-0 rounded-full bg-white/25 dark:bg-white/10 pointer-events-none"
+                />
               )}
 
               <span className="relative z-10 block pointer-events-none">
@@ -139,7 +175,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                     <motion.div
                       layoutId="activeNavPill"
                       transition={navbarSpring}
-                      className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
+                      className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
                     />
                     <span className="relative z-10 block pointer-events-none">
                       {subAppLabel}

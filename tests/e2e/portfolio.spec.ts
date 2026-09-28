@@ -16,6 +16,19 @@ test('home mounts canvas artworks eagerly and does not download music before int
   await expect(page.locator('img[alt="Projects Background"]')).toBeAttached();
 });
 
+test('navbar hover subtle highlight works consistently on every inactive tab', async ({ page }) => {
+  await page.goto('/#timeline');
+  for (const label of ['Home', 'Projects', 'Archive']) {
+    const button = page.getByRole('button', { name: label, exact: true });
+    await button.hover();
+    await expect(button.locator('div.bg-white\\/25')).toBeVisible();
+  }
+  await page.getByRole('button', { name: 'Home', exact: true }).click();
+  const timeline = page.getByRole('button', { name: 'Timeline', exact: true });
+  await timeline.hover();
+  await expect(timeline.locator('div.bg-white\\/25')).toBeVisible();
+});
+
 test('canvas navigation and direct section links render their destination', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Timeline', exact: true }).click();
