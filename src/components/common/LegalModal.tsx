@@ -113,7 +113,7 @@ export const LegalModal = memo(function LegalModal({
                       Privacy Policy
                     </h3>
                     <p className="text-xs text-stone-500 dark:text-stone-400">
-                      Last updated: February 2026
+                      Last updated: September 2026
                     </p>
                   </div>
 
@@ -131,22 +131,34 @@ export const LegalModal = memo(function LegalModal({
                       2. Information Storage & Preferences
                     </h4>
                     <p>
-                      All customized user preferences (such as light/dark mode selection, ambient sound volume, and motion quality presets) are retained exclusively on your local client device using standard browser <code>localStorage</code>. No persistent tracking cookies or cross-site profiling trackers are employed.
+                      Your appearance, audio, and motion preferences, as well as storybook bookmarks, are stored in your browser using <code>localStorage</code>. This site does not use them to create an account or send them to our server.
                     </p>
                   </div>
 
                   <div className="space-y-3">
                     <h4 className="font-sans font-semibold text-stone-900 dark:text-stone-100 text-sm">
-                      3. External Links & Third-Party Services
+                      3. Site Resources & Performance Measurement
                     </h4>
                     <p>
-                      This portfolio includes direct hyperlinks to external platforms (including GitHub, LinkedIn, Vercel deployments, Canva, and Google Drive). Visiting these links places you under the independent privacy practices and terms of those respective providers.
+                      Your browser loads fonts from Google Fonts and media from Cloudflare. Opening the Archive also requests public repository information from GitHub. These services may receive normal request data, such as your IP address and browser details, under their own privacy practices.
+                    </p>
+                    <p>
+                      In production, Vercel Speed Insights collects website performance measurements and sends them to Vercel. According to Vercel, the anonymous measurements include the visited URL, browser and device information, country, and Web Vitals, and are not tied to an individual visitor or IP address. See <a href="https://vercel.com/docs/speed-insights/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-amber-800 dark:text-[#FFD88A] hover:underline">Vercel's Speed Insights privacy details</a>.
                     </p>
                   </div>
 
                   <div className="space-y-3">
                     <h4 className="font-sans font-semibold text-stone-900 dark:text-stone-100 text-sm">
-                      4. Inquiries
+                      4. External Links
+                    </h4>
+                    <p>
+                      This portfolio links to external platforms, including GitHub, LinkedIn, Vercel deployments, Canva, and Google Drive. Visiting those links is subject to each provider's privacy practices.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-sans font-semibold text-stone-900 dark:text-stone-100 text-sm">
+                      5. Inquiries
                     </h4>
                     <p>
                       For any questions or privacy concerns regarding this portfolio, feel free to reach out directly via email at <a href="mailto:contact@liemaxels.com" className="text-amber-800 dark:text-[#FFD88A] hover:underline font-medium">contact@liemaxels.com</a>.
