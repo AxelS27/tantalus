@@ -98,7 +98,7 @@ const TimelineCard = memo(function TimelineCard({
           />
         </div>
 
-        <div className="flex-1 min-w-0 text-left space-y-0.5">
+        <div className="flex-1 min-w-0 text-left space-y-0.5 select-text">
           <p
             className="text-[11px] sm:text-xs font-serif italic text-[#FFD88A] truncate font-medium"
             style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}

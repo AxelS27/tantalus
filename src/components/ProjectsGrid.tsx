@@ -370,7 +370,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                       </div>
 
                       {/* Clean Single-Line High-Legibility Title */}
-                      <div className="w-full flex-1 flex items-center justify-center text-center px-1 py-1 overflow-hidden z-10">
+                      <div className="w-full flex-1 flex items-center justify-center text-center px-1 py-1 overflow-hidden z-10 select-text">
                         <h3
                           title={project.title}
                           className="font-sans text-[11px] sm:text-[12px] font-semibold leading-normal tracking-normal text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors w-full truncate whitespace-nowrap drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)]"
