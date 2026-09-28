@@ -44,8 +44,13 @@ npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 3. Production Build & Lint
+### 3. Production Build & Checks
 ```bash
 npm run lint
 npm run build
+npm run test:e2e
 ```
+
+The build generates static HTML previews for all 16 project routes and `dist/sitemap.xml`. Vercel serves `/projects/:id` through `vercel.json`; the preview server mirrors this rewrite for local E2E checks. The canonical site is `https://www.liemaxels.com`.
+
+For production performance metrics, enable **Speed Insights** on the Vercel project. The client loads it only in production; real-user data appears in the Vercel dashboard after deployment and traffic. CI runs a mobile navigation smoke test with timing data attached to the Playwright result. After release, verify one project URL returns its own OG tags (without JavaScript), check `/sitemap.xml`, and inspect cache headers on HTML, `/assets/*`, and media on `media.liemaxels.com`. Media URLs are stable, so do not make them immutable without versioning.

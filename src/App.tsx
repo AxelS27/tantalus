@@ -149,14 +149,9 @@ export default function App() {
     }
   }, [settings.theme]);
 
-  // Dynamic Web Title matching active navbar section or project detail
+  // Keep metadata in sync for client-side navigation as well as static deep links.
   useEffect(() => {
-    if (activeProjectId) {
-      const project = getProjectById(activeProjectId);
-      document.title = project ? `AxelS27 - ${project.title}` : 'AxelS27 - Project Detail';
-      return;
-    }
-
+    const project = getProjectById(activeProjectId ?? undefined);
     const titleMap: Record<NavItem, string> = {
       home: 'AxelS27 - Home',
       storybook: 'AxelS27 - Story Book',
@@ -168,8 +163,37 @@ export default function App() {
       certificates: 'AxelS27 - Certificates',
       connect: 'AxelS27 - Connect',
     };
-    if (typeof document !== 'undefined') {
-      document.title = titleMap[activeTab] || 'AxelS27 - Home';
+    const title = project ? `AxelS27 - ${project.title}` : titleMap[activeTab];
+    const description = project?.description ?? "Explore Farrell Axel Suwandi's projects, research, experiences, and creative work in an interactive portfolio.";
+    const url = project ? `https://www.liemaxels.com/projects/${project.id}` : 'https://www.liemaxels.com/';
+    const image = project ? getAssetUrl(project.thumbnail) : getAssetUrl('/images/tantalize/home.webp');
+    document.title = title;
+    document.querySelector<HTMLMetaElement>('meta[name="description"]')?.setAttribute('content', description);
+    document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute('href', url);
+    const meta: Record<string, string> = {
+      'og:type': project ? 'article' : 'website',
+      'og:title': title, 'og:description': description, 'og:url': url, 'og:image': image,
+      'twitter:title': title, 'twitter:description': description, 'twitter:image': image,
+    };
+    for (const [key, value] of Object.entries(meta)) {
+      const attribute = key.startsWith('og:') ? 'property' : 'name';
+      document.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`)?.setAttribute('content', value);
+    }
+    let jsonLd = document.getElementById('project-jsonld');
+    if (project) {
+      if (!jsonLd) {
+        jsonLd = document.createElement('script');
+        jsonLd.id = 'project-jsonld';
+        jsonLd.setAttribute('type', 'application/ld+json');
+        document.head.appendChild(jsonLd);
+      }
+      jsonLd.textContent = JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'CreativeWork',
+        name: project.title, description, image, url,
+        author: { '@type': 'Person', name: 'Farrell Axel Suwandi' },
+      });
+    } else {
+      jsonLd?.remove();
     }
   }, [activeTab, activeProjectId]);
 
