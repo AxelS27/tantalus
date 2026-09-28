@@ -239,7 +239,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
       </header>
 
       {/* Main Center Editorial Canvas Panel (Apple Frosted Glassmorphism) */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16 select-text">
         <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.95),0_24px_80px_rgba(0,0,0,0.14)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_24px_80px_rgba(0,0,0,0.6)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
           
           {/* Specular Top Light Accent */}
