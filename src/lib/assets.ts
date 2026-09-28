@@ -3,7 +3,7 @@
  * Mirroring D:/Coding/Portofolio architecture
  */
 
-export const R2_BASE_URL = (import.meta.env.VITE_R2_ASSET_URL || 'https://media.liemaxels.com').replace(/\/+$/, '');
+export const R2_BASE_URL = (import.meta.env?.VITE_R2_ASSET_URL || 'https://media.liemaxels.com').replace(/\/+$/, '');
 
 export function getAssetUrl(path: string | undefined): string {
   if (!path) return '';

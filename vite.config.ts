@@ -4,7 +4,21 @@ import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    {
+      name: 'preview-project-pages',
+      configurePreviewServer(server) {
+        server.middlewares.use((request, _response, next) => {
+          if (request.method === 'GET' && /^\/projects\/[a-z0-9-]+$/.test(request.url ?? '')) {
+            request.url += '/index.html';
+          }
+          next();
+        });
+      },
+    },
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
