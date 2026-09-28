@@ -24,14 +24,17 @@ const navbarSpring = {
   mass: 0.8,
 };
 
-// Soft radial lighting gradient for hover spotlight
-const hoverTransition = {
-  duration: 0.25,
-  ease: [0.16, 1, 0.3, 1],
+// Fluid magnetic spring physics for sliding hover indicator
+const hoverSpring = {
+  type: 'spring' as const,
+  stiffness: 350,
+  damping: 32,
+  mass: 0.6,
 };
 
 export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+  const archivePrefetchProps = getPrefetchProps('archive');
 
   const handleSelect = (id: NavItem) => {
     onTabChange?.(id);
@@ -75,8 +78,13 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
               <button
                 key={item.id}
                 onClick={() => handleSelect(item.id)}
-                onMouseEnter={() => setHoveredTab(item.id)}
                 {...prefetchProps}
+                onMouseEnter={() => {
+                  setHoveredTab(item.id);
+                  if ('onMouseEnter' in prefetchProps && typeof prefetchProps.onMouseEnter === 'function') {
+                    prefetchProps.onMouseEnter();
+                  }
+                }}
                 className={`group relative h-full flex items-center justify-center px-4 sm:px-5 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
                   isActive
                     ? 'text-stone-950 dark:text-stone-100 font-medium'
@@ -92,15 +100,14 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                   />
                 )}
 
-                {/* Smooth Ambient Lighting Hover (Glow transition without rigid container shape) */}
-                <div
-                  className={`absolute inset-0 rounded-full transition-opacity duration-300 pointer-events-none ${
-                    isHovered && !isActive ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  style={{
-                    background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.2) 65%, transparent 100%)',
-                  }}
-                />
+                {/* Soft Magnetic Floating Hover Pill (Sliding smoothly between tabs) */}
+                {isHovered && !isActive && (
+                  <motion.div
+                    layoutId="hoverNavPill"
+                    transition={hoverSpring}
+                    className="absolute inset-0 rounded-full bg-white/25 dark:bg-white/10 pointer-events-none"
+                  />
+                )}
 
                 <span className="relative z-10 block pointer-events-none">
                   {item.label}
@@ -114,8 +121,11 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
             {/* Archive Button */}
             <button
               onClick={() => handleSelect('archive')}
-              onMouseEnter={() => setHoveredTab('archive')}
-              {...getPrefetchProps('archive')}
+              {...archivePrefetchProps}
+              onMouseEnter={() => {
+                setHoveredTab('archive');
+                archivePrefetchProps.onMouseEnter();
+              }}
               className={`group relative h-full flex items-center justify-center px-4 sm:px-5 text-[11px] sm:text-xs tracking-[0.14em] uppercase cursor-pointer focus:outline-none rounded-full transition-colors duration-200 ${
                 activeTab === 'archive'
                   ? 'text-stone-950 dark:text-stone-100 font-medium'
@@ -130,15 +140,14 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                 />
               )}
 
-              {/* Smooth Ambient Lighting Hover for Archive */}
-              <div
-                className={`absolute inset-0 rounded-full transition-opacity duration-300 pointer-events-none ${
-                  hoveredTab === 'archive' && activeTab !== 'archive' ? 'opacity-100' : 'opacity-0'
-                }`}
-                style={{
-                  background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.2) 65%, transparent 100%)',
-                }}
-              />
+              {/* Soft Magnetic Floating Hover Pill for Archive */}
+              {hoveredTab === 'archive' && activeTab !== 'archive' && (
+                <motion.div
+                  layoutId="hoverNavPill"
+                  transition={hoverSpring}
+                  className="absolute inset-0 rounded-full bg-white/25 dark:bg-white/10 pointer-events-none"
+                />
+              )}
 
               <span className="relative z-10 block pointer-events-none">
                 Archive
