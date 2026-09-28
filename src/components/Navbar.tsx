@@ -90,7 +90,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                   <motion.div
                     layoutId="activeNavPill"
                     transition={navbarSpring}
-                    className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
+                    className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
                   />
                 )}
 
@@ -99,7 +99,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                   <motion.div
                     layoutId="hoverNavPill"
                     transition={hoverSpring}
-                    className="absolute inset-0 rounded-full bg-white/35 dark:bg-white/12 border border-white/40 dark:border-white/20 shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
+                    className="absolute inset-0 rounded-full bg-white/35 dark:bg-white/12 shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
                   />
                 )}
 
@@ -127,7 +127,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                 <motion.div
                   layoutId="activeNavPill"
                   transition={navbarSpring}
-                  className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
+                  className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
                 />
               )}
 
@@ -135,7 +135,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                 <motion.div
                   layoutId="hoverNavPill"
                   transition={hoverSpring}
-                  className="absolute inset-0 rounded-full bg-white/35 dark:bg-white/12 border border-white/40 dark:border-white/20 shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
+                  className="absolute inset-0 rounded-full bg-white/35 dark:bg-white/12 shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
                 />
               )}
 
@@ -165,7 +165,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                     <motion.div
                       layoutId="activeNavPill"
                       transition={navbarSpring}
-                      className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 border border-white/75 dark:border-white/25 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
+                      className="absolute inset-0 rounded-full bg-white/65 dark:bg-white/20 shadow-[0_1px_4px_rgba(0,0,0,0.03),inset_0_1px_0.5px_rgba(255,255,255,0.75)]"
                     />
                     <span className="relative z-10 block pointer-events-none">
                       {subAppLabel}
