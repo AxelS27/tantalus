@@ -1,6 +1,6 @@
 import { devices, expect, test } from '@playwright/test';
 
-test('home loads only its artwork and does not download music before interaction', async ({ page }) => {
+test('home mounts canvas artworks eagerly and does not download music before interaction', async ({ page }) => {
   const mediaRequests: string[] = [];
   page.on('request', (request) => {
     if (request.url().includes('media.liemaxels.com')) mediaRequests.push(request.url());
@@ -11,8 +11,9 @@ test('home loads only its artwork and does not download music before interaction
   await page.waitForTimeout(600);
 
   expect(mediaRequests.filter((url) => url.includes('/music/'))).toEqual([]);
-  expect(mediaRequests.filter((url) => url.includes('/images/tantalize/')).every((url) => /\/home(?:-\d+)?\.webp/.test(url))).toBe(true);
-  await expect(page.locator('.spatial-section img')).toHaveCount(1);
+  await expect(page.locator('img[alt="Home Background"]')).toBeVisible();
+  await expect(page.locator('img[alt="Timeline Background"]')).toBeAttached();
+  await expect(page.locator('img[alt="Projects Background"]')).toBeAttached();
 });
 
 test('canvas navigation and direct section links render their destination', async ({ page }) => {
