@@ -154,7 +154,7 @@ export const RepertoireGrid = memo(function RepertoireGrid({
                   skeletonClassName="bg-white/10 dark:bg-black/40"
                 />
               </div>
-              <div className="w-full min-h-12 sm:min-h-14 flex items-center justify-center text-center px-1 py-1.5">
+              <div className="w-full min-h-12 sm:min-h-14 flex items-center justify-center text-center px-1 py-1.5 select-text">
                 <h2
                   title={piece.title}
                   className="w-full line-clamp-2 font-sans text-[11px] sm:text-xs leading-snug font-semibold text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors"

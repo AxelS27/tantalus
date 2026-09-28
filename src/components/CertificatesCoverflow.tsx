@@ -73,7 +73,7 @@ const CertificateCard = memo(function CertificateCard({
         WebkitFontSmoothing: 'antialiased',
         MozOsxFontSmoothing: 'grayscale',
       }}
-      className="group absolute w-[310px] sm:w-[380px] md:w-[430px] h-[300px] sm:h-[340px] md:h-[370px] rounded-3xl p-2.5 sm:p-3 transition-colors cursor-pointer select-none"
+      className="group absolute w-[310px] sm:w-[380px] md:w-[430px] h-[300px] sm:h-[340px] md:h-[370px] rounded-3xl p-2.5 sm:p-3 transition-colors cursor-pointer select-text"
     >
       <div
         style={{

@@ -1138,9 +1138,9 @@ export const StoryBook = memo(function StoryBook({
                 return (
                   <p
                     key={pIdx}
-                    className="leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto"
+                    className="leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text"
                   >
-                    <span className="float-left text-5xl sm:text-6xl md:text-7xl leading-[0.8] pr-3 pt-1 font-serif font-bold text-amber-800 select-none">
+                    <span className="float-left text-5xl sm:text-6xl md:text-7xl leading-[0.8] pr-3 pt-1 font-serif font-bold text-amber-800 select-text">
                       {firstLetter}
                     </span>
                     {restOfParagraph}
@@ -1150,7 +1150,7 @@ export const StoryBook = memo(function StoryBook({
               return (
                 <p
                   key={pIdx}
-                  className={`leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto ${
+                  className={`leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text ${
                     pIdx > 0 || !page.isFirstPageOfChapter ? 'indent-6 sm:indent-8' : ''
                   }`}
                 >
