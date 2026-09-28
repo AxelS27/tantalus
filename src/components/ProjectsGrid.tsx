@@ -2,6 +2,7 @@ import { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { animate, motion, useMotionValue } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
+import StepCounter from './common/StepCounter';
 import { projectPages, cubeFaces, type ProjectCardItem } from '../data/projects';
 import { getProjectCardImage, getProjectCardSrcSet } from '../lib/thumbnails';
 
@@ -400,6 +401,8 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         </div>
 
       </div>
+
+      <StepCounter current={currentPage + 1} total={numFaces} label="Project page" />
 
       {/* Face Indicator Dots */}
       <div className="flex items-center justify-center gap-2.5 pt-4 select-none z-30">

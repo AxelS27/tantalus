@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
 import { type PortfolioSettings, getSavedSettings } from './lib/settings';
 import { getAssetUrl } from './lib/assets';
@@ -23,6 +23,7 @@ import type { ArchiveAppId } from './components/ArchiveHub';
 import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
 import { getProjectById } from './data/projects';
 import { useBackgroundMusic } from './hooks/useBackgroundMusic';
+import { MUSIC_TRACKS } from './lib/music';
 
 // Lazy-loaded code-split section chunks
 const TimelineRoller = lazy(() =>
@@ -419,6 +420,7 @@ export default function App() {
   };
 
   const coords = getCameraCoordinates();
+  const currentTrack = MUSIC_TRACKS.find((track) => track.id === music.trackId);
   const isSectionRendered = (tab: NavItem) =>
     tab === activeTab || tab === transitionFrom || tab === transitionTarget;
   const isBackgroundLive = (tab: NavItem) =>
@@ -429,6 +431,23 @@ export default function App() {
 
   return (
     <ErrorBoundary>
+      <AnimatePresence>
+        {music.status === 'playing' && currentTrack && (
+          <motion.p
+            key={currentTrack.id}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.25 }}
+            role="status"
+            aria-label={`${currentTrack.title} is playing`}
+            className={`pointer-events-none fixed right-4 sm:right-6 ${activeTab === 'storybook' ? 'bottom-24' : 'bottom-5 sm:bottom-6'} z-[60] flex max-w-[calc(100vw-2rem)] gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)]`}
+          >
+            <span aria-hidden="true" className="min-w-0 truncate">{currentTrack.title}</span>
+            <span aria-hidden="true" className="shrink-0">is playing</span>
+          </motion.p>
+        )}
+      </AnimatePresence>
       {activeProjectId ? (
         <div className="fixed inset-0 z-50 bg-[#FAF8F5] dark:bg-[#121110]">
           <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">

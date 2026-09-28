@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { certificatesData, type CertificateItem } from '../data/certificates';
 import { getThumbnailSrcSet, getThumbnailUrl } from '../lib/thumbnails';
+import StepCounter from './common/StepCounter';
 
 export interface CertificatesCoverflowProps {
   isActive?: boolean;
@@ -348,24 +349,7 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
         )}
       </div>
 
-      {/* ================= STEP INDICATOR COUNTER ================= */}
-      <div className="absolute bottom-6 sm:bottom-8 z-30 flex items-center gap-3 font-serif italic text-sm sm:text-base text-white tracking-widest">
-        <span
-          style={{
-            textShadow: '0 1px 6px rgba(0,0,0,0.85)',
-          }}
-        >
-          0{selectedIndex + 1}
-        </span>
-        <span className="w-12 h-[1px] bg-white/40 shadow-sm" />
-        <span
-          style={{
-            textShadow: '0 1px 6px rgba(0,0,0,0.85)',
-          }}
-        >
-          0{certificatesData.length}
-        </span>
-      </div>
+      <StepCounter current={selectedIndex + 1} total={certificatesData.length} label="Certificate" />
     </div>
   );
 });

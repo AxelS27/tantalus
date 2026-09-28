@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight } from 'lucide-react';
 import { getPrefetchProps, type PrefetchSectionKey } from '../lib/prefetch';
+import { elasticLayoutSpring } from '../lib/motion';
 
 export type NavItem = 'home' | 'storybook' | 'timeline' | 'projects' | 'archive' | 'repertoire' | 'watchlist' | 'certificates' | 'connect';
 
@@ -55,16 +56,20 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
   return (
     <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex flex-col items-center">
       <motion.nav
+        layout="position"
         initial={{ opacity: 0, y: -20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{
           duration: 1.6,
           ease: [0.16, 1, 0.3, 1],
+          layout: elasticLayoutSpring,
         }}
         className="pointer-events-auto transform-gpu flex flex-col items-center"
       >
         {/* Main Apple Frosted Glass Capsule (Strictly locked height: h-10 / h-11, width-only elasticity) */}
-        <div 
+        <motion.div
+          layout="size"
+          transition={{ layout: elasticLayoutSpring }}
           onMouseLeave={() => setHoveredTab(null)}
           className="relative h-10 sm:h-11 flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300"
         >
@@ -159,6 +164,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
               {isSubApp && (
                 <motion.div
                   key="subAppBreadcrumb"
+                  layout="size"
                   initial={{ width: 0, opacity: 0 }}
                   animate={{ width: 'auto', opacity: 1 }}
                   exit={{ width: 0, opacity: 0 }}
@@ -171,7 +177,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                   </div>
 
                   {/* Sub-App Active Capsule */}
-                  <div className="relative h-full flex items-center justify-center px-3.5 sm:px-4 text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans font-medium text-stone-950 dark:text-stone-100 flex-shrink-0 whitespace-nowrap">
+                  <motion.div layout="size" transition={{ layout: elasticLayoutSpring }} className="relative h-full flex items-center justify-center px-3.5 sm:px-4 text-[11px] sm:text-xs tracking-[0.14em] uppercase font-sans font-medium text-stone-950 dark:text-stone-100 flex-shrink-0 whitespace-nowrap">
                     <motion.div
                       layoutId="activeNavPill"
                       transition={navbarSpring}
@@ -180,12 +186,12 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
                     <span className="relative z-10 block pointer-events-none">
                       {subAppLabel}
                     </span>
-                  </div>
+                  </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
-        </div>
+        </motion.div>
       </motion.nav>
     </header>
   );

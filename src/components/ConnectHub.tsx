@@ -12,6 +12,7 @@ import {
   Check,
 } from 'lucide-react';
 import Footer from './common/Footer';
+import { elasticLayoutSpring } from '../lib/motion';
 
 const XIcon = ({ size = 20, className = '' }: { size?: number; className?: string }) => (
   <svg
@@ -246,7 +247,7 @@ export const ConnectHub = memo(function ConnectHub({
                   </div>
 
                   {/* Right: Feedback or Arrow */}
-                  <div className="shrink-0 ml-2 relative z-10">
+                  <motion.div layout="size" transition={{ layout: elasticLayoutSpring }} className="shrink-0 ml-2 relative z-10">
                     {isCopied ? (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
                         <Check className="w-3 h-3" />
@@ -255,7 +256,7 @@ export const ConnectHub = memo(function ConnectHub({
                     ) : (
                       <ArrowUpRight className="w-4 h-4 text-stone-500 dark:text-stone-300 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-70 group-hover:opacity-100" />
                     )}
-                  </div>
+                  </motion.div>
                 </motion.a>
               );
             })}

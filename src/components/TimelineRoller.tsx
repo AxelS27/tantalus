@@ -10,6 +10,7 @@ import { ChevronUp, ChevronDown, MapPin, Calendar, Sparkles } from 'lucide-react
 import { getAssetUrl } from '../lib/assets';
 import { timelineData, type TimelineItem } from '../data/timeline';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
+import StepCounter from './common/StepCounter';
 
 export type { TimelineItem };
 
@@ -276,6 +277,8 @@ export const TimelineRoller = memo(function TimelineRoller({
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
+      <StepCounter current={selectedIndex + 1} total={timelineData.length} label="Experience" />
+
       {/* Centered Enlarged Snug Cluster */}
       <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-10 sm:gap-14 lg:gap-18">
         
@@ -334,17 +337,6 @@ export const TimelineRoller = memo(function TimelineRoller({
               {activeItem.description}
             </p>
 
-            {/* Step counter */}
-            <div
-              className="flex items-center justify-center gap-3.5 pt-1.5 text-sm sm:text-base font-serif italic text-stone-200/90 tracking-widest font-light"
-              style={{
-                textShadow: '0 1px 6px rgba(0,0,0,0.7)',
-              }}
-            >
-              <span>0{selectedIndex + 1}</span>
-              <span className="w-14 h-[1px] bg-white/30" />
-              <span>0{timelineData.length}</span>
-            </div>
           </motion.div>
         </div>
 

@@ -45,6 +45,79 @@ test('canvas navigation and direct section links render their destination', asyn
   await expect(page.getByRole('heading', { name: 'Watchlist' })).toBeVisible();
 });
 
+test('paged sections share the same bottom counter placement and typography', async ({ page }) => {
+  const sections = [
+    { hash: 'timeline', label: 'Experience' },
+    { hash: 'projects', label: 'Project page' },
+    { hash: 'certificates', label: 'Certificate' },
+    { hash: 'storybook', label: 'Story' },
+  ];
+  const metrics = [];
+
+  for (const { hash, label } of sections) {
+    await page.goto(`/#${hash}`);
+    const counter = page.getByRole('group', { name: new RegExp(`^${label} 1 of \\d+$`) });
+    await expect(counter).toBeVisible();
+    await expect.poll(async () => {
+      const box = await counter.boundingBox();
+      return box ? page.viewportSize()!.height - box.y - box.height : null;
+    }).toBeCloseTo(32, 0);
+    const box = (await counter.boundingBox())!;
+    metrics.push({
+      bottom: page.viewportSize()!.height - box.y - box.height,
+      font: await counter.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return `${style.fontFamily}|${style.fontStyle}|${style.fontSize}`;
+      }),
+    });
+  }
+
+  for (const metric of metrics.slice(1)) {
+    expect(metric.bottom).toBeCloseTo(metrics[0].bottom, 0);
+    expect(metric.font).toBe(metrics[0].font);
+  }
+});
+
+test('storybook can bookmark the opening 00-01 spread and resume it', async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.goto('/#storybook');
+  await page.evaluate(() => localStorage.setItem(
+    'tantalize_storybook_bookmark_adoketos',
+    JSON.stringify({ spreadIndex: 0, updatedAt: Date.now() }),
+  ));
+  await page.reload();
+  await expect(page.getByText('Click to Read', { exact: true })).toHaveCount(0);
+  await page.locator('div.group.absolute.cursor-pointer.select-none').first()
+    .click({ position: { x: 130, y: 180 } });
+  const addBookmark = page.getByRole('button', { name: 'Put Bookmark' });
+  await expect(addBookmark).toBeVisible();
+  await addBookmark.click();
+  await expect(page.getByRole('button', { name: 'Take off Bookmark' })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const saved = localStorage.getItem('tantalize_storybook_bookmark_adoketos');
+    return saved ? JSON.parse(saved).spreadIndex : null;
+  })).toBe(0);
+
+  await expect(page.getByRole('button', { name: 'At Bookmark' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Turn Right' }).click();
+  const goToBookmark = page.getByRole('button', { name: 'Go to Bookmark' });
+  await expect(goToBookmark).toBeEnabled();
+  await goToBookmark.click();
+  await expect(page.getByRole('button', { name: 'At Bookmark' })).toBeDisabled();
+  await expect(page.getByText('Front Matter', { exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Return to Shelf' }).click();
+  await expect(page.getByRole('button', { name: 'Take off Bookmark' })).toHaveCount(0);
+  await expect(page.getByText('Resume Reading', { exact: true })).toHaveCount(0);
+  await page.locator('div.group.absolute.cursor-pointer.select-none').first()
+    .click({ position: { x: 130, y: 180 } });
+  await expect(page.getByRole('button', { name: 'Take off Bookmark' })).toBeVisible();
+  await page.getByRole('button', { name: 'Remove bookmark' }).click();
+  await expect.poll(() => page.evaluate(() =>
+    localStorage.getItem('tantalize_storybook_bookmark_adoketos'),
+  )).toBeNull();
+});
+
 test('project deep link and robots file work on the production preview', async ({ page, request }) => {
   const robots = await request.get('/robots.txt');
   expect(robots.ok()).toBe(true);

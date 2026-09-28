@@ -23,28 +23,36 @@ import {
 } from 'lucide-react';
 import { storybooksData, type StoryBookItem } from '../data/storybooks/index';
 import { getAssetUrl } from '../lib/assets';
+import StepCounter from './common/StepCounter';
+import { elasticLayoutSpring } from '../lib/motion';
 
 const BOOKMARK_STORAGE_KEY_PREFIX = 'tantalize_storybook_bookmark_';
 
-const getSavedBookmarkSpread = (bookId: string): number => {
+const getSavedBookmarkSpread = (bookId: string): number | null => {
   try {
     const saved = localStorage.getItem(`${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (typeof parsed?.spreadIndex === 'number') {
-        return parsed.spreadIndex;
+      const index = parsed?.spreadIndex;
+      // Older records used 0 as "no bookmark". Only the new explicit flag makes 0 a saved spread.
+      if (Number.isInteger(index) && index >= 0 && (index > 0 || parsed.bookmarked === true)) {
+        return index;
       }
     }
   } catch {}
-  return 0;
+  return null;
 };
 
-const saveBookmarkSpread = (bookId: string, spreadIndex: number) => {
+const saveBookmarkSpread = (bookId: string, spreadIndex: number | null) => {
   try {
-    localStorage.setItem(
-      `${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`,
-      JSON.stringify({ spreadIndex, updatedAt: Date.now() }),
-    );
+    if (spreadIndex === null) {
+      localStorage.removeItem(`${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`);
+    } else {
+      localStorage.setItem(
+        `${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`,
+        JSON.stringify({ spreadIndex, bookmarked: true, updatedAt: Date.now() }),
+      );
+    }
   } catch {}
 };
 
@@ -59,7 +67,6 @@ interface BookCardProps {
   position: MotionValue<number>;
   selectedIndex: number;
   isCoverOpen: boolean;
-  bookmarkSpread?: number;
   onSelect: (book: StoryBookItem, index: number, isCenter: boolean) => void;
 }
 
@@ -86,7 +93,6 @@ const BookCard = memo(function BookCard({
   position,
   selectedIndex,
   isCoverOpen,
-  bookmarkSpread = 0,
   onSelect,
 }: BookCardProps) {
   const x = useTransform(position, (current) => (index - current) * 300);
@@ -148,12 +154,12 @@ const BookCard = memo(function BookCard({
               : 'shadow-xl'
           }`}
         >
-          {/* Gilded Page Block Edge */}
-          <div className="absolute right-0 top-2 bottom-2 w-3 bg-gradient-to-l from-[#C8B898] via-[#EFE6D5] to-[#DFD3BE] rounded-r-md border-l border-amber-900/20 shadow-inner" />
-          <div className="absolute bottom-0 left-2 right-2 h-3 bg-gradient-to-t from-[#C8B898] via-[#EFE6D5] to-[#DFD3BE] rounded-b-md border-t border-amber-900/20 shadow-inner" />
+          {/* Thin, warm paper edges beneath the inner leaf. */}
+          <div className="absolute right-1 top-2 bottom-2 w-1.5 bg-gradient-to-l from-[#B6A27F] via-[#E6D8BE] to-[#D4C2A4] rounded-r-sm border-l border-amber-900/10" />
+          <div className="absolute bottom-1 left-2 right-2 h-1.5 bg-gradient-to-t from-[#B6A27F] via-[#E6D8BE] to-[#D4C2A4] rounded-b-sm border-t border-amber-900/10" />
 
           {/* Clean Antique Parchment Sheet */}
-          <div className="relative w-[calc(100%-14px)] h-[calc(100%-14px)] rounded-r-2xl bg-[#FAF6EE] p-6 flex flex-col justify-between text-[#2B231D] shadow-inner overflow-hidden">
+          <div className="relative w-[calc(100%-5px)] h-[calc(100%-5px)] rounded-r-2xl bg-[#FAF6EE] p-6 flex flex-col justify-between text-[#2B231D] shadow-inner overflow-hidden">
             <div className="absolute inset-3 border border-amber-900/10 rounded-r-xl pointer-events-none" />
             <div className="flex items-center justify-between text-[9px] font-mono tracking-widest text-[#8A7B6E] uppercase border-b border-amber-900/10 pb-1.5 z-10">
               <span>{book.volume}</span>
@@ -249,22 +255,6 @@ const BookCard = memo(function BookCard({
                 {book.author}
               </span>
             </div>
-
-            {isCenter && (
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 text-[10px] font-serif tracking-wider uppercase text-amber-200 bg-amber-950/90 px-3 py-1 rounded-full border border-amber-400/40 backdrop-blur-md shadow-lg group-hover:scale-105 transition-transform">
-                {bookmarkSpread > 0 ? (
-                  <>
-                    <Bookmark className="w-3 h-3 text-amber-300 fill-amber-400/40" />
-                    <span>Resume Reading</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
-                    <span>{book.isAvailable ? 'Click to Read' : 'Coming Soon'}</span>
-                  </>
-                )}
-              </div>
-            )}
 
             <div className="absolute -bottom-4 right-8 w-5 h-12 bg-gradient-to-b from-red-800 to-red-950 rounded-b-sm shadow-md border-t border-amber-400/40 pointer-events-none" />
           </div>
@@ -389,12 +379,11 @@ export const StoryBook = memo(function StoryBook({
   const currentBook: StoryBookItem = storybooksData[selectedIndex] || storybooksData[0];
 
   // Persistent Reading Bookmark State (Manual Put / Take off Bookmark)
-  const [savedBookmarkSpread, setSavedBookmarkSpread] = useState<number>(() =>
+  const [savedBookmarkSpread, setSavedBookmarkSpread] = useState<number | null>(() =>
     getSavedBookmarkSpread(currentBook?.id || 'adoketos'),
   );
   const [showBookmarkToast, setShowBookmarkToast] = useState(false);
   const [bookmarkToastMessage, setBookmarkToastMessage] = useState('Bookmark Placed');
-  const [isTogglingBookmarkAction, setIsTogglingBookmarkAction] = useState(false);
 
   // Sync bookmark from storage when active book changes
   useEffect(() => {
@@ -590,23 +579,20 @@ export const StoryBook = memo(function StoryBook({
   const flipTimerRef = useRef<number | null>(null);
 
   const isCurrentSpreadBookmarked =
-    savedBookmarkSpread > 0 &&
+    savedBookmarkSpread !== null &&
     (turnAnimation ? turnAnimation.toSpreadIdx === savedBookmarkSpread : currentSpreadIndex === savedBookmarkSpread);
 
   // Toggle Bookmark: Put Bookmark / Take off Bookmark
   const handleToggleBookmark = useCallback(() => {
     if (!currentBook?.id) return;
 
-    setIsTogglingBookmarkAction(true);
-
     if (isCurrentSpreadBookmarked) {
       // Take off Bookmark
-      saveBookmarkSpread(currentBook.id, 0);
-      setSavedBookmarkSpread(0);
+      saveBookmarkSpread(currentBook.id, null);
+      setSavedBookmarkSpread(null);
       setBookmarkToastMessage('Bookmark Removed');
       setShowBookmarkToast(true);
       window.setTimeout(() => setShowBookmarkToast(false), 2000);
-      window.setTimeout(() => setIsTogglingBookmarkAction(false), 500);
     } else {
       // Put Bookmark on this page
       saveBookmarkSpread(currentBook.id, currentSpreadIndex);
@@ -614,7 +600,6 @@ export const StoryBook = memo(function StoryBook({
       setBookmarkToastMessage('Bookmark Placed');
       setShowBookmarkToast(true);
       window.setTimeout(() => setShowBookmarkToast(false), 2000);
-      window.setTimeout(() => setIsTogglingBookmarkAction(false), 500);
     }
   }, [currentBook?.id, currentSpreadIndex, isCurrentSpreadBookmarked]);
 
@@ -677,7 +662,7 @@ export const StoryBook = memo(function StoryBook({
 
     const savedSpread = getSavedBookmarkSpread(book.id);
     setIsCoverOpen(true);
-    setCurrentSpreadIndex(savedSpread < spreads.length ? savedSpread : 0);
+    setCurrentSpreadIndex(savedSpread !== null && savedSpread < spreads.length ? savedSpread : 0);
 
     const t1 = window.setTimeout(() => {
       setIsZoomingPaper(true);
@@ -1048,7 +1033,7 @@ export const StoryBook = memo(function StoryBook({
             <div className="w-full flex-1 flex flex-col justify-between py-1 space-y-1 overflow-hidden">
               {page.chapterPageMap?.map((item) => {
                 const chSpreadIdx = Math.floor(item.pageNumber / 2);
-                const isBookmarked = savedBookmarkSpread > 0 && chSpreadIdx === savedBookmarkSpread;
+                const isBookmarked = savedBookmarkSpread !== null && chSpreadIdx === savedBookmarkSpread;
                 return (
                   <button
                     key={item.chapterId}
@@ -1270,7 +1255,6 @@ export const StoryBook = memo(function StoryBook({
               position={position}
               selectedIndex={selectedIndex}
               isCoverOpen={selectedIndex === index && isCoverOpen}
-              bookmarkSpread={savedBookmarkSpread}
               onSelect={handleCardSelect}
             />
           ))}
@@ -1289,16 +1273,7 @@ export const StoryBook = memo(function StoryBook({
           )}
         </div>
 
-        {/* STEP INDICATOR COUNTER */}
-        <div className="absolute bottom-6 sm:bottom-8 z-30 flex items-center gap-3 font-serif italic text-sm sm:text-base text-white tracking-widest">
-          <span style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}>
-            0{selectedIndex + 1}
-          </span>
-          <span className="w-12 h-[1px] bg-white/40 shadow-sm" />
-          <span style={{ textShadow: '0 1px 6px rgba(0,0,0,0.85)' }}>
-            0{storybooksData.length}
-          </span>
-        </div>
+        <StepCounter current={selectedIndex + 1} total={storybooksData.length} label="Story" />
       </motion.div>
 
       {/* ========================================================================= */}
@@ -1336,9 +1311,11 @@ export const StoryBook = memo(function StoryBook({
               </button>
 
               {/* Right Action Group: Bookmark & Index Drawer Trigger */}
-              <div className="flex items-center gap-2">
+              <motion.div layout="position" transition={{ layout: elasticLayoutSpring }} className="flex items-center gap-2">
                 {/* Put / Take off Bookmark Trigger */}
-                <button
+                <motion.button
+                  layout="size"
+                  transition={{ layout: elasticLayoutSpring }}
                   onClick={handleToggleBookmark}
                   title={isCurrentSpreadBookmarked ? 'Take off Bookmark' : 'Put Bookmark'}
                   className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full backdrop-blur-2xl backdrop-saturate-[180%] border text-xs font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)] ${
@@ -1352,24 +1329,24 @@ export const StoryBook = memo(function StoryBook({
                   ) : (
                     <Bookmark className="w-4 h-4 text-stone-600 dark:text-amber-200/80" />
                   )}
-                  <span className="hidden sm:inline">
+                  <motion.span layout="position" className="hidden sm:inline">
                     {showBookmarkToast
                       ? bookmarkToastMessage
                       : isCurrentSpreadBookmarked
                       ? 'Take off Bookmark'
                       : 'Put Bookmark'}
-                  </span>
-                </button>
+                  </motion.span>
+                </motion.button>
 
                 {/* Table of Contents Drawer Trigger */}
-                <button
+                <motion.button layout="position" transition={{ layout: elasticLayoutSpring }}
                   onClick={() => setIsTocOpen(true)}
                   className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
                 >
                   <List className="w-4 h-4 text-amber-700 dark:text-amber-300" />
                   <span className="hidden sm:inline">Index</span>
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             </motion.div>
 
             {/* ================= DUAL-PAGE SPREAD PHYSICAL BOOK CONTAINER ================= */}
@@ -1578,25 +1555,27 @@ export const StoryBook = memo(function StoryBook({
                 <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-amber-900/15 pointer-events-none z-40" />
                 <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-6 -translate-x-1/2 bg-gradient-to-r from-black/[0.04] via-transparent to-black/[0.04] pointer-events-none z-40" />
 
-                {/* Physical Silk Ribbon Bookmark in Center Spine (Real-time, zero-delay rendering) */}
+                {/* Silk ribbon emerges completely from the top edge of the book. */}
                 <AnimatePresence>
                   {isCurrentSpreadBookmarked && (
-                    <motion.div
+                    <motion.button
                       key="center-ribbon-bookmark"
-                      initial={isTogglingBookmarkAction ? { y: -70, opacity: 0 } : false}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -70, opacity: 0 }}
-                      transition={
-                        isTogglingBookmarkAction
-                          ? { duration: 0.45, ease: [0.16, 1, 0.3, 1] }
-                          : { duration: 0 }
-                      }
+                      type="button"
+                      aria-label="Remove bookmark"
+                      title="Remove bookmark"
+                      initial={{ y: '-100%' }}
+                      animate={{ y: 0 }}
+                      exit={{ y: '-100%' }}
+                      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
                       onClick={handleToggleBookmark}
-                      title="Click to take off bookmark"
-                      className="hidden md:flex absolute top-0 left-1/2 -translate-x-1/2 w-5 sm:w-6 h-48 sm:h-56 bg-gradient-to-b from-red-800 via-red-900 to-red-950 rounded-b-sm shadow-[0_6px_16px_rgba(0,0,0,0.45)] border-x border-b border-amber-400/50 z-45 cursor-pointer group items-end justify-center pb-2 transition-transform hover:scale-105"
+                      className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 z-45 w-5 h-32 cursor-pointer [filter:drop-shadow(0_5px_5px_rgba(39,17,11,0.35))]"
                     >
-                      <div className="w-2 h-2 rotate-45 border-r border-b border-amber-400/80 bg-amber-400/30 group-hover:scale-125 transition-transform" />
-                    </motion.div>
+                      <span className="absolute inset-0 bg-gradient-to-r from-[#4e1a20] via-[#933e3c] to-[#4e1a20] [clip-path:polygon(0_0,100%_0,100%_100%,50%_88%,0_100%)]">
+                        <span className="absolute inset-y-0 left-px w-px bg-amber-300/45" />
+                        <span className="absolute inset-y-0 right-px w-px bg-amber-300/45" />
+                        <span className="absolute top-4 bottom-6 left-1/2 w-px -translate-x-1/2 bg-amber-100/15" />
+                      </span>
+                    </motion.button>
                   )}
                 </AnimatePresence>
               </div>
@@ -1608,7 +1587,7 @@ export const StoryBook = memo(function StoryBook({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="w-full flex items-center justify-between px-4 py-2 z-30 mt-2"
+              className="w-full flex flex-wrap sm:flex-nowrap items-center justify-between px-4 py-2 z-30 mt-2"
             >
               {/* Prev Spread Button */}
               <button
@@ -1620,16 +1599,33 @@ export const StoryBook = memo(function StoryBook({
                 <span>Turn Left</span>
               </button>
 
-              {/* Progress Indicator / Spread Counter */}
-              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF8F5]/40 dark:bg-[#161412]/50 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/40 dark:border-white/15 text-stone-900 dark:text-amber-200/90 font-serif text-xs sm:text-sm shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.6)]">
-                <span className="font-mono">
-                  {currentSpreadIndex === 0
-                    ? 'Front Matter'
-                    : `Spread ${currentSpreadIndex}`}
-                </span>
-                <span>/</span>
-                <span className="font-mono">{Math.max(1, spreads.length - 1)} Spreads</span>
-              </div>
+              {/* Reading position and direct return to the saved spread. */}
+              <motion.div layout="position" transition={{ layout: elasticLayoutSpring }} className="order-3 sm:order-none w-full sm:w-auto flex items-center justify-center gap-2 mt-2 sm:mt-0">
+                <motion.div layout="position" className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF8F5]/40 dark:bg-[#161412]/50 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/40 dark:border-white/15 text-stone-900 dark:text-amber-200/90 font-serif text-xs sm:text-sm shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.6)]">
+                  <span className="font-mono">
+                    {currentSpreadIndex === 0
+                      ? 'Front Matter'
+                      : `Spread ${currentSpreadIndex}`}
+                  </span>
+                  <span>/</span>
+                  <span className="font-mono">{Math.max(1, spreads.length - 1)} Spreads</span>
+                </motion.div>
+                {savedBookmarkSpread !== null && (
+                  <motion.button
+                    layout="size"
+                    transition={{ layout: elasticLayoutSpring }}
+                    type="button"
+                    onClick={() => handleJumpToChapterByPage(savedBookmarkSpread * 2)}
+                    disabled={currentSpreadIndex === savedBookmarkSpread}
+                    className="flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-amber-400/40 bg-[#FAF8F5]/65 dark:bg-[#161412]/70 px-3 py-1.5 font-serif text-[11px] sm:text-xs text-amber-900 dark:text-amber-200 backdrop-blur-2xl transition-[background-color,opacity,border-color] duration-200 hover:bg-[#FAF8F5]/90 dark:hover:bg-[#161412]/90 disabled:opacity-50 disabled:cursor-default cursor-pointer"
+                  >
+                    <Bookmark className="w-3.5 h-3.5 shrink-0" />
+                    <motion.span layout="position" className="whitespace-nowrap">
+                      {currentSpreadIndex === savedBookmarkSpread ? 'At Bookmark' : 'Go to Bookmark'}
+                    </motion.span>
+                  </motion.button>
+                )}
+              </motion.div>
 
               {/* Next Spread Button */}
               <button
@@ -1706,7 +1702,7 @@ export const StoryBook = memo(function StoryBook({
                 {chapterPageMap.map((ch) => {
                   const targetSpreadIdx = Math.floor(ch.pageNumber / 2);
                   const isCurrentChapter = currentSpreadIndex === targetSpreadIdx;
-                  const isBookmarkedChapter = savedBookmarkSpread > 0 && targetSpreadIdx === savedBookmarkSpread;
+                  const isBookmarkedChapter = savedBookmarkSpread !== null && targetSpreadIdx === savedBookmarkSpread;
                   return (
                     <button
                       key={ch.chapterId}
