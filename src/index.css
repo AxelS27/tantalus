@@ -32,6 +32,17 @@ body {
   -webkit-user-select: none;
 }
 
+::selection {
+  background-color: #1C1917 !important;
+  color: #FAF8F5 !important;
+  -webkit-text-fill-color: #FAF8F5 !important;
+}
+
+::-moz-selection {
+  background-color: #1C1917 !important;
+  color: #FAF8F5 !important;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

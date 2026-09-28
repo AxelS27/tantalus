@@ -5,12 +5,12 @@ import { watchlistData } from '../data/watchlist';
 import { getAssetUrl } from '../lib/assets';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
 
-type Category = 'All' | 'Anime' | 'Kdrama' | 'Cdrama';
+type Category = 'All' | 'Kdrama' | 'Cdrama' | 'Anime';
 const categories: { id: Category; label: string }[] = [
   { id: 'All', label: 'All' },
-  { id: 'Anime', label: 'Anime' },
   { id: 'Kdrama', label: 'K-Drama' },
   { id: 'Cdrama', label: 'C-Drama' },
+  { id: 'Anime', label: 'Anime' },
 ];
 const pageSize = 15;
 
