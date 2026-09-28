@@ -17,6 +17,8 @@ import CertificatesCoverflowSkeleton from './components/skeletons/CertificatesCo
 import ConnectHubSkeleton from './components/skeletons/ConnectHubSkeleton';
 import StoryBookSkeleton from './components/skeletons/StoryBookSkeleton';
 import ProjectDetailSkeleton from './components/skeletons/ProjectDetailSkeleton';
+import RepertoireGridSkeleton from './components/skeletons/RepertoireGridSkeleton';
+import WatchlistGridSkeleton from './components/skeletons/WatchlistGridSkeleton';
 import type { ArchiveAppId } from './components/ArchiveHub';
 import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
 import { getProjectById } from './data/projects';
@@ -694,7 +696,7 @@ export default function App() {
                 />
               </div>
               {visitedTabs.has('repertoire') && (
-                <Suspense fallback={null}>
+                <Suspense fallback={<RepertoireGridSkeleton />}>
                   <RepertoireGrid
                     isActive={isSectionRendered('repertoire')}
                     onReachTop={handleRepertoireTop}
@@ -722,7 +724,7 @@ export default function App() {
                 />
               </div>
               {visitedTabs.has('watchlist') && (
-                <Suspense fallback={null}>
+                <Suspense fallback={<WatchlistGridSkeleton />}>
                   <WatchlistGrid
                     isActive={isSectionRendered('watchlist')}
                     onReachTop={handleWatchlistTop}
