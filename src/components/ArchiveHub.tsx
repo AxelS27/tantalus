@@ -28,12 +28,7 @@ import {
   DEFAULT_SETTINGS,
   getSavedSettings,
 } from '../lib/settings';
-import {
-  prefetchSection,
-  prefetchSectionBackground,
-  getPrefetchProps,
-  type PrefetchSectionKey,
-} from '../lib/prefetch';
+import { getPrefetchProps, type PrefetchSectionKey } from '../lib/prefetch';
 
 export type { PortfolioSettings };
 export { DEFAULT_SETTINGS, getSavedSettings };
@@ -160,20 +155,6 @@ export const ArchiveHub = memo(function ArchiveHub({
     [order[index], order[destination]] = [order[destination], order[index]];
     handleSettingChange({ musicOrder: order });
   };
-
-  // Eagerly prefetch destination sections and backgrounds in advance
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      prefetchSection('certificates');
-      prefetchSection('connect');
-      prefetchSection('storybook');
-      prefetchSection('repertoire');
-      prefetchSection('watchlist');
-      prefetchSectionBackground('certificates');
-      prefetchSectionBackground('connect');
-      prefetchSectionBackground('storybook');
-    }
-  }, []);
 
   // GitHub Commit Info for About Tab
   const [githubInfo, setGithubInfo] = useState<{

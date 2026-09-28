@@ -3,6 +3,7 @@ import { animate, motion, useMotionValue } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
 import { projectPages, cubeFaces, type ProjectCardItem } from '../data/projects';
+import { getProjectCardImage, getProjectCardSrcSet } from '../lib/thumbnails';
 
 export type { ProjectCardItem };
 
@@ -357,7 +358,8 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                       {/* 16:9 Thumbnail Image with Skeleton Shimmer */}
                       <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/10 dark:bg-black/40 border border-white/40 dark:border-white/15 mb-1 flex-shrink-0 z-10">
                         <ImageWithSkeleton
-                          src={project.image}
+                          src={getProjectCardImage(project.id, project.image)}
+                          srcSet={getProjectCardSrcSet(project.id)}
                           alt={project.title}
                           loading={face.faceIdx === 0 ? 'eager' : 'lazy'}
                           decoding="async"
