@@ -196,6 +196,12 @@ body {
   animation: skeleton-shimmer 1.8s infinite ease-in-out;
 }
 
+@media (max-width: 767px) and (max-height: 640px) {
+  .storybook-shelf-card {
+    width: 200px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ambient-canvas-background--live,
   .skeleton-shimmer::after {

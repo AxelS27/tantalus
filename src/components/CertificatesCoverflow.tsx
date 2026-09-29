@@ -217,6 +217,13 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
     }
 
     position.set(boundedIndex);
+
+    // Keep the active card in sync with the drag, not just the release.
+    const nearestIndex = Math.max(0, Math.min(maxIdx, Math.round(boundedIndex)));
+    if (nearestIndex !== selectedIndexRef.current) {
+      selectedIndexRef.current = nearestIndex;
+      setSelectedIndex(nearestIndex);
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -300,8 +307,12 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
+      <h1 className="md:hidden absolute top-[clamp(5rem,15dvh,8rem)] left-0 right-0 z-30 text-center font-serif italic font-light text-4xl sm:text-5xl tracking-tight text-white select-text" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}>
+        Certificates
+      </h1>
+
       {/* ================= FAR-LEFT ARROW (Pushed all the way outward to the left) ================= */}
-      <div className="absolute left-4 sm:left-8 md:left-12 lg:left-16 top-1/2 -translate-y-1/2 z-40">
+      <div className="hidden md:block absolute left-4 sm:left-8 md:left-12 lg:left-16 top-1/2 -translate-y-1/2 z-40">
         {selectedIndex > 0 && (
           <button
             onClick={handlePrev}
@@ -337,7 +348,7 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
       </div>
 
       {/* ================= FAR-RIGHT ARROW (Pushed all the way outward to the right) ================= */}
-      <div className="absolute right-4 sm:right-8 md:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-40">
+      <div className="hidden md:block absolute right-4 sm:right-8 md:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-40">
         {selectedIndex < certificatesData.length - 1 && (
           <button
             onClick={handleNext}

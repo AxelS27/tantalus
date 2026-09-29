@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight } from 'lucide-react';
+import { ArrowLeft, ChevronRight, House, Clock3, FolderKanban, LibraryBig } from 'lucide-react';
 import { getPrefetchProps, type PrefetchSectionKey } from '../lib/prefetch';
 import { elasticLayoutSpring } from '../lib/motion';
 
@@ -16,6 +16,13 @@ const mainNavItems: { id: 'home' | 'timeline' | 'projects'; label: string }[] = 
   { id: 'timeline', label: 'Timeline' },
   { id: 'projects', label: 'Projects' },
 ];
+
+const mobileNavItems = [
+  { id: 'home', label: 'Home', icon: House },
+  { id: 'timeline', label: 'Timeline', icon: Clock3 },
+  { id: 'projects', label: 'Projects', icon: FolderKanban },
+  { id: 'archive', label: 'Archive', icon: LibraryBig },
+] as const;
 
 // Unified calm spring physics matching page transition tempo
 const navbarSpring = {
@@ -54,7 +61,8 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
             : 'Story Book';
 
   return (
-    <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex flex-col items-center">
+    <>
+    <header className="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex-col items-center">
       <motion.nav
         layout="position"
         initial={{ opacity: 0, y: -20, scale: 0.98 }}
@@ -194,5 +202,53 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
         </motion.div>
       </motion.nav>
     </header>
+    {isSubApp && (
+      <button
+        type="button"
+        onClick={() => handleSelect('archive')}
+        className="glass-surface glass-ivory md:hidden fixed top-[calc(1rem+env(safe-area-inset-top))] left-4 z-50 flex h-11 items-center gap-1.5 rounded-full border border-white/60 dark:border-white/20 bg-[#FAF8F5]/75 dark:bg-[#161412]/75 px-3.5 text-xs font-medium text-stone-950 dark:text-stone-100 backdrop-blur-2xl shadow-[0_8px_24px_rgba(20,15,10,0.2),inset_0_1px_1px_rgba(255,255,255,0.7)] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
+        aria-label="Back to Archive"
+      >
+        <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+        <span>Back to Archive</span>
+      </button>
+    )}
+    <nav
+      aria-label="Main navigation"
+      className="glass-surface glass-ivory md:hidden fixed left-1/2 -translate-x-1/2 bottom-[calc(1.375rem+env(safe-area-inset-bottom))] z-50 grid w-[calc(100%-3rem)] max-w-[340px] h-14 grid-cols-4 items-center rounded-[1.15rem] border border-white/55 dark:border-white/20 bg-[#FAF8F5]/70 dark:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_12px_40px_rgba(20,15,10,0.3),inset_0_1px_0_rgba(255,255,255,0.7)] px-1 select-none"
+    >
+      {mobileNavItems.map(({ id, label, icon: Icon }) => {
+        const isActive = id === 'archive' ? activeTab === 'archive' || isSubApp : activeTab === id;
+        const displayLabel = id === 'archive' && isSubApp ? subAppLabel : label;
+        const prefetchProps = id === 'home' ? {} : getPrefetchProps(id);
+        return (
+          <button
+            key={id}
+            type="button"
+            aria-label={displayLabel}
+            aria-current={isActive ? 'page' : undefined}
+            onClick={() => {
+              if (id === 'archive' && isSubApp) return;
+              handleSelect(id);
+            }}
+            {...prefetchProps}
+            className={`relative flex h-11 flex-col items-center justify-center gap-0.5 rounded-[0.9rem] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700 transition-colors ${
+              isActive ? 'text-stone-950 dark:text-amber-100' : 'text-stone-700/80 dark:text-stone-300/80'
+            }`}
+          >
+            {isActive && (
+              <motion.span
+                layoutId="mobileActiveNavPill"
+                transition={navbarSpring}
+                className="absolute inset-0 rounded-[0.9rem] bg-white/75 dark:bg-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.75),0_2px_10px_rgba(0,0,0,0.08)]"
+              />
+            )}
+            <Icon aria-hidden="true" className="relative z-10 h-[18px] w-[18px]" strokeWidth={isActive ? 2.2 : 1.8} />
+            <span className="relative z-10 font-sans text-[9px] font-medium leading-tight tracking-wide whitespace-nowrap">{displayLabel}</span>
+          </button>
+        );
+      })}
+    </nav>
+    </>
   );
 }

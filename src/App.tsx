@@ -239,6 +239,9 @@ export default function App() {
     syncHistory = true,
     immediate = false,
   ) => {
+    // On mobile, section changes come from the dock, app links, or browser history,
+    // not from scrolling past the edge of a section or carousel.
+    if (!immediate && window.matchMedia('(max-width: 767px)').matches) return;
     if (newTab === activeTabRef.current) return;
     if (isTransitioningRef.current && !immediate) return;
 
@@ -440,7 +443,7 @@ export default function App() {
             transition={{ duration: 0.25 }}
             role="status"
             aria-label={`${currentTrack.title} is playing`}
-            className="pointer-events-none fixed right-4 sm:right-6 bottom-5 sm:bottom-6 z-[60] flex max-w-[calc(100vw-2rem)] gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)]"
+            className="pointer-events-none fixed right-4 sm:right-6 bottom-[calc(8.25rem+env(safe-area-inset-bottom))] md:bottom-6 z-[60] flex max-w-[calc(100vw-2rem)] gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)]"
           >
             <span aria-hidden="true" className="min-w-0 truncate">{currentTrack.title}</span>
             <span aria-hidden="true" className="shrink-0">is playing</span>
@@ -475,7 +478,7 @@ export default function App() {
           onWheel={handleGlobalWheel}
           className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
         >
-          {/* Floating Centered Apple Frosted Glass Navbar */}
+          {/* Desktop glass navbar and mobile bottom dock */}
           <Navbar
             activeTab={activeTab}
             onTabChange={(tab) => triggerSectionChange(tab, true, true)}
@@ -516,10 +519,10 @@ export default function App() {
               </div>
 
               {/* Upper-Left Editorial Identity */}
-              <div className="absolute top-[25%] sm:top-[27%] left-6 sm:left-14 md:left-20 z-20 pointer-events-auto space-y-2 sm:space-y-2.5 max-w-5xl select-text">
+              <div className="absolute top-[23%] md:top-[27%] left-0 right-0 md:left-20 md:right-auto z-20 pointer-events-auto space-y-2 md:space-y-2.5 px-4 md:px-0 max-w-5xl text-center md:text-left select-text">
                 {/* Line 1: Name */}
                 <h1
-                  className="font-serif italic text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white tracking-tight font-light leading-none whitespace-nowrap"
+                  className="font-serif italic text-[clamp(1.8rem,8.5vw,3.75rem)] md:text-7xl lg:text-8xl text-white tracking-tight font-light leading-none md:whitespace-nowrap"
                   style={{
                     textShadow: '0 2px 12px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.65)',
                   }}
@@ -529,7 +532,7 @@ export default function App() {
 
                 {/* Line 2: Role (Antique Gold) */}
                 <p
-                  className="font-serif italic text-lg sm:text-xl md:text-2xl lg:text-3xl text-[#E8C582] tracking-wide font-normal whitespace-nowrap"
+                  className="font-serif italic text-[clamp(0.95rem,4vw,1.25rem)] md:text-2xl lg:text-3xl text-[#E8C582] tracking-wide font-normal [-webkit-text-stroke:0.35px_#E8C582] md:[-webkit-text-stroke:0] md:whitespace-nowrap"
                   style={{
                     textShadow: '0 2px 10px rgba(0,0,0,0.85), 0 4px 20px rgba(0,0,0,0.65)',
                   }}
@@ -539,7 +542,7 @@ export default function App() {
 
                 {/* Line 3: Age & Location */}
                 <div
-                  className="flex items-center gap-2.5 sm:gap-3 font-serif italic text-sm sm:text-base md:text-lg lg:text-xl text-stone-100/90 tracking-wide font-light whitespace-nowrap"
+                  className="flex items-center justify-center md:justify-start gap-2.5 md:gap-3 font-serif italic text-sm md:text-lg lg:text-xl text-stone-100/90 tracking-wide font-light whitespace-nowrap"
                   style={{
                     textShadow: '0 1px 8px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.6)',
                   }}
@@ -551,7 +554,7 @@ export default function App() {
 
                 {/* Line 4: Passions */}
                 <p
-                  className="font-serif italic text-sm sm:text-base md:text-lg lg:text-xl text-stone-100/85 tracking-wide font-light whitespace-nowrap pt-0.5"
+                  className="font-serif italic text-sm md:text-lg lg:text-xl text-stone-100/85 tracking-wide font-light pt-0.5"
                   style={{
                     textShadow: '0 1px 8px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.6)',
                   }}

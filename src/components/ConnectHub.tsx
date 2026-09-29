@@ -182,13 +182,13 @@ export const ConnectHub = memo(function ConnectHub({
       }`}
     >
       {/* ================= 1. CONNECT HERO VIEWPORT (Full Screen) ================= */}
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-16 select-none">
+      <div className="relative min-h-screen w-full flex flex-col items-center justify-start md:justify-center px-4 sm:px-6 md:px-8 pt-[clamp(6rem,13dvh,8rem)] pb-[calc(7rem+env(safe-area-inset-bottom))] md:py-16 select-none">
         {/* Fluid Floating Content Rig (No Outer Card) */}
         <motion.div
           initial={{ opacity: 0, y: 16, scale: 0.98 }}
           animate={isActive ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 16, scale: 0.98 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="relative w-full max-w-2xl sm:max-w-3xl flex flex-col items-center justify-center space-y-5 sm:space-y-7"
+          className="relative w-full max-w-[360px] md:max-w-3xl flex flex-col items-center justify-center space-y-5 md:space-y-7"
         >
           {/* Header Block: Editorial Title */}
           <div className="text-center max-w-xl mx-auto">
@@ -200,8 +200,8 @@ export const ConnectHub = memo(function ConnectHub({
             </h2>
           </div>
 
-          {/* 2x3 Grid of Floating Frosted Glass Social Cards */}
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 pt-1">
+          {/* Compact mobile tiles; keep the wider two-column cards on desktop. */}
+          <div className="w-full grid grid-cols-2 gap-2.5 md:gap-4 pt-1">
             {socialChannels.map((channel) => {
               const isCopied = copiedName === channel.name;
               const Icon = channel.icon;
@@ -221,7 +221,7 @@ export const ConnectHub = memo(function ConnectHub({
                     y: 0,
                     transition: { duration: 0.1 },
                   }}
-                  className="glass-surface group relative flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_32px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_16px_40px_-4px_rgba(40,30,20,0.22)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_18px_44px_-4px_rgba(0,0,0,0.85)] cursor-pointer no-underline text-stone-900 dark:text-white transition-colors duration-150 overflow-hidden z-10 hover:z-30"
+                  className="glass-surface group relative flex min-h-16 items-center justify-between md:min-h-0 p-2.5 md:p-4 rounded-2xl bg-white/70 md:bg-white/45 dark:bg-[#161412]/70 md:dark:bg-[#161412]/60 hover:bg-white/75 md:hover:bg-white/65 dark:hover:bg-[#161412]/80 md:dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_32px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_16px_40px_-4px_rgba(40,30,20,0.22)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_18px_44px_-4px_rgba(0,0,0,0.85)] cursor-pointer no-underline text-stone-900 dark:text-white transition-colors duration-150 overflow-hidden z-10 hover:z-30"
                 >
                   {/* Specular Top Light Accent */}
                   <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150 rounded-t-2xl" />
@@ -230,8 +230,8 @@ export const ConnectHub = memo(function ConnectHub({
                   <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none rounded-2xl" />
 
                   {/* Left: Icon & Info */}
-                  <div className="flex items-center gap-3.5 min-w-0 relative z-10">
-                    <div className="w-10 h-10 rounded-xl bg-white/70 dark:bg-white/10 hover:bg-white/90 dark:hover:bg-white/20 border border-white/80 dark:border-white/20 flex items-center justify-center shadow-xs shrink-0 group-hover:scale-110 group-hover:border-amber-700/60 dark:group-hover:border-[#FFD88A]/60 transition-all text-amber-800 dark:text-[#FFD88A]">
+                  <div className="flex items-center gap-2 md:gap-3.5 min-w-0 relative z-10">
+                    <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white/70 dark:bg-white/10 hover:bg-white/90 dark:hover:bg-white/20 border border-white/80 dark:border-white/20 flex items-center justify-center shadow-xs shrink-0 group-hover:scale-110 group-hover:border-amber-700/60 dark:group-hover:border-[#FFD88A]/60 transition-all text-amber-800 dark:text-[#FFD88A]">
                       <Icon size={19} className="shrink-0" />
                     </div>
                     <div className="flex flex-col min-w-0 text-left">
@@ -239,7 +239,7 @@ export const ConnectHub = memo(function ConnectHub({
                         {channel.name}
                       </span>
                       <span
-                        className="text-[11px] sm:text-xs font-mono text-stone-700 dark:text-stone-300 truncate pt-0.5"
+                        className="hidden md:block text-xs font-mono text-stone-700 dark:text-stone-300 truncate pt-0.5"
                       >
                         {isCopied ? 'Copied to Clipboard!' : channel.handle}
                       </span>
@@ -247,14 +247,14 @@ export const ConnectHub = memo(function ConnectHub({
                   </div>
 
                   {/* Right: Feedback or Arrow */}
-                  <motion.div layout="size" transition={{ layout: elasticLayoutSpring }} className="shrink-0 ml-2 relative z-10">
+                  <motion.div layout="size" transition={{ layout: elasticLayoutSpring }} className="absolute right-2 top-2 md:static md:ml-2 shrink-0 z-10">
                     {isCopied ? (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
                         <Check className="w-3 h-3" />
-                        <span>Copied</span>
+                        <span className="hidden md:inline">Copied</span>
                       </span>
                     ) : (
-                      <ArrowUpRight className="w-4 h-4 text-stone-500 dark:text-stone-300 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-70 group-hover:opacity-100" />
+                      <ArrowUpRight className="hidden md:block w-4 h-4 text-stone-500 dark:text-stone-300 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all opacity-70 group-hover:opacity-100" />
                     )}
                   </motion.div>
                 </motion.a>
@@ -264,7 +264,7 @@ export const ConnectHub = memo(function ConnectHub({
 
           {/* Bottom: Location & Timezone Clean Text */}
           <div
-            className="pt-2 flex items-center justify-center gap-3 text-xs sm:text-sm font-serif italic text-stone-200/90"
+            className="pt-[clamp(2rem,14dvh,7.5rem)] md:pt-2 flex items-center justify-center gap-3 text-xs sm:text-sm font-serif italic text-stone-200/90"
             style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}
           >
             <div className="flex items-center gap-1.5 text-[#FFD88A] font-medium">

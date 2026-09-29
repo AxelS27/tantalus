@@ -103,8 +103,8 @@ export const RepertoireGrid = memo(function RepertoireGrid({
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
-      <div className="relative mx-auto max-w-5xl px-5 sm:px-10 pt-32 sm:pt-36 pb-24">
-        <header className="text-center mb-8 sm:mb-10">
+      <div className="relative mx-auto max-w-5xl px-5 sm:px-10 pt-24 md:pt-36 pb-24">
+        <header className="text-center mb-6 md:mb-10">
           <h1
             className="font-serif italic font-light text-5xl sm:text-7xl text-white tracking-tight select-text"
             style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}
@@ -113,7 +113,7 @@ export const RepertoireGrid = memo(function RepertoireGrid({
           </h1>
         </header>
 
-        <div className="flex sm:justify-center gap-2 overflow-x-auto no-scrollbar pb-5 mb-3 sm:mb-5" aria-label="Filter repertoire by genre">
+        <div className="flex flex-wrap justify-center md:flex-nowrap gap-2 md:overflow-x-auto no-scrollbar pb-3 md:pb-5 mb-2 md:mb-5" aria-label="Filter repertoire by genre">
           {genres.map((item) => (
             <button
               key={item}
