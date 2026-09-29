@@ -3,7 +3,7 @@ import { animate, motion, useMotionValue } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
 import StepCounter from './common/StepCounter';
-import { projectPages, cubeFaces, type ProjectCardItem } from '../data/projects';
+import { allProjects, projectPages, cubeFaces, type ProjectCardItem } from '../data/projects';
 import { getProjectCardImage, getProjectCardSrcSet } from '../lib/thumbnails';
 
 export type { ProjectCardItem };
@@ -24,6 +24,10 @@ export const ProjectsGrid = memo(function ProjectsGrid({
   const numFaces = cubeFaces.length;
   const angleStep = 360 / numFaces;
   const [currentPage, setCurrentPage] = useState(0);
+  const [mobilePage, setMobilePage] = useState(1);
+  const mobilePageSize = 10;
+  const mobilePageCount = Math.ceil(allProjects.length / mobilePageSize);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
   const [facingStep, setFacingStep] = useState(0);
   const [visibleFaceIndexes, setVisibleFaceIndexes] = useState<number[]>([0]);
   const [visitedFaceIndexes, setVisitedFaceIndexes] = useState<number[]>([0]);
@@ -114,6 +118,11 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       settleToFace(prevY);
     }
   }, [angleStep, currentPage, onReachStart, settleToFace]);
+
+  const goToMobilePage = (page: number) => {
+    setMobilePage(page);
+    mobileScrollRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+  };
 
   const handleCardClick = useCallback((projectId: string) => {
     isPointerDownRef.current = false;
@@ -242,7 +251,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
   // Mousewheel listener for rotating Cube & Section Handoff
   const handleWheel = (e: React.WheelEvent) => {
-    if (!isActive) return;
+    if (!isActive || window.matchMedia('(max-width: 767px)').matches) return;
     e.stopPropagation();
     const now = Date.now();
 
@@ -268,8 +277,77 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
-      {/* 3D Cube Container with Non-Overlapping Flex Flanks */}
-      <div className="relative w-full flex items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-14">
+      {/* Mobile gallery matches the Repertoire and Watchlist reading flow. */}
+      <div ref={mobileScrollRef} className="archive-gallery-scroll-container md:hidden absolute inset-0 overflow-y-auto overflow-x-hidden overscroll-contain">
+        <div className="relative mx-auto max-w-5xl px-5 pt-16 pb-[calc(8rem+env(safe-area-inset-bottom))]">
+          <header className="mb-6 text-center">
+            <h1 className="font-serif italic font-light text-5xl tracking-tight text-white select-text" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}>
+              Projects
+            </h1>
+          </header>
+
+          <div className="grid grid-cols-2 gap-3">
+            {allProjects.slice((mobilePage - 1) * mobilePageSize, mobilePage * mobilePageSize).map((project) => (
+              <motion.a
+                key={project.id}
+                href={`/projects/${project.id}`}
+                onClick={(e) => {
+                  if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) {
+                    e.preventDefault();
+                    handleCardClick(project.id);
+                  }
+                }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                transition={{ duration: 0.18 }}
+                className="glass-surface group relative min-w-0 flex flex-col p-1.5 rounded-xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-xl border border-white/60 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] transition-colors cursor-pointer overflow-hidden no-underline"
+              >
+                <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-black/20 border border-white/40 dark:border-white/15">
+                  <ImageWithSkeleton
+                    src={getProjectCardImage(project.id, project.image)}
+                    srcSet={getProjectCardSrcSet(project.id)}
+                    alt={project.title}
+                    loading="lazy"
+                    decoding="async"
+                    wrapperClassName="w-full h-full"
+                    className="w-full h-full object-cover object-center pointer-events-none select-none"
+                    skeletonClassName="bg-white/10 dark:bg-black/40"
+                  />
+                </div>
+                <div className="w-full min-h-12 flex items-center justify-center text-center px-1 py-1.5 select-text">
+                  <h2 title={project.title} className="w-full line-clamp-2 font-sans text-[11px] leading-snug font-semibold text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors">
+                    {project.title}
+                  </h2>
+                </div>
+              </motion.a>
+            ))}
+          </div>
+
+          {mobilePageCount > 1 && (
+            <nav aria-label="Project pages" className="flex items-center justify-center gap-1.5 mt-10">
+              <button type="button" onClick={() => goToMobilePage(mobilePage - 1)} disabled={mobilePage === 1} aria-label="Previous page" className="group flex h-11 w-11 items-center justify-center rounded-full text-white disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-2 focus-visible:outline-white">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/35 border border-white/30 backdrop-blur-xl group-hover:bg-black/55">
+                  <ChevronLeft className="w-4 h-4" />
+                </span>
+              </button>
+              {Array.from({ length: mobilePageCount }, (_, index) => index + 1).map((number) => (
+                <button key={number} type="button" onClick={() => goToMobilePage(number)} aria-label={`Page ${number}`} aria-current={mobilePage === number ? 'page' : undefined} className="group flex h-11 w-11 items-center justify-center rounded-full cursor-pointer focus-visible:outline-2 focus-visible:outline-white">
+                  <span className={`flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold backdrop-blur-xl transition-colors ${mobilePage === number ? 'bg-white/80 border-white/80 text-stone-950 dark:bg-stone-900/85 dark:text-amber-200' : 'bg-black/35 border-white/30 text-white group-hover:bg-black/55'}`}>
+                    {number}
+                  </span>
+                </button>
+              ))}
+              <button type="button" onClick={() => goToMobilePage(mobilePage + 1)} disabled={mobilePage === mobilePageCount} aria-label="Next page" className="group flex h-11 w-11 items-center justify-center rounded-full text-white disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-2 focus-visible:outline-white">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/35 border border-white/30 backdrop-blur-xl group-hover:bg-black/55">
+                  <ChevronRight className="w-4 h-4" />
+                </span>
+              </button>
+            </nav>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop: 3D cube with side navigation. */}
+      <div className="relative hidden md:flex w-full items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-14">
         
         {/* Left Arrow Slot (Hidden on newest / Page 0) */}
         <div className="w-10 sm:w-12 md:w-14 flex items-center justify-center flex-shrink-0 z-40">
@@ -402,10 +480,12 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
       </div>
 
-      <StepCounter current={currentPage + 1} total={numFaces} label="Project page" />
+      <div className="hidden md:contents">
+        <StepCounter current={currentPage + 1} total={numFaces} label="Project page" />
+      </div>
 
       {/* Face Indicator Dots */}
-      <div className="flex items-center justify-center gap-2.5 pt-4 select-none z-30">
+      <div className="hidden md:flex items-center justify-center gap-2.5 pt-4 select-none z-30">
         {cubeFaces.map((face) => (
           <button
             key={face.faceIdx}

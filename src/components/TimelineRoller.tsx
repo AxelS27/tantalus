@@ -26,6 +26,7 @@ interface TimelineCardProps {
   position: MotionValue<number>;
   selectedIndex: number;
   isDragging: boolean;
+  horizontal?: boolean;
   onSelect: (index: number) => void;
 }
 
@@ -35,20 +36,25 @@ const TimelineCard = memo(function TimelineCard({
   position,
   selectedIndex,
   isDragging,
+  horizontal = false,
   onSelect,
 }: TimelineCardProps) {
-  const y = useTransform(position, (current) => (index - current) * 118);
+  const x = useTransform(position, (current) => horizontal ? (index - current) * 230 : 0);
+  const y = useTransform(position, (current) => horizontal ? 0 : (index - current) * 118);
   const scale = useTransform(position, (current) =>
-    Math.max(0.68, 1 - Math.abs(index - current) * 0.14),
+    Math.max(0.68, 1 - Math.abs(index - current) * (horizontal ? 0.1 : 0.14)),
   );
   const opacity = useTransform(position, (current) => {
     const distance = Math.abs(index - current);
     return distance <= 1
-      ? Math.max(0, 1 - distance * 0.45)
-      : Math.max(0, 0.55 - (distance - 1) * 0.3);
+      ? Math.max(0, 1 - distance * (horizontal ? 0.3 : 0.45))
+      : Math.max(0, (horizontal ? 0.7 : 0.55) - (distance - 1) * 0.3);
   });
   const rotateX = useTransform(position, (current) =>
-    Math.max(-25, Math.min(25, (index - current) * -9)),
+    horizontal ? 0 : Math.max(-25, Math.min(25, (index - current) * -9)),
+  );
+  const rotateY = useTransform(position, (current) =>
+    horizontal ? Math.max(-18, Math.min(18, (index - current) * -12)) : 0,
   );
   const zIndex = useTransform(position, (current) =>
     Math.round(30 - Math.min(25, Math.abs(index - current) * 10)),
@@ -60,21 +66,23 @@ const TimelineCard = memo(function TimelineCard({
 
   return (
     <motion.div
-      onClick={() => isInteractive && !window.getSelection()?.toString() && onSelect(index)}
+      onClick={() => isInteractive && (horizontal || !window.getSelection()?.toString()) && onSelect(index)}
       style={{
+        x,
         y,
         scale,
         opacity,
         rotateX,
+        rotateY,
         zIndex,
         transformStyle: 'preserve-3d',
         pointerEvents: isInteractive ? 'auto' : 'none',
       }}
-      className={`glass-surface absolute w-full p-2.5 sm:p-3 rounded-2xl cursor-pointer overflow-hidden transform-gpu will-change-transform ${
+      className={`glass-surface absolute ${horizontal ? 'w-[min(66vw,210px)] h-[76px] p-2' : 'w-full p-2.5 sm:p-3'} rounded-2xl cursor-pointer overflow-hidden transform-gpu will-change-transform ${
         isCenter
           ? 'bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/75 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]'
           : 'bg-white/25 dark:bg-[#161412]/40 backdrop-blur-xl backdrop-saturate-[160%] border border-white/40 dark:border-white/10 hover:opacity-85'
-      } ${isDragging ? 'select-none' : ''}`}
+      } ${horizontal || isDragging ? 'select-none' : ''}`}
     >
       {/* Specular Top Light Accent */}
       {isCenter && (
@@ -84,10 +92,10 @@ const TimelineCard = memo(function TimelineCard({
         </>
       )}
 
-      <div className="flex items-center gap-3.5 relative z-10">
+      <div className={`flex ${horizontal ? 'h-full items-center gap-2.5' : 'items-center gap-2.5 md:gap-3.5'} relative z-10`}>
         <div
           className={`relative overflow-hidden rounded-xl border border-white/25 flex-shrink-0 transition-all duration-300 ${
-            isCenter ? 'w-26 h-18 sm:w-30 sm:h-20' : 'w-18 h-12 sm:w-22 sm:h-15'
+            horizontal ? 'w-14 h-14' : isCenter ? 'w-20 h-16 md:w-30 md:h-20' : 'w-16 h-12 md:w-22 md:h-15'
           }`}
         >
           <ImageWithSkeleton
@@ -99,21 +107,21 @@ const TimelineCard = memo(function TimelineCard({
           />
         </div>
 
-        <div data-timeline-text className="flex-1 min-w-0 text-left space-y-0.5 select-text cursor-text">
+        <div data-timeline-text className={`flex-1 min-w-0 w-full text-left space-y-0.5 ${horizontal ? 'flex flex-col justify-center select-none cursor-grab' : 'select-text cursor-text'}`}>
           <p
-            className="text-[11px] sm:text-xs font-serif italic text-amber-900 dark:text-[#FFD88A] truncate font-medium dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)]"
+            className={`${horizontal ? 'hidden' : ''} text-[11px] sm:text-xs font-serif italic text-amber-900 dark:text-[#FFD88A] truncate font-medium dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)]`}
           >
             {item.year}
           </p>
           <h3
-            className={`font-serif italic text-stone-950 dark:text-white font-normal truncate dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)] ${
-              isCenter ? 'text-sm sm:text-base font-medium' : 'text-xs'
+            className={`font-serif italic text-stone-950 dark:text-white font-normal dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)] ${
+              horizontal ? 'text-[12px] font-medium line-clamp-2 leading-tight' : isCenter ? 'text-sm md:text-base font-medium max-md:line-clamp-2' : 'text-xs truncate'
             }`}
           >
             {item.role}
           </h3>
           <p
-            className="text-[11px] sm:text-xs font-serif italic text-stone-800 dark:text-stone-200/90 truncate dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)]"
+            className={`text-[11px] md:text-xs font-serif italic text-stone-800 dark:text-stone-200/90 dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)] ${horizontal ? 'truncate' : isCenter ? 'max-md:line-clamp-2 md:truncate' : 'truncate'}`}
           >
             {item.company}
           </p>
@@ -135,6 +143,8 @@ export const TimelineRoller = memo(function TimelineRoller({
   const [isDragging, setIsDragging] = useState(false);
   const isDraggingRef = useRef(false);
   const dragStartYRef = useRef(0);
+  const dragStartXRef = useRef(0);
+  const isHorizontalDragRef = useRef(false);
   const dragStartIndexRef = useRef(0);
   const hasDraggedRef = useRef(false);
   const lastWheelTimeRef = useRef<number>(0);
@@ -174,15 +184,17 @@ export const TimelineRoller = memo(function TimelineRoller({
   }, [selectedIndex, onReachStart, animateToIndex]);
 
   // Pointer drag controls for holding & rolling freely
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = (e: React.PointerEvent, horizontal = false) => {
     if (!isActive || e.button !== 0) return;
     // Let mouse users select card labels; dragging from the image or card surface still rolls.
-    if (e.pointerType === 'mouse' && (e.target as HTMLElement).closest('[data-timeline-text]')) return;
+    if (!horizontal && e.pointerType === 'mouse' && (e.target as HTMLElement).closest('[data-timeline-text]')) return;
+    isHorizontalDragRef.current = horizontal;
     isDraggingRef.current = true;
     position.stop();
     setIsDragging(true);
     hasDraggedRef.current = false;
     dragStartYRef.current = e.clientY;
+    dragStartXRef.current = e.clientX;
     dragStartIndexRef.current = position.get();
 
     try {
@@ -194,15 +206,16 @@ export const TimelineRoller = memo(function TimelineRoller({
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDraggingRef.current) return;
-    const dy = e.clientY - dragStartYRef.current;
+    const delta = isHorizontalDragRef.current
+      ? e.clientX - dragStartXRef.current
+      : e.clientY - dragStartYRef.current;
 
-    if (Math.abs(dy) > 4) {
+    if (Math.abs(delta) > 4) {
       hasDraggedRef.current = true;
     }
 
-    // Dragging down (dy > 0) pulls upper cards down (decreases index)
-    // Dragging up (dy < 0) pulls lower cards up (increases index)
-    const rawIndex = dragStartIndexRef.current - dy / 118;
+    // Drag left on mobile or up on desktop to move forward through experiences.
+    const rawIndex = dragStartIndexRef.current - delta / (isHorizontalDragRef.current ? 230 : 118);
     const maxIdx = timelineData.length - 1;
 
     // Soft elastic resistance beyond boundaries
@@ -272,27 +285,27 @@ export const TimelineRoller = memo(function TimelineRoller({
     <div
       onWheel={isActive ? handleWheel : undefined}
       aria-hidden={!isActive}
-      className={`relative w-full h-full flex items-center justify-center z-20 px-6 sm:px-12 md:px-16 transition-opacity duration-300 ${
+      className={`relative w-full h-full flex items-center justify-center z-20 md:px-16 transition-opacity duration-300 ${
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
       <StepCounter current={selectedIndex + 1} total={timelineData.length} label="Experience" />
 
       {/* Centered Enlarged Snug Cluster */}
-      <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-10 sm:gap-14 lg:gap-18">
+      <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-14 lg:gap-18 max-md:absolute max-md:inset-x-0 max-md:top-2 max-md:bottom-[calc(8.75rem+env(safe-area-inset-bottom))] max-md:justify-between max-md:overflow-y-auto max-md:overscroll-contain max-md:px-5 max-md:py-4">
         
         {/* LEFT: Detail Content */}
-        <div className="flex-1 max-w-xl lg:max-w-2xl xl:max-w-3xl flex flex-col items-center justify-center text-center select-text z-20">
+        <div className="w-full max-md:flex-1 md:w-auto md:flex-1 max-w-xl lg:max-w-2xl xl:max-w-3xl flex flex-col items-center justify-center max-md:justify-end max-md:pb-20 text-center select-text z-20">
           <motion.div
             key={activeItem.id}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full flex flex-col items-center justify-center space-y-3 sm:space-y-3.5"
+            className="w-full flex flex-col items-center justify-center space-y-2.5 md:space-y-3.5"
           >
             {/* Role Title */}
             <h2
-              className="font-serif italic text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-light leading-tight tracking-tight whitespace-nowrap"
+              className="font-serif italic text-[clamp(1.8rem,8vw,2.5rem)] md:text-5xl lg:text-6xl text-white font-light leading-[1.1] md:leading-tight tracking-tight md:whitespace-nowrap"
               style={{
                 textShadow: '0 2px 18px rgba(0,0,0,0.85), 0 8px 40px rgba(0,0,0,0.65)',
               }}
@@ -301,25 +314,27 @@ export const TimelineRoller = memo(function TimelineRoller({
             </h2>
 
             {/* Grouped Location & Date in Frosted Glass Capsule */}
-            <div className="glass-surface inline-flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/55 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_8px_24px_rgba(0,0,0,0.15)] text-sm sm:text-base md:text-lg font-serif italic tracking-wide">
-              {/* Company / Location */}
-              <div className="flex items-center gap-1.5 text-amber-800 dark:text-[#FFD88A] font-semibold dark:font-medium">
-                <MapPin className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-700 dark:text-[#FFD88A]" />
-                <span>{activeItem.company}</span>
-              </div>
+            <div className="glass-surface inline-flex max-w-full flex-col md:flex-row md:flex-wrap items-center justify-center gap-1 md:gap-3 px-3 md:px-5 py-2 rounded-2xl md:rounded-full bg-white/55 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_8px_24px_rgba(0,0,0,0.15)] text-xs md:text-lg font-serif italic tracking-wide">
+              <div className="flex w-full min-w-0 items-center gap-1.5 md:contents">
+                {/* Company / Location */}
+                <div className="flex min-w-0 items-center gap-1 text-amber-800 dark:text-[#FFD88A] font-semibold dark:font-medium md:gap-1.5" title={activeItem.company}>
+                  <MapPin className="w-3 h-3 md:w-4 md:h-4 shrink-0 text-amber-700 dark:text-[#FFD88A]" />
+                  <span className="truncate md:overflow-visible md:whitespace-normal md:text-clip">{activeItem.company}</span>
+                </div>
 
-              {/* Separator Dot */}
-              <span className="w-1.5 h-1.5 rounded-full bg-stone-400/70 dark:bg-white/40" />
+                {/* Separator Dot */}
+                <span className="w-1 h-1 md:w-1.5 md:h-1.5 shrink-0 rounded-full bg-stone-400/70 dark:bg-white/40" />
 
-              {/* Date / Year */}
-              <div className="flex items-center gap-1.5 text-stone-900 dark:text-white font-semibold dark:font-medium">
-                <Calendar className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-700 dark:text-[#FFD88A]" />
-                <span>{activeItem.year}</span>
+                {/* Date / Year */}
+                <div className="flex shrink-0 items-center gap-1 text-stone-900 dark:text-white font-semibold dark:font-medium md:gap-1.5">
+                  <Calendar className="w-3 h-3 md:w-4 md:h-4 shrink-0 text-amber-700 dark:text-[#FFD88A]" />
+                  <span className="whitespace-nowrap">{activeItem.year}</span>
+                </div>
               </div>
 
               {/* Upcoming Badge */}
               {activeItem.isUpcoming && (
-                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 dark:bg-amber-500/30 border border-amber-600/40 dark:border-amber-300/40 text-[10px] sm:text-xs uppercase tracking-[0.18em] text-amber-900 dark:text-amber-200 font-medium ml-1">
+                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 dark:bg-amber-500/30 border border-amber-600/40 dark:border-amber-300/40 text-xs uppercase tracking-[0.18em] text-amber-900 dark:text-amber-200 font-medium md:ml-1">
                   <Sparkles className="w-3 h-3" />
                   <span>Upcoming</span>
                 </span>
@@ -328,7 +343,7 @@ export const TimelineRoller = memo(function TimelineRoller({
 
             {/* Description */}
             <p
-              className="font-serif italic text-base sm:text-lg md:text-xl lg:text-2xl text-white leading-[1.65] font-normal tracking-[0.015em] pt-1 max-w-xl"
+              className="w-[calc(100vw-4.5rem)] max-w-[21rem] md:w-auto md:max-w-xl font-serif italic text-[17px] md:text-xl lg:text-2xl text-white leading-[1.5] md:leading-[1.65] font-normal tracking-[0.015em] pt-1"
               style={{
                 textShadow: '0 2px 12px rgba(0,0,0,0.85), 0 6px 28px rgba(0,0,0,0.65)',
               }}
@@ -339,16 +354,16 @@ export const TimelineRoller = memo(function TimelineRoller({
           </motion.div>
         </div>
 
-        {/* RIGHT: Cylindrical Roller Wheel */}
-        <div className="flex-shrink-0 flex flex-col items-center justify-center z-30">
+        {/* Desktop: vertical cylindrical roller */}
+        <div className="hidden md:flex flex-shrink-0 flex-col items-center justify-center z-30">
           
           {/* Scroll Up Button Indicator (Only visible when not at top) */}
-          <div className="h-10 flex items-center justify-center mb-2.5">
+          <div className="h-11 md:h-10 flex items-center justify-center mb-1 md:mb-2.5">
             {selectedIndex > 0 ? (
               <button
                 onClick={handlePrev}
                 title="Previous Experience"
-                className="glass-surface p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
+                className="glass-surface min-w-11 min-h-11 md:min-w-0 md:min-h-0 p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
               >
                 <ChevronUp className="w-4 h-4" />
               </button>
@@ -365,7 +380,7 @@ export const TimelineRoller = memo(function TimelineRoller({
               maskImage: 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)',
               WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)',
             }}
-            className={`relative h-[440px] sm:h-[500px] w-[280px] sm:w-[330px] md:w-[370px] flex items-center justify-center perspective-[1200px] overflow-visible py-4 touch-none ${
+            className={`relative h-[500px] w-[370px] flex items-center justify-center perspective-[1200px] overflow-visible py-4 touch-none ${
               isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
             }`}
           >
@@ -383,12 +398,12 @@ export const TimelineRoller = memo(function TimelineRoller({
           </div>
 
           {/* Scroll Down Button Indicator (Only visible when not at bottom) */}
-          <div className="h-10 flex items-center justify-center mt-2.5">
+          <div className="h-11 md:h-10 flex items-center justify-center mt-1 md:mt-2.5">
             {selectedIndex < timelineData.length - 1 ? (
               <button
                 onClick={handleNext}
                 title="Next Experience"
-                className="glass-surface p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
+                className="glass-surface min-w-11 min-h-11 md:min-w-0 md:min-h-0 p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
               >
                 <ChevronDown className="w-4 h-4" />
               </button>
@@ -396,6 +411,35 @@ export const TimelineRoller = memo(function TimelineRoller({
           </div>
         </div>
 
+        {/* Mobile: swipeable horizontal coverflow beneath the active story. */}
+        <div className="md:hidden w-full flex-shrink-0 flex flex-col items-center z-30">
+          <div
+            onPointerDown={(event) => handlePointerDown(event, true)}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            style={{
+              maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
+            }}
+            className={`relative flex h-[104px] w-full max-w-[400px] items-center justify-center overflow-hidden perspective-[1200px] touch-pan-y ${
+              isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
+            }`}
+          >
+            {timelineData.map((item, index) => (
+              <TimelineCard
+                key={item.id}
+                item={item}
+                index={index}
+                position={position}
+                selectedIndex={selectedIndex}
+                isDragging={isDragging}
+                horizontal
+                onSelect={handleSelect}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

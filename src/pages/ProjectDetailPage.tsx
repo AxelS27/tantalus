@@ -204,8 +204,8 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
     <div className="relative min-h-screen w-full text-stone-900 dark:text-white selection:bg-[#E8C582]/40 selection:text-white font-sans overflow-x-clip">
 
       {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
-      <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 sm:px-8 max-w-5xl">
-        <div className="glass-surface glass-ivory pointer-events-auto relative w-full h-10 sm:h-11 flex items-center justify-between p-1 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/75 hover:bg-[#FAF8F5]/75 dark:hover:bg-[#161412]/85 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(40,30,20,0.1)] dark:shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-300">
+      <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-start md:justify-center w-full px-4 sm:px-8 max-w-5xl">
+        <div className="glass-surface glass-ivory pointer-events-auto relative w-fit md:w-full h-10 md:h-11 flex items-center justify-between p-1 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/75 hover:bg-[#FAF8F5]/75 dark:hover:bg-[#161412]/85 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(40,30,20,0.1)] dark:shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-300">
           
           {/* Left Segment: Back to Projects */}
           <a
@@ -223,7 +223,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           </a>
 
           {/* Center Segment: Prominent Project Title */}
-          <div className="flex-1 flex items-center justify-center px-3 sm:px-6 min-w-0 overflow-hidden">
+          <div className="hidden md:flex flex-1 items-center justify-center px-3 sm:px-6 min-w-0 overflow-hidden">
             <span
               title={project.title}
               className="text-sm sm:text-base md:text-lg text-stone-950 dark:text-stone-50 font-serif italic font-semibold truncate tracking-normal text-center drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)] dark:drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]"
@@ -233,7 +233,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
           </div>
 
           {/* Right Symmetric Spacer to keep Center Title perfectly balanced */}
-          <div className="w-[120px] sm:w-[155px] hidden sm:block pointer-events-none" />
+          <div className="w-[155px] hidden md:block pointer-events-none" />
 
         </div>
       </header>
@@ -247,7 +247,10 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
         
           {/* ================= 1. WIDE FLUID HERO SECTION (Visual Left + Specs/Actions Right) ================= */}
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            
+            <h1 className="md:hidden font-serif italic text-[clamp(1.9rem,8vw,2.4rem)] leading-[1.08] font-medium tracking-tight text-stone-950 dark:text-stone-100 break-words">
+              {project.title}
+            </h1>
+
             {/* Left Side (6 cols on desktop): Compact & Proportionate Visual Stage */}
             <div className="lg:col-span-6">
               {allMedia.length > 0 && (
@@ -519,7 +522,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
           {/* ================= 3. CONTINUUM OF WORKS (Typographic Bottom Links) ================= */}
           <nav className="pt-8 border-t border-stone-200 dark:border-white/20 font-sans">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12">
+            <div className="grid grid-cols-2 gap-2 sm:gap-12">
               {/* Previous Work */}
               {prevProject ? (
                 <a
@@ -530,9 +533,9 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       handleNavProject(prevProject.id);
                     }
                   }}
-                  className="glass-surface group flex items-center gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit transition-all duration-200"
+                  className="glass-surface group flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit transition-all duration-200"
                 >
-                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-white/60 dark:border-white/25 shrink-0 shadow-md">
+                  <div className="hidden sm:block w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-white/60 dark:border-white/25 shrink-0 shadow-md">
                     <img
                       src={getAssetUrl(prevProject.thumbnail)}
                       alt={prevProject.title}
@@ -540,11 +543,11 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 flex items-center gap-1 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] transition-colors">
+                    <span className="text-[10px] sm:text-xs font-semibold text-stone-500 dark:text-stone-400 flex items-center gap-1 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] transition-colors">
                       <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform text-amber-700 dark:text-[#FFD88A]" />
                       <span>Previous Project</span>
                     </span>
-                    <h4 className="text-sm sm:text-base text-stone-900 dark:text-white truncate font-medium pt-0.5 group-hover:underline">
+                    <h4 className="text-xs sm:text-base text-stone-900 dark:text-white truncate font-medium pt-0.5 group-hover:underline">
                       {prevProject.title}
                     </h4>
                   </div>
@@ -561,18 +564,18 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       handleNavProject(nextProject.id);
                     }
                   }}
-                  className="glass-surface group flex items-center justify-end gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit text-right transition-all duration-200"
+                  className="glass-surface group flex items-center justify-end gap-2 sm:gap-4 p-2 sm:p-3 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit text-right transition-all duration-200"
                 >
                   <div className="min-w-0 flex-1">
-                    <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 flex items-center justify-end gap-1 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] transition-colors">
+                    <span className="text-[10px] sm:text-xs font-semibold text-stone-500 dark:text-stone-400 flex items-center justify-end gap-1 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] transition-colors">
                       <span>Next Project</span>
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-amber-700 dark:text-[#FFD88A]" />
                     </span>
-                    <h4 className="text-sm sm:text-base text-stone-900 dark:text-white truncate font-medium pt-0.5 group-hover:underline">
+                    <h4 className="text-xs sm:text-base text-stone-900 dark:text-white truncate font-medium pt-0.5 group-hover:underline">
                       {nextProject.title}
                     </h4>
                   </div>
-                  <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-white/60 dark:border-white/25 shrink-0 order-first sm:order-last shadow-md">
+                  <div className="hidden sm:block w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-white/60 dark:border-white/25 shrink-0 order-first sm:order-last shadow-md">
                     <img
                       src={getAssetUrl(nextProject.thumbnail)}
                       alt={nextProject.title}

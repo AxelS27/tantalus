@@ -148,7 +148,7 @@ const BookCard = memo(function BookCard({
         WebkitFontSmoothing: 'antialiased',
         MozOsxFontSmoothing: 'grayscale',
       }}
-      className="group absolute w-[260px] sm:w-[300px] md:w-[330px] aspect-[1/1.42] transition-shadow cursor-pointer select-none"
+      className="storybook-shelf-card group absolute w-[260px] sm:w-[300px] md:w-[330px] aspect-[1/1.42] transition-shadow cursor-pointer select-none"
     >
       {/* 3D BOOK CONTAINER */}
       <div
@@ -1252,6 +1252,10 @@ export const StoryBook = memo(function StoryBook({
         }}
         className="absolute inset-0 w-full h-full flex flex-col items-center justify-center"
       >
+        <h1 className="md:hidden absolute top-[clamp(5.5rem,16dvh,9rem)] left-0 right-0 z-30 text-center font-serif italic font-light text-4xl tracking-tight text-white select-text" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}>
+          Story Books
+        </h1>
+
         {/* FAR-LEFT ARROW (Screen Edge) */}
         <div className="absolute left-4 sm:left-8 md:left-12 lg:left-16 top-1/2 -translate-y-1/2 z-40">
           {selectedIndex > 0 && (
@@ -1320,7 +1324,7 @@ export const StoryBook = memo(function StoryBook({
               ease: [0.16, 1, 0.3, 1],
             }}
             style={{ perspective: '2000px', transformStyle: 'preserve-3d' }}
-            className="relative w-full max-w-6xl xl:max-w-7xl h-[92vh] max-h-[860px] flex flex-col items-center justify-between z-40 my-auto px-2 sm:px-4"
+            className="absolute inset-x-0 top-3 bottom-[calc(6.25rem+env(safe-area-inset-bottom))] md:relative md:inset-auto w-full max-w-6xl xl:max-w-7xl h-auto md:h-[92vh] max-h-[860px] flex flex-col items-center justify-between z-40 md:my-auto px-2 sm:px-4"
           >
             {/* Top Reader Floating Bar */}
             <motion.div

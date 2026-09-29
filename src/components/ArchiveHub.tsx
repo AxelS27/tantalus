@@ -375,9 +375,9 @@ export const ArchiveHub = memo(function ArchiveHub({
       }`}
     >
       {/* ================= 1. LAUNCHPAD HERO VIEWPORT (Full Screen) ================= */}
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 py-16 select-none">
-        {/* macOS Launchpad 4x2 Grid (Compact & Snug) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-5 sm:gap-y-6 md:gap-y-7 justify-items-center w-full max-w-md sm:max-w-xl md:max-w-2xl">
+      <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 pt-10 pb-[calc(7rem+env(safe-area-inset-bottom))] md:py-16 select-none">
+        {/* Compact phone launchpad; keep the wider desktop grid unchanged. */}
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-x-2 md:gap-x-8 gap-y-5 md:gap-y-7 justify-items-center w-full max-w-[340px] md:max-w-2xl">
           {launchpadApps.map((app, index) => {
             const IconComponent = app.icon;
             const colIndex = index % 4;
@@ -427,7 +427,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                       ? { scale: 0.94, y: 0, transition: { duration: 0.1 } }
                       : { scale: 0.98 }
                   }
-                  className="glass-surface group relative w-18 h-18 sm:w-20 sm:h-20 md:w-22 md:h-22 rounded-[22px] sm:rounded-[24px] md:rounded-[26px] bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_16px_40px_-4px_rgba(40,30,20,0.22)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_18px_44px_-4px_rgba(0,0,0,0.85)] flex flex-col items-center justify-center cursor-pointer transition-colors duration-150 select-none overflow-hidden"
+                  className="glass-surface group relative w-16 h-16 md:w-22 md:h-22 rounded-[20px] md:rounded-[26px] bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_16px_40px_-4px_rgba(40,30,20,0.22)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_18px_44px_-4px_rgba(0,0,0,0.85)] flex flex-col items-center justify-center cursor-pointer transition-colors duration-150 select-none overflow-hidden"
                 >
                   {/* Specular Top Light Accent */}
                   <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150" />
@@ -436,12 +436,12 @@ export const ArchiveHub = memo(function ArchiveHub({
                   <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
                   {/* Centered App Icon with Crisp Drop-Shadow */}
-                  <IconComponent className="relative z-10 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-amber-300 group-hover:scale-105 transition-all duration-150 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" />
+                  <IconComponent className="relative z-10 w-7 h-7 md:w-10 md:h-10 text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-amber-300 group-hover:scale-105 transition-all duration-150 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" />
                 </motion.button>
 
                 {/* macOS Launchpad Icon Label (Selectable & Copyable) */}
                 <span
-                  className="mt-2.5 font-sans text-xs sm:text-[13px] font-semibold text-white tracking-wide text-center select-text cursor-text pointer-events-auto"
+                  className="mt-2 font-sans text-[11px] md:text-[13px] font-semibold text-white tracking-wide text-center select-none md:select-text cursor-default md:cursor-text pointer-events-auto"
                   style={{
                     textShadow: '0 1px 3px rgba(0,0,0,0.95), 0 2px 8px rgba(0,0,0,0.85)',
                   }}
