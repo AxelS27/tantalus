@@ -156,18 +156,18 @@ export default function App() {
   useEffect(() => {
     const project = getProjectById(activeProjectId ?? undefined);
     const titleMap: Record<NavItem, string> = {
-      home: 'AxelS27 - Home',
-      storybook: 'AxelS27 - Story Book',
-      timeline: 'AxelS27 - Timeline',
-      projects: 'AxelS27 - Projects',
-      archive: 'AxelS27 - Archive',
-      repertoire: 'AxelS27 - Repertoire',
-      watchlist: 'AxelS27 - Watchlist',
-      certificates: 'AxelS27 - Certificates',
-      connect: 'AxelS27 - Connect',
+      home: 'Farrell Axel Suwandi | AI Researcher & Software Engineer',
+      storybook: 'Story Book | Farrell Axel Suwandi',
+      timeline: 'Timeline | Farrell Axel Suwandi',
+      projects: 'Projects | Farrell Axel Suwandi',
+      archive: 'Archive | Farrell Axel Suwandi',
+      repertoire: 'Repertoire | Farrell Axel Suwandi',
+      watchlist: 'Watchlist | Farrell Axel Suwandi',
+      certificates: 'Certificates | Farrell Axel Suwandi',
+      connect: 'Connect | Farrell Axel Suwandi',
     };
-    const title = project ? `AxelS27 - ${project.title}` : titleMap[activeTab];
-    const description = project?.description ?? "Explore Farrell Axel Suwandi's projects, research, experiences, and creative work in an interactive portfolio.";
+    const title = project ? `${project.title} | Farrell Axel Suwandi` : titleMap[activeTab];
+    const description = project?.description ?? 'Farrell Axel Suwandi is an AI researcher and software engineer based in Jakarta. He enjoys playing piano, coding, and watching movies.';
     const url = project ? `https://www.liemaxels.com/projects/${project.id}` : 'https://www.liemaxels.com/';
     const image = project ? getAssetUrl(project.thumbnail) : getAssetUrl('/images/tantalize/home.webp');
     document.title = title;

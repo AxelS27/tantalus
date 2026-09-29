@@ -27,7 +27,7 @@ export const timelineData: TimelineItem[] = [
     role: 'Intelligent Systems Mobility Student',
     company: 'BINUS University @ Kemanggisan',
     description:
-      'Continuing CS degree through a cross-campus mobility program in Jakarta with a 3.93 GPA. Specializing in Intelligent Systems with a deep focus on Machine Learning, Computer Vision, Natural Language Processing, Deep Learning, and Speech Recognition.',
+      'Continuing CS degree through a cross-campus mobility program in Jakarta with a 3.93 GPA. Specializing in Intelligent Systems with a deep focus on Computer Vision, Natural Language Processing, Speech Recognition, Machine Learning, and Deep Learning.',
     image: getAssetUrl('/images/thumbnails/career/binus-anggrek.webp'),
   },
   {

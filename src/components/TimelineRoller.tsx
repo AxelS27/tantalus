@@ -60,7 +60,7 @@ const TimelineCard = memo(function TimelineCard({
 
   return (
     <motion.div
-      onClick={() => isInteractive && onSelect(index)}
+      onClick={() => isInteractive && !window.getSelection()?.toString() && onSelect(index)}
       style={{
         y,
         scale,
@@ -99,24 +99,21 @@ const TimelineCard = memo(function TimelineCard({
           />
         </div>
 
-        <div className="flex-1 min-w-0 text-left space-y-0.5 select-text">
+        <div data-timeline-text className="flex-1 min-w-0 text-left space-y-0.5 select-text cursor-text">
           <p
-            className="text-[11px] sm:text-xs font-serif italic text-[#FFD88A] truncate font-medium"
-            style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}
+            className="text-[11px] sm:text-xs font-serif italic text-amber-900 dark:text-[#FFD88A] truncate font-medium dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)]"
           >
             {item.year}
           </p>
           <h3
-            className={`font-serif italic text-white font-normal truncate ${
+            className={`font-serif italic text-stone-950 dark:text-white font-normal truncate dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)] ${
               isCenter ? 'text-sm sm:text-base font-medium' : 'text-xs'
             }`}
-            style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}
           >
             {item.role}
           </h3>
           <p
-            className="text-[11px] sm:text-xs font-serif italic text-stone-200/90 truncate"
-            style={{ textShadow: '0 1px 4px rgba(0,0,0,0.95)' }}
+            className="text-[11px] sm:text-xs font-serif italic text-stone-800 dark:text-stone-200/90 truncate dark:[text-shadow:0_1px_4px_rgba(0,0,0,0.95)]"
           >
             {item.company}
           </p>
@@ -179,6 +176,8 @@ export const TimelineRoller = memo(function TimelineRoller({
   // Pointer drag controls for holding & rolling freely
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!isActive || e.button !== 0) return;
+    // Let mouse users select card labels; dragging from the image or card surface still rolls.
+    if (e.pointerType === 'mouse' && (e.target as HTMLElement).closest('[data-timeline-text]')) return;
     isDraggingRef.current = true;
     position.stop();
     setIsDragging(true);
@@ -283,7 +282,7 @@ export const TimelineRoller = memo(function TimelineRoller({
       <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-10 sm:gap-14 lg:gap-18">
         
         {/* LEFT: Detail Content */}
-        <div className="flex-1 max-w-xl lg:max-w-2xl xl:max-w-3xl flex flex-col items-center justify-center text-center z-20">
+        <div className="flex-1 max-w-xl lg:max-w-2xl xl:max-w-3xl flex flex-col items-center justify-center text-center select-text z-20">
           <motion.div
             key={activeItem.id}
             initial={{ opacity: 0, y: 14 }}

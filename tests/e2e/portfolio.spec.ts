@@ -118,6 +118,21 @@ test('storybook can bookmark the opening 00-01 spread and resume it', async ({ p
   )).toBeNull();
 });
 
+test('home SEO identifies the person in the server response and after navigation', async ({ page, request }) => {
+  const response = await request.get('/');
+  expect(response.ok()).toBe(true);
+  const html = await response.text();
+  expect(html).toContain('<title>Farrell Axel Suwandi | AI Researcher &amp; Software Engineer</title>');
+  expect(html).toContain('Farrell Axel Suwandi is an AI researcher and software engineer based in Jakarta.');
+  expect(html).not.toContain('in an interactive portfolio');
+  expect(html).toContain('id="person-jsonld"');
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Timeline' }).click();
+  await expect(page).toHaveTitle('Timeline | Farrell Axel Suwandi');
+  await page.getByRole('button', { name: 'Home' }).click();
+  await expect(page).toHaveTitle('Farrell Axel Suwandi | AI Researcher & Software Engineer');
+});
+
 test('project deep link and robots file work on the production preview', async ({ page, request }) => {
   const robots = await request.get('/robots.txt');
   expect(robots.ok()).toBe(true);
@@ -126,7 +141,7 @@ test('project deep link and robots file work on the production preview', async (
   const response = await request.get('/projects/phylaxify');
   expect(response.ok()).toBe(true);
   const html = await response.text();
-  expect(html).toContain('<title>AxelS27 - Phylaxify: AI Powered Donation Filter</title>');
+  expect(html).toContain('<title>Phylaxify: AI Powered Donation Filter | Farrell Axel Suwandi</title>');
   expect(html).toContain('property="og:image" content="https://media.liemaxels.com/projects/phylaxify/');
   expect(html).toContain('rel="canonical" href="https://www.liemaxels.com/projects/phylaxify"');
   expect(html).not.toContain('rel="preload" as="image"');
