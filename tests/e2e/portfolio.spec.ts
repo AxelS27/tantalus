@@ -122,15 +122,19 @@ test('home SEO identifies the person in the server response and after navigation
   const response = await request.get('/');
   expect(response.ok()).toBe(true);
   const html = await response.text();
-  expect(html).toContain('<title>Farrell Axel Suwandi | AI Researcher &amp; Software Engineer</title>');
+  expect(html).toContain('<title>AxelS27 - Home</title>');
+  expect(html).toContain('property="og:title" content="AxelS27 - Home"');
+  expect(html).toContain('name="twitter:title" content="AxelS27 - Home"');
   expect(html).toContain('Farrell Axel Suwandi is an AI researcher and software engineer based in Jakarta.');
   expect(html).not.toContain('in an interactive portfolio');
   expect(html).toContain('id="person-jsonld"');
   await page.goto('/');
   await page.getByRole('button', { name: 'Timeline' }).click();
-  await expect(page).toHaveTitle('Timeline | Farrell Axel Suwandi');
+  await expect(page).toHaveTitle('AxelS27 - Timeline');
   await page.getByRole('button', { name: 'Home' }).click();
-  await expect(page).toHaveTitle('Farrell Axel Suwandi | AI Researcher & Software Engineer');
+  await expect(page).toHaveTitle('AxelS27 - Home');
+  await page.goto('/#storybook');
+  await expect(page).toHaveTitle('AxelS27 - Story Book');
 });
 
 test('project deep link and robots file work on the production preview', async ({ page, request }) => {
@@ -141,7 +145,8 @@ test('project deep link and robots file work on the production preview', async (
   const response = await request.get('/projects/phylaxify');
   expect(response.ok()).toBe(true);
   const html = await response.text();
-  expect(html).toContain('<title>Phylaxify: AI Powered Donation Filter | Farrell Axel Suwandi</title>');
+  expect(html).toContain('<title>AxelS27 - Phylaxify: AI Powered Donation Filter</title>');
+  expect(html).toContain('property="og:title" content="AxelS27 - Phylaxify: AI Powered Donation Filter"');
   expect(html).toContain('property="og:image" content="https://media.liemaxels.com/projects/phylaxify/');
   expect(html).toContain('rel="canonical" href="https://www.liemaxels.com/projects/phylaxify"');
   expect(html).not.toContain('rel="preload" as="image"');
@@ -153,6 +158,7 @@ test('project deep link and robots file work on the production preview', async (
     if (request.url().includes('/images/tantalize/home')) artworkRequests.push(request.url());
   });
   await page.goto('/projects/phylaxify');
+  await expect(page).toHaveTitle('AxelS27 - Phylaxify: AI Powered Donation Filter');
   await expect(page.getByText('Phylaxify: AI Powered Donation Filter', { exact: true }).first()).toBeVisible();
   expect(artworkRequests).toEqual([]);
   await expect(page.locator('img[src*="project-detail-bg"]')).toBeVisible();

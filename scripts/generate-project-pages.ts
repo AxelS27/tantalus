@@ -23,10 +23,10 @@ const urls = [origin + '/'];
 for (const project of allProjectsData) {
   if (!/^[a-z0-9-]+$/.test(project.id)) throw new Error(`Invalid project id: ${project.id}`);
   const url = `${origin}/projects/${project.id}`;
-  const title = `${project.title} | Farrell Axel Suwandi`;
+  const title = `AxelS27 - ${project.title}`;
   const image = `${mediaOrigin}${project.thumbnail}`;
   const description = project.description;
-  let html = replaceTag(template, '<title>Farrell Axel Suwandi | AI Researcher &amp; Software Engineer</title>', `<title>${escapeHtml(title)}</title>`);
+  let html = replaceTag(template, '<title>AxelS27 - Home</title>', `<title>${escapeHtml(title)}</title>`);
   html = html.replace(
     /<meta name="description" content="[^"]*"\s*\/>/,
     `<meta name="description" content="${escapeHtml(description)}" />`,
@@ -34,11 +34,11 @@ for (const project of allProjectsData) {
   const tags: Array<[string, string]> = [
     ['<link rel="canonical" href="https://www.liemaxels.com/" />', `<link rel="canonical" href="${url}" />`],
     ['<meta property="og:type" content="website" />', '<meta property="og:type" content="article" />'],
-    ['<meta property="og:title" content="Farrell Axel Suwandi | AI Researcher &amp; Software Engineer" />', `<meta property="og:title" content="${escapeHtml(title)}" />`],
+    ['<meta property="og:title" content="AxelS27 - Home" />', `<meta property="og:title" content="${escapeHtml(title)}" />`],
     ['<meta property="og:description" content="Farrell Axel Suwandi is an AI researcher and software engineer based in Jakarta. He enjoys playing piano, coding, and watching movies." />', `<meta property="og:description" content="${escapeHtml(description)}" />`],
     ['<meta property="og:url" content="https://www.liemaxels.com/" />', `<meta property="og:url" content="${url}" />`],
     ['<meta property="og:image" content="https://media.liemaxels.com/images/tantalize/home.webp" />', `<meta property="og:image" content="${escapeHtml(image)}" />`],
-    ['<meta name="twitter:title" content="Farrell Axel Suwandi | AI Researcher &amp; Software Engineer" />', `<meta name="twitter:title" content="${escapeHtml(title)}" />`],
+    ['<meta name="twitter:title" content="AxelS27 - Home" />', `<meta name="twitter:title" content="${escapeHtml(title)}" />`],
     ['<meta name="twitter:description" content="Farrell Axel Suwandi is an AI researcher and software engineer based in Jakarta. He enjoys playing piano, coding, and watching movies." />', `<meta name="twitter:description" content="${escapeHtml(description)}" />`],
     ['<meta name="twitter:image" content="https://media.liemaxels.com/images/tantalize/home.webp" />', `<meta name="twitter:image" content="${escapeHtml(image)}" />`],
   ];

@@ -56,6 +56,16 @@ const saveBookmarkSpread = (bookId: string, spreadIndex: number | null) => {
   } catch {}
 };
 
+function BookmarkRibbonMark() {
+  return (
+    <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[#4e1a20] via-[#933e3c] to-[#4e1a20] [clip-path:polygon(0_0,100%_0,100%_100%,50%_88%,0_100%)]">
+      <span className="absolute inset-y-0 left-px w-px bg-amber-300/45" />
+      <span className="absolute inset-y-0 right-px w-px bg-amber-300/45" />
+      <span className="absolute top-4 bottom-6 left-1/2 w-px -translate-x-1/2 bg-amber-100/15" />
+    </span>
+  );
+}
+
 export interface StoryBookProps {
   isActive?: boolean;
   onReachTop?: () => void;
@@ -575,6 +585,7 @@ export const StoryBook = memo(function StoryBook({
     toSpreadIdx: number;
     durationSec?: number;
   } | null>(null);
+  const [isBookmarkRetracting, setIsBookmarkRetracting] = useState(false);
   const isFlippingRef = useRef(false);
   const flipTimerRef = useRef<number | null>(null);
 
@@ -659,6 +670,9 @@ export const StoryBook = memo(function StoryBook({
   const handleOpenSequence = useCallback((book: StoryBookItem) => {
     if (!book.isAvailable) return;
     clearSequenceTimers();
+    isFlippingRef.current = false;
+    setIsBookmarkRetracting(false);
+    setTurnAnimation(null);
 
     const savedSpread = getSavedBookmarkSpread(book.id);
     setIsCoverOpen(true);
@@ -678,17 +692,22 @@ export const StoryBook = memo(function StoryBook({
   // Unified Closing Sequence
   const handleCloseSequence = useCallback(() => {
     clearSequenceTimers();
+    isFlippingRef.current = false;
+    setIsBookmarkRetracting(false);
+    setTurnAnimation(null);
 
     setIsReaderSpread(false);
     setIsTocOpen(false);
 
+    // Let the reader start shrinking first, then reveal the shelf beneath it.
     const t1 = window.setTimeout(() => {
       setIsZoomingPaper(false);
-    }, 400);
+    }, 300);
 
+    // Close the cover only after the shelf book is back in place.
     const t2 = window.setTimeout(() => {
       setIsCoverOpen(false);
-    }, 900);
+    }, 1200);
 
     sequenceTimersRef.current = [t1, t2];
   }, []);
@@ -708,10 +727,8 @@ export const StoryBook = memo(function StoryBook({
       const step = diff > 0 ? 1 : -1;
       const totalSteps = Math.abs(diff);
 
-      // Adaptive tempo: smooth 550ms for 1 step (turn left/right), fast rhythmic riffle for distant chapters
-      const stepDurationMs = totalSteps === 1 ? 550 : Math.max(140, Math.min(240, 1100 / totalSteps));
-      const stepDurationSec = stepDurationMs / 1000;
-
+      // Single turns stay deliberate. Longer jumps accelerate through the middle,
+      // then slow down so the destination feels like a natural landing.
       let currentStep = 0;
       let curIdx = currentSpreadIndex;
 
@@ -724,6 +741,9 @@ export const StoryBook = memo(function StoryBook({
 
         const fromIdx = curIdx;
         const toIdx = curIdx + step;
+        const progress = totalSteps === 1 ? 0 : currentStep / (totalSteps - 1);
+        const edgeWeight = Math.pow(Math.abs(2 * progress - 1), 1.5);
+        const stepDurationMs = totalSteps === 1 ? 800 : Math.round(180 + 220 * edgeWeight);
         curIdx = toIdx;
         currentStep++;
 
@@ -732,7 +752,7 @@ export const StoryBook = memo(function StoryBook({
           direction: step > 0 ? 'forward' : 'backward',
           fromSpreadIdx: fromIdx,
           toSpreadIdx: toIdx,
-          durationSec: stepDurationSec,
+          durationSec: stepDurationMs / 1000,
         });
 
         if (flipTimerRef.current) window.clearTimeout(flipTimerRef.current);
@@ -746,12 +766,21 @@ export const StoryBook = memo(function StoryBook({
               isFlippingRef.current = false;
             });
           }
-        }, stepDurationMs);
+        }, stepDurationMs + (currentStep === totalSteps ? 40 : 0));
       };
 
-      stepRiffle();
+      isFlippingRef.current = true;
+      if (savedBookmarkSpread === currentSpreadIndex) {
+        setIsBookmarkRetracting(true);
+        flipTimerRef.current = window.setTimeout(() => {
+          setIsBookmarkRetracting(false);
+          stepRiffle();
+        }, 220);
+      } else {
+        stepRiffle();
+      }
     },
-    [currentSpreadIndex, spreads.length],
+    [currentSpreadIndex, savedBookmarkSpread, spreads.length],
   );
 
   // Turn to Next Spread with 3D Page Turn Animation (Unified with Index Engine)
@@ -1218,7 +1247,7 @@ export const StoryBook = memo(function StoryBook({
           pointerEvents: isCoverOpen || isReaderSpread ? 'none' : 'auto',
         }}
         transition={{
-          duration: 1.5,
+          duration: isZoomingPaper ? 1.5 : 0.85,
           ease: [0.16, 1, 0.3, 1],
         }}
         className="absolute inset-0 w-full h-full flex flex-col items-center justify-center"
@@ -1285,7 +1314,7 @@ export const StoryBook = memo(function StoryBook({
             key="reader-spread-active"
             initial={{ opacity: 0, scale: 0.88, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.88, y: 15 }}
+            exit={{ opacity: 0, scale: 0.88, y: 15, transition: { duration: 0.65, ease: [0.4, 0, 0.8, 0.3] } }}
             transition={{
               duration: 1.4,
               ease: [0.16, 1, 0.3, 1],
@@ -1350,7 +1379,7 @@ export const StoryBook = memo(function StoryBook({
             </motion.div>
 
             {/* ================= DUAL-PAGE SPREAD PHYSICAL BOOK CONTAINER ================= */}
-            <div className="relative w-full flex-1 flex items-stretch justify-center rounded-3xl shadow-[0_35px_100px_rgba(0,0,0,0.9)] border-2 border-[#D8A048]/70 bg-[#160E0A] p-3 sm:p-4 overflow-hidden">
+            <div className="relative w-full flex-1 flex items-stretch justify-center rounded-3xl shadow-[0_35px_100px_rgba(0,0,0,0.9)] border-2 border-[#D8A048]/70 bg-[#160E0A] p-3 sm:p-4 overflow-visible">
               
               {/* Outer Hardcover Base Tray */}
               <div className="absolute inset-0 bg-[#2B1612] rounded-3xl pointer-events-none" />
@@ -1358,8 +1387,8 @@ export const StoryBook = memo(function StoryBook({
 
               {/* ================= OPEN PARCHMENT SPREAD ================= */}
               <div
-                style={{ perspective: '2800px', transformStyle: 'preserve-3d' }}
-                className="relative w-full h-full flex flex-col md:flex-row rounded-2xl bg-[#FAF6EE] text-[#2B231D] shadow-inner overflow-hidden"
+                style={{ perspective: '2200px', transformStyle: 'preserve-3d' }}
+                className="relative w-full h-full flex flex-col md:flex-row rounded-2xl bg-[#FAF6EE] text-[#2B231D] shadow-inner overflow-visible"
               >
                 {!turnAnimation ? (
                   <>
@@ -1392,7 +1421,7 @@ export const StoryBook = memo(function StoryBook({
                       animate={{ rotateY: -180 }}
                       transition={{
                         duration: turnAnimation.durationSec ?? 0.68,
-                        ease: turnAnimation.durationSec && turnAnimation.durationSec < 0.4 ? 'easeInOut' : [0.16, 1, 0.3, 1],
+                        ease: turnAnimation.durationSec && turnAnimation.durationSec < 0.4 ? 'easeInOut' : [0.45, 0, 0.55, 1],
                       }}
                       onAnimationComplete={() => {
                         if (!turnAnimation.durationSec) {
@@ -1414,7 +1443,6 @@ export const StoryBook = memo(function StoryBook({
                         transformOrigin: 'left center',
                         transformStyle: 'preserve-3d',
                         zIndex: 30,
-                        transform: 'translate3d(0, 0, 0.1px)',
                         willChange: 'transform',
                       }}
                       className="hidden md:block pointer-events-none"
@@ -1428,13 +1456,13 @@ export const StoryBook = memo(function StoryBook({
                           WebkitBackfaceVisibility: 'hidden',
                           transform: 'rotateY(0deg)',
                         }}
-                        className="w-full h-full flex flex-col overflow-hidden bg-[#FAF6EE]"
+                        className="w-full h-full flex flex-col overflow-visible bg-[#FAF6EE] shadow-[12px_0_24px_rgba(43,22,12,0.24)]"
                       >
                         {renderNovelPage(spreads[turnAnimation.fromSpreadIdx]?.rightPage, false)}
-                        {/* Dynamic shadow shading overlay as leaf lifts */}
+                        {/* Shading follows the leaf as it folds around the spine. */}
                         <motion.div
                           initial={{ opacity: 0 }}
-                          animate={{ opacity: [0, 0.25, 0] }}
+                          animate={{ opacity: [0, 0.4, 0] }}
                           transition={{ duration: turnAnimation.durationSec ?? 0.68, ease: 'easeInOut' }}
                           className="absolute inset-0 bg-gradient-to-r from-black/25 via-black/10 to-transparent pointer-events-none"
                         />
@@ -1449,7 +1477,7 @@ export const StoryBook = memo(function StoryBook({
                           backfaceVisibility: 'hidden',
                           WebkitBackfaceVisibility: 'hidden',
                         }}
-                        className="w-full h-full flex flex-col overflow-hidden bg-[#FAF6EE]"
+                        className="w-full h-full flex flex-col overflow-visible bg-[#FAF6EE]"
                       >
                         {renderNovelPage(spreads[turnAnimation.toSpreadIdx]?.leftPage, true)}
                         {/* Dynamic landing shadow overlay as leaf settles */}
@@ -1481,7 +1509,7 @@ export const StoryBook = memo(function StoryBook({
                       animate={{ rotateY: 180 }}
                       transition={{
                         duration: turnAnimation.durationSec ?? 0.68,
-                        ease: turnAnimation.durationSec && turnAnimation.durationSec < 0.4 ? 'easeInOut' : [0.16, 1, 0.3, 1],
+                        ease: turnAnimation.durationSec && turnAnimation.durationSec < 0.4 ? 'easeInOut' : [0.45, 0, 0.55, 1],
                       }}
                       onAnimationComplete={() => {
                         if (!turnAnimation.durationSec) {
@@ -1503,7 +1531,6 @@ export const StoryBook = memo(function StoryBook({
                         transformOrigin: 'right center',
                         transformStyle: 'preserve-3d',
                         zIndex: 30,
-                        transform: 'translate3d(0, 0, 0.1px)',
                         willChange: 'transform',
                       }}
                       className="hidden md:block pointer-events-none"
@@ -1517,12 +1544,12 @@ export const StoryBook = memo(function StoryBook({
                           WebkitBackfaceVisibility: 'hidden',
                           transform: 'rotateY(0deg)',
                         }}
-                        className="w-full h-full flex flex-col overflow-hidden bg-[#FAF6EE]"
+                        className="w-full h-full flex flex-col overflow-visible bg-[#FAF6EE] shadow-[-12px_0_24px_rgba(43,22,12,0.24)]"
                       >
                         {renderNovelPage(spreads[turnAnimation.fromSpreadIdx]?.leftPage, true)}
                         <motion.div
                           initial={{ opacity: 0 }}
-                          animate={{ opacity: [0, 0.25, 0] }}
+                          animate={{ opacity: [0, 0.4, 0] }}
                           transition={{ duration: turnAnimation.durationSec ?? 0.68, ease: 'easeInOut' }}
                           className="absolute inset-0 bg-gradient-to-l from-black/25 via-black/10 to-transparent pointer-events-none"
                         />
@@ -1537,7 +1564,7 @@ export const StoryBook = memo(function StoryBook({
                           backfaceVisibility: 'hidden',
                           WebkitBackfaceVisibility: 'hidden',
                         }}
-                        className="w-full h-full flex flex-col overflow-hidden bg-[#FAF6EE]"
+                        className="w-full h-full flex flex-col overflow-visible bg-[#FAF6EE]"
                       >
                         {renderNovelPage(spreads[turnAnimation.toSpreadIdx]?.rightPage, false)}
                         <motion.div
@@ -1555,29 +1582,27 @@ export const StoryBook = memo(function StoryBook({
                 <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-amber-900/15 pointer-events-none z-40" />
                 <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-6 -translate-x-1/2 bg-gradient-to-r from-black/[0.04] via-transparent to-black/[0.04] pointer-events-none z-40" />
 
-                {/* Silk ribbon emerges completely from the top edge of the book. */}
-                <AnimatePresence>
-                  {isCurrentSpreadBookmarked && (
-                    <motion.button
-                      key="center-ribbon-bookmark"
-                      type="button"
-                      aria-label="Remove bookmark"
-                      title="Remove bookmark"
-                      initial={{ y: '-100%' }}
-                      animate={{ y: 0 }}
-                      exit={{ y: '-100%' }}
-                      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-                      onClick={handleToggleBookmark}
-                      className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 z-45 w-5 h-32 cursor-pointer [filter:drop-shadow(0_5px_5px_rgba(39,17,11,0.35))]"
-                    >
-                      <span className="absolute inset-0 bg-gradient-to-r from-[#4e1a20] via-[#933e3c] to-[#4e1a20] [clip-path:polygon(0_0,100%_0,100%_100%,50%_88%,0_100%)]">
-                        <span className="absolute inset-y-0 left-px w-px bg-amber-300/45" />
-                        <span className="absolute inset-y-0 right-px w-px bg-amber-300/45" />
-                        <span className="absolute top-4 bottom-6 left-1/2 w-px -translate-x-1/2 bg-amber-100/15" />
-                      </span>
-                    </motion.button>
-                  )}
-                </AnimatePresence>
+                {/* Reveal the ribbon only after landing; retract it before turning away. */}
+                <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 z-45 w-5 h-32 overflow-hidden pointer-events-none">
+                  <AnimatePresence>
+                    {!turnAnimation && isCurrentSpreadBookmarked && !isBookmarkRetracting && (
+                      <motion.button
+                        key="center-ribbon-bookmark"
+                        type="button"
+                        aria-label="Remove bookmark"
+                        title="Remove bookmark"
+                        initial={{ y: '-100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '-100%' }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        onClick={handleToggleBookmark}
+                        className="relative block w-full h-full cursor-pointer pointer-events-auto [filter:drop-shadow(0_5px_5px_rgba(39,17,11,0.35))]"
+                      >
+                        <BookmarkRibbonMark />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 

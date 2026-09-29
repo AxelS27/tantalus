@@ -155,17 +155,17 @@ export default function App() {
   useEffect(() => {
     const project = getProjectById(activeProjectId ?? undefined);
     const titleMap: Record<NavItem, string> = {
-      home: 'Farrell Axel Suwandi | AI Researcher & Software Engineer',
-      storybook: 'Story Book | Farrell Axel Suwandi',
-      timeline: 'Timeline | Farrell Axel Suwandi',
-      projects: 'Projects | Farrell Axel Suwandi',
-      archive: 'Archive | Farrell Axel Suwandi',
-      repertoire: 'Repertoire | Farrell Axel Suwandi',
-      watchlist: 'Watchlist | Farrell Axel Suwandi',
-      certificates: 'Certificates | Farrell Axel Suwandi',
-      connect: 'Connect | Farrell Axel Suwandi',
+      home: 'AxelS27 - Home',
+      storybook: 'AxelS27 - Story Book',
+      timeline: 'AxelS27 - Timeline',
+      projects: 'AxelS27 - Projects',
+      archive: 'AxelS27 - Archive',
+      repertoire: 'AxelS27 - Repertoire',
+      watchlist: 'AxelS27 - Watchlist',
+      certificates: 'AxelS27 - Certificates',
+      connect: 'AxelS27 - Connect',
     };
-    const title = project ? `${project.title} | Farrell Axel Suwandi` : titleMap[activeTab];
+    const title = project ? `AxelS27 - ${project.title}` : titleMap[activeTab];
     const description = project?.description ?? 'Farrell Axel Suwandi is an AI researcher and software engineer based in Jakarta. He enjoys playing piano, coding, and watching movies.';
     const url = project ? `https://www.liemaxels.com/projects/${project.id}` : 'https://www.liemaxels.com/';
     const image = project ? getAssetUrl(project.thumbnail) : getAssetUrl('/images/tantalize/home.webp');
@@ -440,7 +440,7 @@ export default function App() {
             transition={{ duration: 0.25 }}
             role="status"
             aria-label={`${currentTrack.title} is playing`}
-            className={`pointer-events-none fixed right-4 sm:right-6 ${activeTab === 'storybook' ? 'bottom-24' : 'bottom-5 sm:bottom-6'} z-[60] flex max-w-[calc(100vw-2rem)] gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)]`}
+            className="pointer-events-none fixed right-4 sm:right-6 bottom-5 sm:bottom-6 z-[60] flex max-w-[calc(100vw-2rem)] gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)]"
           >
             <span aria-hidden="true" className="min-w-0 truncate">{currentTrack.title}</span>
             <span aria-hidden="true" className="shrink-0">is playing</span>
