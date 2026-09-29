@@ -1229,7 +1229,7 @@ export const StoryBook = memo(function StoryBook({
             <button
               onClick={handlePrevShelf}
               title="Previous Tome"
-              className="p-3 sm:p-3.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
+              className="glass-surface p-3 sm:p-3.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
@@ -1266,7 +1266,7 @@ export const StoryBook = memo(function StoryBook({
             <button
               onClick={handleNextShelf}
               title="Next Tome"
-              className="p-3 sm:p-3.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
+              className="glass-surface p-3 sm:p-3.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
@@ -1304,7 +1304,7 @@ export const StoryBook = memo(function StoryBook({
               {/* Back to Shelf Button */}
               <button
                 onClick={handleCloseSequence}
-                className="group flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
+                className="glass-surface glass-ivory group flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:-translate-x-0.5" />
                 <span>Return to Shelf</span>
@@ -1341,7 +1341,7 @@ export const StoryBook = memo(function StoryBook({
                 {/* Table of Contents Drawer Trigger */}
                 <motion.button layout="position" transition={{ layout: elasticLayoutSpring }}
                   onClick={() => setIsTocOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
+                  className="glass-surface glass-ivory flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
                 >
                   <List className="w-4 h-4 text-amber-700 dark:text-amber-300" />
                   <span className="hidden sm:inline">Index</span>

@@ -147,10 +147,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.classList.toggle('dark', settings.theme === 'dark');
-    }
-  }, [settings.theme]);
+    document.documentElement.classList.toggle('dark', settings.theme === 'dark');
+    document.documentElement.style.setProperty('--glass-opacity', String(settings.glassOpacity / 100));
+  }, [settings.theme, settings.glassOpacity]);
 
   // Keep metadata in sync for client-side navigation as well as static deep links.
   useEffect(() => {

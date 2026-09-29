@@ -245,7 +245,7 @@ export const ArchiveHub = memo(function ArchiveHub({
     }
     return 280;
   });
-  const [activeSettingsTab, setActiveSettingsTab] = useState<'appearance' | 'audio' | 'motion' | 'about'>('appearance');
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'appearance' | 'audio' | 'motion' | 'about'>('about');
 
   // Anchor suction nozzle directly at the absolute bottom edge of the screen (bener-bener bawah screen)
   const updateSuctionPosition = () => {
@@ -427,7 +427,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                       ? { scale: 0.94, y: 0, transition: { duration: 0.1 } }
                       : { scale: 0.98 }
                   }
-                  className="group relative w-18 h-18 sm:w-20 sm:h-20 md:w-22 md:h-22 rounded-[22px] sm:rounded-[24px] md:rounded-[26px] bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_16px_40px_-4px_rgba(40,30,20,0.22)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_18px_44px_-4px_rgba(0,0,0,0.85)] flex flex-col items-center justify-center cursor-pointer transition-colors duration-150 select-none overflow-hidden"
+                  className="glass-surface group relative w-18 h-18 sm:w-20 sm:h-20 md:w-22 md:h-22 rounded-[22px] sm:rounded-[24px] md:rounded-[26px] bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_16px_40px_-4px_rgba(40,30,20,0.22)] dark:hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_18px_44px_-4px_rgba(0,0,0,0.85)] flex flex-col items-center justify-center cursor-pointer transition-colors duration-150 select-none overflow-hidden"
                 >
                   {/* Specular Top Light Accent */}
                   <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/90 dark:via-white/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity duration-150" />
@@ -549,10 +549,10 @@ export const ArchiveHub = memo(function ArchiveHub({
                     {/* Sidebar Navigation */}
                     <div className="w-full sm:w-52 flex sm:block gap-1 sm:space-y-1.5 border-b sm:border-b-0 sm:border-r border-stone-200/60 dark:border-stone-800 p-2 sm:p-3 bg-black/[0.02] dark:bg-stone-950/20 flex-shrink-0">
                       {[
+                        { id: 'about', label: 'About', icon: Info },
                         { id: 'appearance', label: 'Appearance', icon: Palette },
                         { id: 'audio', label: 'Ambience', icon: Volume2 },
                         { id: 'motion', label: 'Motion', icon: Sliders },
-                        { id: 'about', label: 'About', icon: Info },
                       ].map((tab) => {
                         const Icon = tab.icon;
                         const isActive = activeSettingsTab === tab.id;
@@ -583,7 +583,7 @@ export const ArchiveHub = memo(function ArchiveHub({
 
                     {/* Content Pane */}
                     <div className="settings-content-scroll flex-1 min-w-0 min-h-0 p-4 sm:p-7 overflow-y-auto overscroll-contain space-y-5">
-                      {/* Tab 1: Appearance (Light & Dark Only) */}
+                      {/* Appearance */}
                       {activeSettingsTab === 'appearance' && (
                         <div className="space-y-5">
                           <div>
@@ -654,10 +654,48 @@ export const ArchiveHub = memo(function ArchiveHub({
                               );
                             })}
                           </div>
+
+                          <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-white/80 dark:border-white/10 shadow-sm space-y-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <label htmlFor="glass-opacity" className="text-sm font-sans font-medium text-stone-900 dark:text-stone-100">
+                                Glass opacity
+                              </label>
+                              <output htmlFor="glass-opacity" className="text-sm font-mono text-amber-900 dark:text-amber-300">
+                                {activeSettings.glassOpacity}%
+                              </output>
+                            </div>
+                            <div
+                              aria-label="Glass opacity preview"
+                              className={`relative h-28 rounded-xl overflow-hidden border border-stone-300/40 dark:border-white/15 flex items-center justify-center ${
+                                activeSettings.theme === 'dark'
+                                  ? 'bg-[linear-gradient(135deg,#302821,#715737_50%,#211b19)]'
+                                  : 'bg-[linear-gradient(135deg,#b69a77,#e9d3a8_50%,#8b7056)]'
+                              }`}
+                            >
+                              <div className="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(90deg,transparent_0px,transparent_46px,rgba(255,255,255,0.28)_47px,transparent_49px)]" />
+                              <div className="glass-surface relative w-3/4 max-w-64 rounded-xl border border-white/60 dark:border-white/20 p-3 backdrop-blur-xl shadow-[0_10px_28px_rgba(0,0,0,0.2)] text-stone-950 dark:text-stone-100">
+                                <span className="block font-serif italic text-lg leading-tight">Tantalus Galleria</span>
+                                <span className="block text-[11px] font-sans">A preview of your glass panels</span>
+                              </div>
+                            </div>
+                            <input
+                              id="glass-opacity"
+                              type="range"
+                              min="0"
+                              max="100"
+                              step="1"
+                              value={activeSettings.glassOpacity}
+                              onChange={(e) => handleSettingChange({ glassOpacity: Number(e.target.value) })}
+                              className="w-full accent-amber-800 dark:accent-amber-400 cursor-pointer"
+                            />
+                            <p className="text-xs font-sans text-stone-600 dark:text-stone-400">
+                              Adjust glass transparency.
+                            </p>
+                          </div>
                         </div>
                       )}
 
-                      {/* Tab 2: Audio & Ambience */}
+                      {/* Audio & Ambience */}
                       {activeSettingsTab === 'audio' && (
                         <div className="space-y-5">
                           <div>
@@ -776,7 +814,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                         </div>
                       )}
 
-                      {/* Tab 3: Motion (Functional Toggles) */}
+                      {/* Motion (Functional Toggles) */}
                       {activeSettingsTab === 'motion' && (
                         <div className="space-y-5">
                           <div>
@@ -789,27 +827,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                           </div>
 
                           <div className="space-y-3">
-                            {/* Toggle 1: Reduced Motion */}
-                            <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-white/80 dark:border-white/10 shadow-sm flex items-center justify-between">
-                              <div className="space-y-1">
-                                <span className="text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100">
-                                  Reduced Motion
-                                </span>
-                                <p className="text-xs font-sans text-stone-500 dark:text-stone-400">
-                                  Snap camera glides (0.25s) and minimize spatial displacements
-                                </p>
-                              </div>
-                              <button
-                                onClick={() => handleSettingChange({ reducedMotion: !activeSettings.reducedMotion })}
-                                className={`w-12 h-6.5 rounded-full p-0.5 transition-colors cursor-pointer ${
-                                  activeSettings.reducedMotion ? 'bg-amber-800 dark:bg-amber-600' : 'bg-stone-300 dark:bg-stone-700'
-                                }`}
-                              >
-                                <div className={`w-5.5 h-5.5 rounded-full bg-white shadow-md transform transition-transform ${activeSettings.reducedMotion ? 'translate-x-5.5' : 'translate-x-0'}`} />
-                              </button>
-                            </div>
-
-                            {/* Toggle 2: Ambient Canvas Parallax */}
+                            {/* Living Art Parallax */}
                             <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-white/80 dark:border-white/10 shadow-sm flex items-center justify-between">
                               <div className="space-y-1">
                                 <span className="text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100">
@@ -829,7 +847,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                               </button>
                             </div>
 
-                            {/* Toggle 3: 3D Interactive Tilt & Elevate */}
+                            {/* 3D Interactive Tilt & Elevate */}
                             <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-white/80 dark:border-white/10 shadow-sm flex items-center justify-between">
                               <div className="space-y-1">
                                 <span className="text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100">
@@ -848,11 +866,31 @@ export const ArchiveHub = memo(function ArchiveHub({
                                 <div className={`w-5.5 h-5.5 rounded-full bg-white shadow-md transform transition-transform ${activeSettings.interactiveTilt ? 'translate-x-5.5' : 'translate-x-0'}`} />
                               </button>
                             </div>
+
+                            {/* Reduced Motion */}
+                            <div className="p-4 rounded-2xl bg-white/70 dark:bg-white/5 border border-white/80 dark:border-white/10 shadow-sm flex items-center justify-between">
+                              <div className="space-y-1">
+                                <span className="text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100">
+                                  Reduced Motion
+                                </span>
+                                <p className="text-xs font-sans text-stone-500 dark:text-stone-400">
+                                  Snap camera glides (0.25s) and minimize spatial displacements
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => handleSettingChange({ reducedMotion: !activeSettings.reducedMotion })}
+                                className={`w-12 h-6.5 rounded-full p-0.5 transition-colors cursor-pointer ${
+                                  activeSettings.reducedMotion ? 'bg-amber-800 dark:bg-amber-600' : 'bg-stone-300 dark:bg-stone-700'
+                                }`}
+                              >
+                                <div className={`w-5.5 h-5.5 rounded-full bg-white shadow-md transform transition-transform ${activeSettings.reducedMotion ? 'translate-x-5.5' : 'translate-x-0'}`} />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       )}
 
-                      {/* Tab 4: About (Author: AxelS27 & Last Updated from GitHub) */}
+                      {/* About (Author: AxelS27 & Last Updated from GitHub) */}
                       {activeSettingsTab === 'about' && (
                         <div className="space-y-5">
                           <div className="flex items-center gap-3.5 pb-1 border-b border-stone-200/60 dark:border-stone-800">
@@ -868,7 +906,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                                 Tantalize OS
                               </h4>
                               <p className="text-xs font-sans text-stone-500 dark:text-stone-400">
-                                2D Spatial Canvas Portfolio Architecture
+                                Tantalus Galleria, Inspired by Classical European Art
                               </p>
                             </div>
                           </div>
