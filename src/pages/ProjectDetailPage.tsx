@@ -205,7 +205,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
       {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
       <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-center w-full px-4 sm:px-8 max-w-5xl">
-        <div className="pointer-events-auto relative w-full h-10 sm:h-11 flex items-center justify-between p-1 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/75 hover:bg-[#FAF8F5]/75 dark:hover:bg-[#161412]/85 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(40,30,20,0.1)] dark:shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-300">
+        <div className="glass-surface glass-ivory pointer-events-auto relative w-full h-10 sm:h-11 flex items-center justify-between p-1 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/75 hover:bg-[#FAF8F5]/75 dark:hover:bg-[#161412]/85 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(40,30,20,0.1)] dark:shadow-[inset_0_1px_1.5px_0_rgba(255,255,255,0.25),0_16px_40px_rgba(0,0,0,0.55)] transition-colors duration-300">
           
           {/* Left Segment: Back to Projects */}
           <a
@@ -240,7 +240,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
       {/* Main Center Editorial Canvas Panel (Apple Frosted Glassmorphism) */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16 select-text">
-        <article className="relative w-full rounded-3xl sm:rounded-[36px] bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.95),0_24px_80px_rgba(0,0,0,0.14)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_24px_80px_rgba(0,0,0,0.6)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
+        <article className="glass-surface relative w-full rounded-3xl sm:rounded-[36px] bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.95),0_24px_80px_rgba(0,0,0,0.14)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_24px_80px_rgba(0,0,0,0.6)] p-6 sm:p-10 md:p-14 space-y-12 sm:space-y-16">
           
           {/* Specular Top Light Accent */}
           <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/95 dark:via-white/35 to-transparent opacity-80 rounded-t-3xl sm:rounded-t-[36px]" />
@@ -530,7 +530,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       handleNavProject(prevProject.id);
                     }
                   }}
-                  className="group flex items-center gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit transition-all duration-200"
+                  className="glass-surface group flex items-center gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit transition-all duration-200"
                 >
                   <div className="w-16 h-12 sm:w-20 sm:h-14 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-white/60 dark:border-white/25 shrink-0 shadow-md">
                     <img
@@ -561,7 +561,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                       handleNavProject(nextProject.id);
                     }
                   }}
-                  className="group flex items-center justify-end gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit text-right transition-all duration-200"
+                  className="glass-surface group flex items-center justify-end gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/15 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_4px_16px_rgba(0,0,0,0.06)] dark:shadow-none cursor-pointer no-underline text-inherit text-right transition-all duration-200"
                 >
                   <div className="min-w-0 flex-1">
                     <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 flex items-center justify-end gap-1 group-hover:text-amber-800 dark:group-hover:text-[#FFD88A] transition-colors">

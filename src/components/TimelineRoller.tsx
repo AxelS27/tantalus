@@ -70,7 +70,7 @@ const TimelineCard = memo(function TimelineCard({
         transformStyle: 'preserve-3d',
         pointerEvents: isInteractive ? 'auto' : 'none',
       }}
-      className={`absolute w-full p-2.5 sm:p-3 rounded-2xl cursor-pointer overflow-hidden transform-gpu will-change-transform ${
+      className={`glass-surface absolute w-full p-2.5 sm:p-3 rounded-2xl cursor-pointer overflow-hidden transform-gpu will-change-transform ${
         isCenter
           ? 'bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/75 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]'
           : 'bg-white/25 dark:bg-[#161412]/40 backdrop-blur-xl backdrop-saturate-[160%] border border-white/40 dark:border-white/10 hover:opacity-85'
@@ -301,7 +301,7 @@ export const TimelineRoller = memo(function TimelineRoller({
             </h2>
 
             {/* Grouped Location & Date in Frosted Glass Capsule */}
-            <div className="inline-flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/55 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_8px_24px_rgba(0,0,0,0.15)] text-sm sm:text-base md:text-lg font-serif italic tracking-wide">
+            <div className="glass-surface inline-flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/55 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_8px_24px_rgba(0,0,0,0.15)] text-sm sm:text-base md:text-lg font-serif italic tracking-wide">
               {/* Company / Location */}
               <div className="flex items-center gap-1.5 text-amber-800 dark:text-[#FFD88A] font-semibold dark:font-medium">
                 <MapPin className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-700 dark:text-[#FFD88A]" />
@@ -348,7 +348,7 @@ export const TimelineRoller = memo(function TimelineRoller({
               <button
                 onClick={handlePrev}
                 title="Previous Experience"
-                className="p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
+                className="glass-surface p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
               >
                 <ChevronUp className="w-4 h-4" />
               </button>
@@ -388,7 +388,7 @@ export const TimelineRoller = memo(function TimelineRoller({
               <button
                 onClick={handleNext}
                 title="Next Experience"
-                className="p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
+                className="glass-surface p-2.5 rounded-full bg-white/50 dark:bg-[#161412]/60 hover:bg-white/75 dark:hover:bg-[#161412]/80 active:bg-white/90 dark:active:bg-[#161412]/95 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/70 dark:border-white/20 hover:border-white dark:hover:border-white/40 text-stone-900 dark:text-stone-100 hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer hover:scale-110 active:scale-95 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15)]"
               >
                 <ChevronDown className="w-4 h-4" />
               </button>

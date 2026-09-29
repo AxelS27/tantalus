@@ -2,6 +2,7 @@ import { DEFAULT_MUSIC_ORDER, normalizeMusicOrder, type MusicTrackId, type Playb
 
 export interface PortfolioSettings {
   theme: 'light' | 'dark';
+  glassOpacity: number;
   reducedMotion: boolean;
   ambientParallax: boolean;
   interactiveTilt: boolean;
@@ -13,6 +14,7 @@ export interface PortfolioSettings {
 
 export const DEFAULT_SETTINGS: PortfolioSettings = {
   theme: 'light',
+  glassOpacity: 50,
   reducedMotion: false,
   ambientParallax: true,
   interactiveTilt: true,
@@ -32,6 +34,8 @@ export const getSavedSettings = (): PortfolioSettings => {
         ...DEFAULT_SETTINGS,
         ...parsed,
         volume: Number.isFinite(parsed.volume) ? Math.max(0, Math.min(100, parsed.volume)) : DEFAULT_SETTINGS.volume,
+        glassOpacity: typeof parsed.glassOpacity === 'number' && Number.isFinite(parsed.glassOpacity)
+          ? Math.max(0, Math.min(100, parsed.glassOpacity)) : DEFAULT_SETTINGS.glassOpacity,
         playbackMode: parsed.playbackMode === 'sequential' ? 'sequential' : 'shuffle',
         musicOrder: normalizeMusicOrder(parsed.musicOrder),
       };

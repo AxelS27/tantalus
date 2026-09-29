@@ -139,6 +139,21 @@ body {
   animation-play-state: paused;
 }
 
+/* Only the glass tint is adjustable; keep text, borders, shadows and blur readable. */
+.glass-surface.glass-surface,
+.glass-surface.glass-surface:hover,
+.glass-surface.glass-surface:active {
+  background-color: rgb(var(--glass-tint, 255 255 255) / var(--glass-opacity, 0.5));
+}
+
+.glass-ivory {
+  --glass-tint: 250 248 245;
+}
+
+.dark .glass-surface.glass-surface {
+  --glass-tint: 22 20 18;
+}
+
 /* Scale section glass cost to the device without changing layout or content. */
 .canvas-quality-balanced [class*="backdrop-blur"] {
   --tw-backdrop-blur: blur(12px);

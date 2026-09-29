@@ -6,7 +6,7 @@ import { getAssetUrl } from '../lib/assets';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
 
 type Genre = 'All' | 'Romantic' | 'Classical' | 'Baroque' | 'OST & Soundtracks' | 'Studies';
-const genres: Genre[] = ['All', 'Romantic', 'Classical', 'Baroque', 'OST & Soundtracks', 'Studies'];
+const genres: Genre[] = ['All', 'Baroque', 'Classical', 'Romantic', 'OST & Soundtracks', 'Studies'];
 // Preserve the original portfolio's curated order (popular pieces first, Studies last).
 const visibleRepertoire = repertoireData
   .filter((piece) => !/^epr-level-(?:[4-9]|10)$/.test(piece.id))
@@ -106,7 +106,7 @@ export const RepertoireGrid = memo(function RepertoireGrid({
       <div className="relative mx-auto max-w-5xl px-5 sm:px-10 pt-32 sm:pt-36 pb-24">
         <header className="text-center mb-8 sm:mb-10">
           <h1
-            className="font-serif italic font-light text-5xl sm:text-7xl text-white tracking-tight"
+            className="font-serif italic font-light text-5xl sm:text-7xl text-white tracking-tight select-text"
             style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}
           >
             Repertoire
@@ -141,7 +141,7 @@ export const RepertoireGrid = memo(function RepertoireGrid({
               aria-label={`Open score for ${piece.title}`}
               whileHover={{ y: -4, scale: 1.02 }}
               transition={{ duration: 0.18 }}
-              className="group relative min-w-0 flex flex-col p-1.5 sm:p-2 rounded-xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-xl border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] transition-colors cursor-pointer overflow-hidden"
+              className="glass-surface group relative min-w-0 flex flex-col p-1.5 sm:p-2 rounded-xl bg-white/45 dark:bg-[#161412]/60 hover:bg-white/65 dark:hover:bg-[#161412]/75 backdrop-blur-xl border border-white/60 dark:border-white/20 hover:border-white/95 dark:hover:border-white/40 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_8px_24px_-4px_rgba(40,30,20,0.14)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_12px_32px_-4px_rgba(0,0,0,0.65)] transition-colors cursor-pointer overflow-hidden"
             >
               <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-black/20 border border-white/40 dark:border-white/15">
                 <ImageWithSkeleton

@@ -71,7 +71,7 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
           layout="size"
           transition={{ layout: elasticLayoutSpring }}
           onMouseLeave={() => setHoveredTab(null)}
-          className="relative h-10 sm:h-11 flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300"
+          className="glass-surface glass-ivory relative h-10 sm:h-11 flex items-center p-1 rounded-full bg-[#FAF8F5]/50 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/60 dark:hover:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/50 dark:border-stone-700/60 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.7),0_8px_32px_-6px_rgba(40,30,20,0.08)] transition-colors duration-300"
         >
           {/* Main 3 Quadrant Tabs: Home, Timeline, Projects */}
           {mainNavItems.map((item) => {
