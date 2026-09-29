@@ -43,14 +43,24 @@ const getSavedBookmarkSpread = (bookId: string): number | null => {
   return null;
 };
 
-const saveBookmarkSpread = (bookId: string, spreadIndex: number | null) => {
+const getSavedBookmarkPage = (bookId: string): number | null => {
+  try {
+    const saved = localStorage.getItem(`${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`);
+    const pageIndex = saved ? JSON.parse(saved)?.pageIndex : null;
+    if (Number.isInteger(pageIndex) && pageIndex >= 0) return pageIndex;
+  } catch {}
+  const spreadIndex = getSavedBookmarkSpread(bookId);
+  return spreadIndex === null ? null : spreadIndex * 2;
+};
+
+const saveBookmarkSpread = (bookId: string, spreadIndex: number | null, pageIndex?: number) => {
   try {
     if (spreadIndex === null) {
       localStorage.removeItem(`${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`);
     } else {
       localStorage.setItem(
         `${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`,
-        JSON.stringify({ spreadIndex, bookmarked: true, updatedAt: Date.now() }),
+        JSON.stringify({ spreadIndex, pageIndex: pageIndex ?? spreadIndex * 2, bookmarked: true, updatedAt: Date.now() }),
       );
     }
   } catch {}
@@ -369,6 +379,9 @@ export const StoryBook = memo(function StoryBook({
 
   // Paginated Spread Navigation (100% paginated novel flow, zero vertical scroll!)
   const [currentSpreadIndex, setCurrentSpreadIndex] = useState(0);
+  const [mobilePageIndex, setMobilePageIndex] = useState(0);
+  const [mobilePageDirection, setMobilePageDirection] = useState(1);
+  const mobileTouchStartRef = useRef<{ x: number; y: number } | null>(null);
   const [isTocOpen, setIsTocOpen] = useState(false);
 
   const sequenceTimersRef = useRef<number[]>([]);
@@ -392,6 +405,9 @@ export const StoryBook = memo(function StoryBook({
   const [savedBookmarkSpread, setSavedBookmarkSpread] = useState<number | null>(() =>
     getSavedBookmarkSpread(currentBook?.id || 'adoketos'),
   );
+  const [savedBookmarkPage, setSavedBookmarkPage] = useState<number | null>(() =>
+    getSavedBookmarkPage(currentBook?.id || 'adoketos'),
+  );
   const [showBookmarkToast, setShowBookmarkToast] = useState(false);
   const [bookmarkToastMessage, setBookmarkToastMessage] = useState('Bookmark Placed');
 
@@ -400,6 +416,7 @@ export const StoryBook = memo(function StoryBook({
     if (currentBook?.id) {
       const saved = getSavedBookmarkSpread(currentBook.id);
       setSavedBookmarkSpread(saved);
+      setSavedBookmarkPage(getSavedBookmarkPage(currentBook.id));
     }
   }, [currentBook?.id]);
 
@@ -566,6 +583,12 @@ export const StoryBook = memo(function StoryBook({
     return { spreads: spreadList, chapterPageMap: chapterMap };
   }, [currentBook]);
 
+  // The phone reader uses the same ordered content, but reveals one leaf at a time.
+  const mobilePages = useMemo(
+    () => spreads.flatMap((spread) => [spread.leftPage, spread.rightPage]).filter((page) => page.type !== 'blank-cover'),
+    [spreads],
+  );
+
   const currentSpread = useMemo(() => {
     if (!spreads || spreads.length === 0) {
       return {
@@ -589,9 +612,11 @@ export const StoryBook = memo(function StoryBook({
   const isFlippingRef = useRef(false);
   const flipTimerRef = useRef<number | null>(null);
 
-  const isCurrentSpreadBookmarked =
-    savedBookmarkSpread !== null &&
-    (turnAnimation ? turnAnimation.toSpreadIdx === savedBookmarkSpread : currentSpreadIndex === savedBookmarkSpread);
+  const isMobileReader = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+  const isCurrentSpreadBookmarked = isMobileReader
+    ? savedBookmarkPage === mobilePageIndex && savedBookmarkPage !== null
+    : savedBookmarkSpread !== null &&
+      (turnAnimation ? turnAnimation.toSpreadIdx === savedBookmarkSpread : currentSpreadIndex === savedBookmarkSpread);
 
   // Toggle Bookmark: Put Bookmark / Take off Bookmark
   const handleToggleBookmark = useCallback(() => {
@@ -601,18 +626,21 @@ export const StoryBook = memo(function StoryBook({
       // Take off Bookmark
       saveBookmarkSpread(currentBook.id, null);
       setSavedBookmarkSpread(null);
+      setSavedBookmarkPage(null);
       setBookmarkToastMessage('Bookmark Removed');
       setShowBookmarkToast(true);
       window.setTimeout(() => setShowBookmarkToast(false), 2000);
     } else {
       // Put Bookmark on this page
-      saveBookmarkSpread(currentBook.id, currentSpreadIndex);
+      const pageIndex = isMobileReader ? mobilePageIndex : currentSpreadIndex * 2;
+      saveBookmarkSpread(currentBook.id, currentSpreadIndex, pageIndex);
       setSavedBookmarkSpread(currentSpreadIndex);
+      setSavedBookmarkPage(pageIndex);
       setBookmarkToastMessage('Bookmark Placed');
       setShowBookmarkToast(true);
       window.setTimeout(() => setShowBookmarkToast(false), 2000);
     }
-  }, [currentBook?.id, currentSpreadIndex, isCurrentSpreadBookmarked]);
+  }, [currentBook?.id, currentSpreadIndex, isCurrentSpreadBookmarked, isMobileReader, mobilePageIndex]);
 
   const clearSequenceTimers = () => {
     sequenceTimersRef.current.forEach((t) => window.clearTimeout(t));
@@ -676,7 +704,10 @@ export const StoryBook = memo(function StoryBook({
 
     const savedSpread = getSavedBookmarkSpread(book.id);
     setIsCoverOpen(true);
-    setCurrentSpreadIndex(savedSpread !== null && savedSpread < spreads.length ? savedSpread : 0);
+    const resumeSpread = savedSpread !== null && savedSpread < spreads.length ? savedSpread : 0;
+    setCurrentSpreadIndex(resumeSpread);
+    const savedPage = getSavedBookmarkPage(book.id);
+    setMobilePageIndex(savedPage !== null && savedPage < mobilePages.length ? savedPage : resumeSpread * 2);
 
     const t1 = window.setTimeout(() => {
       setIsZoomingPaper(true);
@@ -687,7 +718,7 @@ export const StoryBook = memo(function StoryBook({
     }, 1450);
 
     sequenceTimersRef.current = [t1, t2];
-  }, [spreads.length]);
+  }, [spreads.length, mobilePages.length]);
 
   // Unified Closing Sequence
   const handleCloseSequence = useCallback(() => {
@@ -782,6 +813,15 @@ export const StoryBook = memo(function StoryBook({
     },
     [currentSpreadIndex, savedBookmarkSpread, spreads.length],
   );
+
+  const goToMobilePage = useCallback((targetPage: number) => {
+    setIsTocOpen(false);
+    if (targetPage < 0 || targetPage >= mobilePages.length || targetPage === mobilePageIndex) return;
+    setMobilePageDirection(targetPage > mobilePageIndex ? 1 : -1);
+    setMobilePageIndex(targetPage);
+    setCurrentSpreadIndex(Math.floor(targetPage / 2));
+    setIsTocOpen(false);
+  }, [mobilePageIndex, mobilePages.length]);
 
   // Turn to Next Spread with 3D Page Turn Animation (Unified with Index Engine)
   const handleNextSpread = useCallback(() => {
@@ -881,6 +921,8 @@ export const StoryBook = memo(function StoryBook({
     if (now - lastWheelTimeRef.current < 220) return;
 
     if (isReaderSpread) {
+      // Phone leaves scroll internally; wheel gestures must not skip unread text.
+      if (window.matchMedia('(max-width: 767px)').matches) return;
       const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       if (Math.abs(delta) > 15) {
         if (delta > 0) {
@@ -948,8 +990,13 @@ export const StoryBook = memo(function StoryBook({
       }
 
       if (isReaderSpread) {
-        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') handleNextSpread();
-        if (e.key === 'ArrowLeft' || e.key === 'PageUp') handlePrevSpread();
+        if (window.matchMedia('(max-width: 767px)').matches) {
+          if (e.key === 'ArrowRight') goToMobilePage(mobilePageIndex + 1);
+          if (e.key === 'ArrowLeft') goToMobilePage(mobilePageIndex - 1);
+        } else {
+          if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') handleNextSpread();
+          if (e.key === 'ArrowLeft' || e.key === 'PageUp') handlePrevSpread();
+        }
       } else {
         if (e.key === 'ArrowLeft') handlePrevShelf();
         if (e.key === 'ArrowRight') handleNextShelf();
@@ -975,6 +1022,8 @@ export const StoryBook = memo(function StoryBook({
     handleCloseSequence,
     handlePrevSpread,
     handleNextSpread,
+    goToMobilePage,
+    mobilePageIndex,
     onReachTop,
   ]);
 
@@ -993,7 +1042,7 @@ export const StoryBook = memo(function StoryBook({
   );
 
   // Helper to render an individual novel page authentically with maximized content density
-  const renderNovelPage = (page: NovelPageData | undefined, isLeft: boolean) => {
+  const renderNovelPage = (page: NovelPageData | undefined, isLeft: boolean, mobile = false) => {
     if (!page || page.type === 'blank-cover') {
       return (
         <div
@@ -1047,7 +1096,7 @@ export const StoryBook = memo(function StoryBook({
           <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Book Title & Clickable Index Table with Hierarchy & Dot Leaders */}
-          <div className="flex-1 flex flex-col justify-start min-h-0 py-2 px-2 sm:px-6 md:px-8 z-10 overflow-hidden">
+          <div className={`flex-1 flex flex-col justify-start min-h-0 py-2 px-2 sm:px-6 md:px-8 z-10 ${mobile ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'}`}>
             <div className="text-center pb-3">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#1F1712] tracking-wide">
                 Table of Contents
@@ -1059,27 +1108,27 @@ export const StoryBook = memo(function StoryBook({
             </div>
 
             {/* Clickable Index Table with Hierarchy, Dot Leaders & Larger Typography */}
-            <div className="w-full flex-1 flex flex-col justify-between py-1 space-y-1 overflow-hidden">
+            <div className={`w-full flex-1 flex flex-col py-1 space-y-1 ${mobile ? 'justify-start shrink-0' : 'justify-between overflow-hidden'}`}>
               {page.chapterPageMap?.map((item) => {
                 const chSpreadIdx = Math.floor(item.pageNumber / 2);
                 const isBookmarked = savedBookmarkSpread !== null && chSpreadIdx === savedBookmarkSpread;
                 return (
                   <button
                     key={item.chapterId}
-                    onClick={() => handleJumpToChapterByPage(item.pageNumber)}
-                    className="group w-full flex items-baseline justify-between py-1 px-2 rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer"
+                    onClick={() => mobile ? goToMobilePage(item.pageNumber) : handleJumpToChapterByPage(item.pageNumber)}
+                    className={`group w-full flex items-baseline justify-between rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer ${mobile ? 'min-h-11 py-2 px-0' : 'py-1 px-2'}`}
                   >
                     <div className="flex items-baseline gap-2.5 min-w-0 flex-1 pr-2">
-                      <span className="font-serif text-xs sm:text-[13px] md:text-sm text-[#8A7B6E] w-20 sm:w-24 md:w-28 flex-shrink-0 text-left uppercase tracking-wider font-medium">
+                      <span className="font-serif text-xs sm:text-[13px] md:text-sm text-[#8A7B6E] w-16 sm:w-24 md:w-28 flex-shrink-0 text-left uppercase tracking-wider font-medium">
                         {item.number}
                       </span>
-                      <span className="font-serif font-medium text-xs sm:text-sm md:text-[14.5px] lg:text-[15px] text-[#241D17] group-hover:text-amber-800 truncate flex items-center gap-1.5">
+                      <span className={`font-serif font-medium text-[#241D17] group-hover:text-amber-800 flex items-center gap-1.5 ${mobile ? 'text-sm leading-tight' : 'text-xs sm:text-sm md:text-[14.5px] lg:text-[15px] truncate'}`} >
                         {item.title}
                         {isBookmarked && (
                           <Bookmark className="w-3.5 h-3.5 text-amber-700 fill-amber-500/30 flex-shrink-0" />
                         )}
                       </span>
-                      <span className="flex-1 border-b border-dotted border-[#8A7B6E]/40 mx-2 mb-1 min-w-[24px]" />
+                      <span className={`${mobile ? 'hidden' : 'flex-1'} border-b border-dotted border-[#8A7B6E]/40 mx-2 mb-1 min-w-[24px]`} />
                     </div>
                     <span className="font-mono text-xs sm:text-sm text-[#8A7B6E] group-hover:text-amber-800 flex-shrink-0 tabular-nums font-semibold">
                       {String(item.pageNumber).padStart(2, '0')}
@@ -1144,7 +1193,7 @@ export const StoryBook = memo(function StoryBook({
           <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Narrative Text Body (Balanced, highly legible editorial font) */}
-          <div className="flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 px-2 sm:px-4 md:px-6 overflow-hidden z-10">
+          <div className={`flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 px-2 sm:px-4 md:px-6 z-10 ${mobile ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'}`} >
             {page.paragraphs?.map((paragraph, pIdx) => {
               if (page.isFirstPageOfChapter && pIdx === 0 && paragraph.length > 0) {
                 const firstLetter = paragraph.charAt(0);
@@ -1332,12 +1381,12 @@ export const StoryBook = memo(function StoryBook({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="w-full flex items-center justify-between px-4 py-2 z-30 mb-2"
+              className="w-full flex items-center justify-between px-2 sm:px-4 py-2 pt-14 md:pt-2 z-30 mb-2"
             >
               {/* Back to Shelf Button */}
               <button
                 onClick={handleCloseSequence}
-                className="glass-surface glass-ivory group flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
+                className="glass-surface glass-ivory group flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/85 md:bg-[#FAF8F5]/60 dark:bg-[#161412]/75 md:dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:-translate-x-0.5" />
                 <span>Return to Shelf</span>
@@ -1382,8 +1431,24 @@ export const StoryBook = memo(function StoryBook({
               </motion.div>
             </motion.div>
 
+            {/* Mobile reader: one independent parchment leaf per step. */}
+            <div className="md:hidden relative w-full max-w-xl flex-1 min-h-0 rounded-2xl border border-[#D8A048]/70 bg-[#FAF6EE] p-1.5 shadow-[0_24px_60px_rgba(20,10,5,0.45)] overflow-hidden">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={`${currentBook.id}-${mobilePageIndex}`}
+                  initial={{ opacity: 0, x: mobilePageDirection * 24, rotateY: mobilePageDirection * 5 }}
+                  animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                  exit={{ opacity: 0, x: -mobilePageDirection * 24, rotateY: -mobilePageDirection * 5 }}
+                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative h-full w-full rounded-xl overflow-hidden"
+                >
+                  {renderNovelPage(mobilePages[mobilePageIndex], false, true)}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
             {/* ================= DUAL-PAGE SPREAD PHYSICAL BOOK CONTAINER ================= */}
-            <div className="relative w-full flex-1 flex items-stretch justify-center rounded-3xl shadow-[0_35px_100px_rgba(0,0,0,0.9)] border-2 border-[#D8A048]/70 bg-[#160E0A] p-3 sm:p-4 overflow-visible">
+            <div className="relative hidden md:flex w-full flex-1 items-stretch justify-center rounded-3xl shadow-[0_35px_100px_rgba(0,0,0,0.9)] border-2 border-[#D8A048]/70 bg-[#160E0A] p-3 sm:p-4 overflow-visible">
               
               {/* Outer Hardcover Base Tray */}
               <div className="absolute inset-0 bg-[#2B1612] rounded-3xl pointer-events-none" />
@@ -1610,13 +1675,26 @@ export const StoryBook = memo(function StoryBook({
               </div>
             </div>
 
+            {/* A leaf at a time on phones; the two-page controls stay on desktop. */}
+            <div className="md:hidden w-full flex items-center justify-between gap-2 px-2 py-2 mt-2 z-30">
+              <button type="button" onClick={() => goToMobilePage(mobilePageIndex - 1)} disabled={mobilePageIndex === 0} className="min-h-11 min-w-20 px-3 rounded-full bg-[#FAF8F5]/75 text-stone-900 font-serif text-sm border border-white/60 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer">
+                Previous
+              </button>
+              <span className="font-mono text-xs text-white/90 tabular-nums whitespace-nowrap [text-shadow:0_1px_6px_rgba(0,0,0,0.85)]">
+                {mobilePageIndex + 1} / {mobilePages.length}
+              </span>
+              <button type="button" onClick={() => goToMobilePage(mobilePageIndex + 1)} disabled={mobilePageIndex >= mobilePages.length - 1} className="min-h-11 min-w-20 px-3 rounded-full bg-gradient-to-r from-amber-600 to-amber-500 text-white font-serif text-sm border border-amber-400/30 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer">
+                Next
+              </button>
+            </div>
+
             {/* ================= BOTTOM SPREAD PAGE-TURN NAVIGATION (Theme-standardized) ================= */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="w-full flex flex-wrap sm:flex-nowrap items-center justify-between px-4 py-2 z-30 mt-2"
+              className="hidden md:flex w-full flex-wrap sm:flex-nowrap items-center justify-between px-4 py-2 z-30 mt-2"
             >
               {/* Prev Spread Button */}
               <button
@@ -1713,7 +1791,7 @@ export const StoryBook = memo(function StoryBook({
               >
                 {/* Front Matter Button */}
                 <button
-                  onClick={() => handleJumpToChapterByPage(0)}
+                  onClick={() => isMobileReader ? goToMobilePage(0) : handleJumpToChapterByPage(0)}
                   className={`w-full text-left p-3 rounded-xl transition-all flex flex-col gap-1 border cursor-pointer ${
                     currentSpreadIndex === 0
                       ? 'bg-amber-500/15 border-amber-500/40 text-amber-950 dark:text-amber-200 shadow-sm'
@@ -1730,12 +1808,12 @@ export const StoryBook = memo(function StoryBook({
 
                 {chapterPageMap.map((ch) => {
                   const targetSpreadIdx = Math.floor(ch.pageNumber / 2);
-                  const isCurrentChapter = currentSpreadIndex === targetSpreadIdx;
+                  const isCurrentChapter = isMobileReader ? mobilePageIndex === ch.pageNumber : currentSpreadIndex === targetSpreadIdx;
                   const isBookmarkedChapter = savedBookmarkSpread !== null && targetSpreadIdx === savedBookmarkSpread;
                   return (
                     <button
                       key={ch.chapterId}
-                      onClick={() => handleJumpToChapterByPage(ch.pageNumber)}
+                      onClick={() => isMobileReader ? goToMobilePage(ch.pageNumber) : handleJumpToChapterByPage(ch.pageNumber)}
                       className={`w-full text-left p-3 rounded-xl transition-all flex flex-col gap-1 border cursor-pointer ${
                         isCurrentChapter
                           ? 'bg-amber-500/15 border-amber-500/40 text-amber-950 dark:text-amber-200 shadow-sm'
