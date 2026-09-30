@@ -123,6 +123,8 @@ export default function App() {
   const prefersReducedMotion = useReducedMotion();
   const shouldReduceMotion = settings.reducedMotion || prefersReducedMotion;
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isStoryBookReading, setIsStoryBookReading] = useState(false);
+  const [storyBookCloseRequest, setStoryBookCloseRequest] = useState(0);
   const [visitedTabs, setVisitedTabs] = useState<Set<NavItem>>(() => new Set([activeTab]));
   const [transitionFrom, setTransitionFrom] = useState<NavItem | null>(null);
   const [transitionTarget, setTransitionTarget] = useState<NavItem | null>(null);
@@ -443,7 +445,11 @@ export default function App() {
             transition={{ duration: 0.25 }}
             role="status"
             aria-label={`${currentTrack.title} is playing`}
-            className="pointer-events-none fixed right-4 sm:right-6 bottom-[calc(8.25rem+env(safe-area-inset-bottom))] md:bottom-6 z-[60] flex max-w-[calc(100vw-2rem)] gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)]"
+            className={`pointer-events-none fixed z-[60] flex gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)] ${
+              activeTab === 'storybook'
+                ? 'left-1/2 -translate-x-1/2 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] md:bottom-2 max-w-[calc(100vw-3rem)] justify-center'
+                : 'right-4 sm:right-6 bottom-[calc(8.25rem+env(safe-area-inset-bottom))] md:bottom-6 max-w-[calc(100vw-2rem)]'
+            }}`}
           >
             <span aria-hidden="true" className="min-w-0 truncate">{currentTrack.title}</span>
             <span aria-hidden="true" className="shrink-0">is playing</span>
@@ -481,6 +487,10 @@ export default function App() {
           {/* Desktop glass navbar and mobile bottom dock */}
           <Navbar
             activeTab={activeTab}
+            mobileBackAction={activeTab === 'storybook' && isStoryBookReading ? {
+              label: 'Return to Shelf',
+              onClick: () => setStoryBookCloseRequest((request) => request + 1),
+            } : undefined}
             onTabChange={(tab) => triggerSectionChange(tab, true, true)}
           />
 
@@ -591,6 +601,8 @@ export default function App() {
                   <StoryBook
                     isActive={isSectionRendered('storybook')}
                     onReachTop={handleStoryBookTop}
+                    onReaderChange={setIsStoryBookReading}
+                    closeRequest={storyBookCloseRequest}
                   />
                 </Suspense>
               )}
