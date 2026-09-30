@@ -15,6 +15,7 @@ import {
 import { certificatesData, type CertificateItem } from '../data/certificates';
 import { getThumbnailSrcSet, getThumbnailUrl } from '../lib/thumbnails';
 import StepCounter from './common/StepCounter';
+import { COMPACT_VIEWPORT_QUERY, canScrollWithin } from '../lib/layout';
 
 export interface CertificatesCoverflowProps {
   isActive?: boolean;
@@ -74,7 +75,7 @@ const CertificateCard = memo(function CertificateCard({
         WebkitFontSmoothing: 'antialiased',
         MozOsxFontSmoothing: 'grayscale',
       }}
-      className="group absolute w-[310px] sm:w-[380px] md:w-[430px] h-[300px] sm:h-[340px] md:h-[370px] rounded-3xl p-2.5 sm:p-3 transition-colors cursor-pointer select-text"
+      className="certificate-card group absolute w-[310px] sm:w-[380px] spacious:w-[430px] h-[300px] sm:h-[340px] spacious:h-[370px] rounded-3xl p-2.5 sm:p-3 transition-colors cursor-pointer select-text"
     >
       <div
         style={{
@@ -82,7 +83,7 @@ const CertificateCard = memo(function CertificateCard({
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
         }}
-        className={`glass-surface relative w-full h-full rounded-2xl flex flex-col justify-between p-3.5 sm:p-4.5 border transition-all duration-300 overflow-hidden ${
+        className={`certificate-surface glass-surface relative w-full h-full rounded-2xl flex flex-col justify-between p-3.5 sm:p-4.5 border transition-all duration-300 overflow-hidden ${
           isCenter
             ? 'bg-white/45 dark:bg-[#161412]/60 backdrop-blur-2xl backdrop-saturate-[180%] border-white/75 dark:border-white/20 shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,0.9),0_24px_50px_-10px_rgba(0,0,0,0.35)] group-hover:border-amber-700/60 dark:group-hover:border-amber-400/50 group-hover:shadow-[inset_0_1.5px_1.5px_0_rgba(255,255,255,1),0_28px_60px_-10px_rgba(0,0,0,0.45)]'
             : 'bg-white/30 dark:bg-[#161412]/40 backdrop-blur-xl backdrop-saturate-[160%] border-white/50 dark:border-white/10 shadow-[0_12px_32px_rgba(0,0,0,0.2)] hover:border-white/80'
@@ -93,7 +94,7 @@ const CertificateCard = memo(function CertificateCard({
 
         {/* Ambient Glass Sheen */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/35 dark:from-white/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none rounded-2xl" />
-        <div className="relative w-full h-40 sm:h-48 md:h-52 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-2 flex-shrink-0">
+        <div className="certificate-thumbnail relative w-full h-40 sm:h-48 spacious:h-52 rounded-xl overflow-hidden bg-black/5 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 mb-2 flex-shrink-0">
           <img
             src={getThumbnailUrl(cert.image)}
             srcSet={getThumbnailSrcSet(cert.image)}
@@ -126,7 +127,7 @@ const CertificateCard = memo(function CertificateCard({
         <div className="py-1">
           <h3
             title={cert.title}
-            className="font-sans text-xs sm:text-sm md:text-base font-semibold text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors leading-snug line-clamp-1 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)]"
+            className="font-sans text-xs sm:text-sm spacious:text-base font-semibold text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors leading-snug line-clamp-1 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)]"
           >
             {cert.title}
           </h3>
@@ -248,6 +249,9 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
   const handleWheel = (e: React.WheelEvent) => {
     if (!isActive) return;
     e.stopPropagation();
+    if (window.matchMedia(COMPACT_VIEWPORT_QUERY).matches &&
+        Math.abs(e.deltaY) > Math.abs(e.deltaX) &&
+        canScrollWithin(e.target, e.currentTarget, e.deltaY)) return;
     const now = Date.now();
 
     if (now - lastWheelTimeRef.current < 160) return;
@@ -303,16 +307,16 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
     <div
       onWheel={isActive ? handleWheel : undefined}
       aria-hidden={!isActive}
-      className={`relative w-full h-full flex flex-col items-center justify-center select-none px-4 sm:px-8 py-6 z-20 overflow-hidden transition-opacity duration-300 ${
+      className={`certificates-view relative w-full h-full flex flex-col items-center justify-center select-none px-4 sm:px-8 py-6 compact:pt-[calc(6rem+env(safe-area-inset-top))] compact:pb-[calc(7rem+env(safe-area-inset-bottom))] compact:justify-start z-20 overflow-hidden compact:overflow-y-auto transition-opacity duration-300 ${
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
-      <h1 className="md:hidden absolute top-[clamp(5rem,15dvh,8rem)] left-0 right-0 z-30 text-center font-serif italic font-light text-4xl sm:text-5xl tracking-tight text-white select-text" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}>
+      <h1 className="spacious:hidden mb-6 shrink-0 z-30 text-center font-serif italic font-light text-4xl sm:text-5xl tracking-tight text-white select-text" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}>
         Certificates
       </h1>
 
       {/* ================= FAR-LEFT ARROW (Pushed all the way outward to the left) ================= */}
-      <div className="hidden md:block absolute left-4 sm:left-8 md:left-12 lg:left-16 top-1/2 -translate-y-1/2 z-40">
+      <div className="hidden spacious:block absolute left-4 sm:left-8 spacious:left-12 lg:left-16 top-1/2 -translate-y-1/2 z-40">
         {selectedIndex > 0 && (
           <button
             onClick={handlePrev}
@@ -331,7 +335,7 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         style={{ perspective: '1200px' }}
-        className={`relative w-full max-w-5xl h-[380px] sm:h-[420px] md:h-[450px] flex items-center justify-center touch-none select-none ${
+        className={`certificate-stage relative w-full max-w-5xl shrink-0 h-[380px] sm:h-[420px] spacious:h-[450px] flex items-center justify-center touch-none compact:touch-pan-y select-none ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
       >
@@ -348,7 +352,7 @@ export const CertificatesCoverflow = memo(function CertificatesCoverflow({
       </div>
 
       {/* ================= FAR-RIGHT ARROW (Pushed all the way outward to the right) ================= */}
-      <div className="hidden md:block absolute right-4 sm:right-8 md:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-40">
+      <div className="hidden spacious:block absolute right-4 sm:right-8 spacious:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-40">
         {selectedIndex < certificatesData.length - 1 && (
           <button
             onClick={handleNext}

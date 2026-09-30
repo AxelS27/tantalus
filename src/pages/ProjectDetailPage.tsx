@@ -184,7 +184,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
 
   if (!project) {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 bg-[#FAF8F5] dark:bg-[#121110] text-stone-900 dark:text-stone-100 font-sans">
+      <div className="min-h-dvh w-full flex flex-col items-center justify-center p-6 bg-[#FAF8F5] dark:bg-[#121110] text-stone-900 dark:text-stone-100 font-sans">
         <h2 className="text-3xl font-bold mb-3">Project Not Found</h2>
         <p className="text-sm text-stone-600 dark:text-stone-400 mb-6">
           The requested project could not be found.
@@ -201,7 +201,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
   }
 
   return (
-    <div className="relative min-h-screen w-full text-stone-900 dark:text-white selection:bg-[#E8C582]/40 selection:text-white font-sans overflow-x-clip">
+    <div className="relative min-h-dvh w-full text-stone-900 dark:text-white selection:bg-[#E8C582]/40 selection:text-white font-sans overflow-x-clip">
 
       {/* Centered Floating Apple Frosted Glass Navbar Capsule */}
       <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex items-center justify-start md:justify-center w-full px-4 sm:px-8 max-w-5xl">
@@ -613,7 +613,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="relative w-full max-w-6xl max-h-[90vh] flex flex-col items-center justify-center z-10"
+              className="relative w-full max-w-6xl max-h-[90dvh] flex flex-col items-center justify-center z-10"
             >
               {/* Header Bar */}
               <div className="w-full flex items-center justify-between text-white mb-3 px-2">
@@ -633,7 +633,7 @@ export const ProjectDetailPage = memo(function ProjectDetailPage({
                 <img
                   src={getAssetUrl(allMedia[lightboxIndex])}
                   alt={`Image ${lightboxIndex + 1}`}
-                  className="max-h-[75vh] max-w-full object-contain rounded-xl select-none"
+                  className="max-h-[75dvh] max-w-full object-contain rounded-xl select-none"
                 />
 
                 {allMedia.length > 1 && (

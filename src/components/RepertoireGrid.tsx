@@ -103,7 +103,7 @@ export const RepertoireGrid = memo(function RepertoireGrid({
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
-      <div className="relative mx-auto max-w-5xl px-5 sm:px-10 pt-24 md:pt-36 pb-24">
+      <div className="relative mx-auto max-w-5xl px-5 sm:px-10 pt-24 spacious:pt-36 pb-[calc(7rem+env(safe-area-inset-bottom))] spacious:pb-24">
         <header className="text-center mb-6 md:mb-10">
           <h1
             className="font-serif italic font-light text-5xl sm:text-7xl text-white tracking-tight select-text"
@@ -131,7 +131,7 @@ export const RepertoireGrid = memo(function RepertoireGrid({
           ))}
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
           {pieces.map((piece) => (
             <motion.a
               key={piece.id}

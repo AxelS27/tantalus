@@ -182,7 +182,7 @@ export const ConnectHub = memo(function ConnectHub({
       }`}
     >
       {/* ================= 1. CONNECT HERO VIEWPORT (Full Screen) ================= */}
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-start md:justify-center px-4 sm:px-6 md:px-8 pt-[clamp(6rem,13dvh,8rem)] pb-[calc(7rem+env(safe-area-inset-bottom))] md:py-16 select-none">
+      <div className="relative min-h-dvh w-full flex flex-col items-center justify-start md:justify-center px-4 sm:px-6 md:px-8 pt-[clamp(6rem,13dvh,8rem)] pb-[calc(7rem+env(safe-area-inset-bottom))] md:py-16 select-none">
         {/* Fluid Floating Content Rig (No Outer Card) */}
         <motion.div
           initial={{ opacity: 0, y: 16, scale: 0.98 }}
