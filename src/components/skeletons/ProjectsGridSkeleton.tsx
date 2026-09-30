@@ -3,8 +3,16 @@ import Skeleton from '../common/Skeleton';
 export default function ProjectsGridSkeleton() {
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center select-none pointer-events-none px-4 py-4 overflow-hidden z-20">
+      <div className="spacious:hidden w-full max-w-5xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        {Array.from({ length: 6 }, (_, index) => (
+          <div key={index} className="p-2 rounded-xl bg-white/30 border border-white/30">
+            <Skeleton className="w-full aspect-[4/3] rounded-lg bg-white/15" />
+            <Skeleton className="w-3/4 h-3 mt-3 mx-auto rounded-full bg-white/20" />
+          </div>
+        ))}
+      </div>
       {/* 3D Cube Container with Non-Overlapping Flanks */}
-      <div className="relative w-full flex items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-14">
+      <div className="relative hidden spacious:flex w-full items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-14">
         
         {/* Left Arrow Placeholder */}
         <div className="w-10 sm:w-12 md:w-14 flex items-center justify-center shrink-0">
@@ -12,7 +20,7 @@ export default function ProjectsGridSkeleton() {
         </div>
 
         {/* 3D Perspective Stage Skeleton */}
-        <div className="relative w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl h-[310px] sm:h-[340px] md:h-[365px] flex items-center justify-center shrink-0">
+        <div className="relative w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl h-[310px] sm:h-[340px] md:h-[365px] flex items-center justify-center min-w-0 shrink">
           <div className="w-full h-full grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
             {[...Array(6)].map((_, idx) => (
               <div
@@ -45,7 +53,7 @@ export default function ProjectsGridSkeleton() {
       </div>
 
       {/* Bottom Pagination Dots Skeleton */}
-      <div className="flex items-center justify-center gap-2.5 pt-4">
+      <div className="hidden spacious:flex items-center justify-center gap-2.5 pt-4">
         <Skeleton className="w-7 h-1.5 rounded-full bg-amber-600/50 dark:bg-[#FFD88A]/50" />
         <Skeleton className="w-2 h-1.5 rounded-full bg-stone-400/40 dark:bg-white/20" />
         <Skeleton className="w-2 h-1.5 rounded-full bg-stone-400/40 dark:bg-white/20" />

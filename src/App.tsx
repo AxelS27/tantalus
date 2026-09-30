@@ -447,8 +447,8 @@ export default function App() {
             aria-label={`${currentTrack.title} is playing`}
             className={`pointer-events-none fixed z-[60] flex gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)] ${
               activeTab === 'storybook'
-                ? 'left-1/2 -translate-x-1/2 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] md:bottom-2 max-w-[calc(100vw-3rem)] justify-center'
-                : 'right-4 sm:right-6 bottom-[calc(8.25rem+env(safe-area-inset-bottom))] md:bottom-6 max-w-[calc(100vw-2rem)]'
+                ? 'left-1/2 -translate-x-1/2 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] spacious:bottom-2 max-w-[calc(100vw-3rem)] justify-center'
+                : 'right-4 sm:right-6 bottom-[calc(8.25rem+env(safe-area-inset-bottom))] spacious:bottom-6 max-w-[calc(100vw-2rem)]'
             }}`}
           >
             <span aria-hidden="true" className="min-w-0 truncate">{currentTrack.title}</span>
@@ -482,7 +482,7 @@ export default function App() {
       ) : (
         <div
           onWheel={handleGlobalWheel}
-          className="relative w-screen h-screen overflow-hidden bg-[#FAF8F5]"
+          className="relative w-screen h-dvh overflow-hidden bg-[#FAF8F5]"
         >
           {/* Desktop glass navbar and mobile bottom dock */}
           <Navbar
@@ -511,9 +511,9 @@ export default function App() {
             }`}
           >
             {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
-            <div className="spatial-section absolute left-0 top-0 w-screen h-screen overflow-hidden z-10">
+            <div className="spatial-section absolute left-0 top-0 w-screen h-dvh overflow-hidden z-10">
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('home') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
@@ -529,10 +529,10 @@ export default function App() {
               </div>
 
               {/* Upper-Left Editorial Identity */}
-              <div className="absolute top-[23%] md:top-[27%] left-0 right-0 md:left-20 md:right-auto z-20 pointer-events-auto space-y-2 md:space-y-2.5 px-4 md:px-0 max-w-5xl text-center md:text-left select-text">
+              <div className="absolute top-[23%] spacious:top-[27%] left-0 right-0 spacious:left-20 spacious:right-auto z-20 pointer-events-auto space-y-2 spacious:space-y-2.5 px-4 spacious:px-0 max-w-5xl text-center spacious:text-left select-text">
                 {/* Line 1: Name */}
                 <h1
-                  className="font-serif italic text-[clamp(1.8rem,8.5vw,3.75rem)] md:text-7xl lg:text-8xl text-white tracking-tight font-light leading-none md:whitespace-nowrap"
+                  className="font-serif italic text-[clamp(1.8rem,8.5vw,3.75rem)] spacious:text-8xl text-white tracking-tight font-light leading-none spacious:whitespace-nowrap"
                   style={{
                     textShadow: '0 2px 12px rgba(0,0,0,0.85), 0 8px 32px rgba(0,0,0,0.65)',
                   }}
@@ -542,7 +542,7 @@ export default function App() {
 
                 {/* Line 2: Role (Antique Gold) */}
                 <p
-                  className="font-serif italic text-[clamp(0.95rem,4vw,1.25rem)] md:text-2xl lg:text-3xl text-[#E8C582] tracking-wide font-normal [-webkit-text-stroke:0.35px_#E8C582] md:[-webkit-text-stroke:0] md:whitespace-nowrap"
+                  className="font-serif italic text-[clamp(0.95rem,4vw,1.25rem)] spacious:text-3xl text-[#E8C582] tracking-wide font-normal [-webkit-text-stroke:0.35px_#E8C582] spacious:[-webkit-text-stroke:0] spacious:whitespace-nowrap"
                   style={{
                     textShadow: '0 2px 10px rgba(0,0,0,0.85), 0 4px 20px rgba(0,0,0,0.65)',
                   }}
@@ -552,7 +552,7 @@ export default function App() {
 
                 {/* Line 3: Age & Location */}
                 <div
-                  className="flex items-center justify-center md:justify-start gap-2.5 md:gap-3 font-serif italic text-sm md:text-lg lg:text-xl text-stone-100/90 tracking-wide font-light whitespace-nowrap"
+                  className="flex items-center justify-center spacious:justify-start gap-2.5 spacious:gap-3 font-serif italic text-sm spacious:text-xl text-stone-100/90 tracking-wide font-light whitespace-nowrap"
                   style={{
                     textShadow: '0 1px 8px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.6)',
                   }}
@@ -564,7 +564,7 @@ export default function App() {
 
                 {/* Line 4: Passions */}
                 <p
-                  className="font-serif italic text-sm md:text-lg lg:text-xl text-stone-100/85 tracking-wide font-light pt-0.5"
+                  className="font-serif italic text-sm spacious:text-xl text-stone-100/85 tracking-wide font-light pt-0.5"
                   style={{
                     textShadow: '0 1px 8px rgba(0,0,0,0.85), 0 3px 14px rgba(0,0,0,0.6)',
                   }}
@@ -574,11 +574,11 @@ export default function App() {
               </div>
             </div>
 
-            {/* ================= STORY BOOK SECTION (North-East: +100vw, -100vh) ================= */}
-            <div className="spatial-section absolute left-[100vw] top-[-100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+            {/* ================= STORY BOOK SECTION (North-East: +100vw, -100dvh) ================= */}
+            <div className="spatial-section absolute left-[100vw] top-[-100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center">
               {/* Background Image with Ambient Parallax */}
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('storybook') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
@@ -609,10 +609,10 @@ export default function App() {
             </div>
 
             {/* ================= 2. TIMELINE SECTION (East: +100vw, 0) ================= */}
-            <div className="spatial-section absolute left-[100vw] top-0 w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+            <div className="spatial-section absolute left-[100vw] top-0 w-screen h-dvh overflow-hidden z-10 flex items-center justify-center">
               {/* Background Image with Ultra-Subtle Vignette */}
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('timeline') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
@@ -640,11 +640,11 @@ export default function App() {
               )}
             </div>
 
-            {/* ================= 3. PROJECTS SECTION (South: 0, +100vh) ================= */}
-            <div className="spatial-section absolute left-0 top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+            {/* ================= 3. PROJECTS SECTION (South: 0, +100dvh) ================= */}
+            <div className="spatial-section absolute left-0 top-[100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center">
               {/* Background Image with Subtle Vignette */}
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('projects') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
@@ -674,9 +674,9 @@ export default function App() {
             </div>
 
             {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
-            <div className="spatial-section absolute left-[-100vw] top-0 w-screen h-screen overflow-hidden z-10">
+            <div className="spatial-section absolute left-[-100vw] top-0 w-screen h-dvh overflow-hidden z-10">
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('archive') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
@@ -710,10 +710,10 @@ export default function App() {
               )}
             </div>
 
-            {/* ================= REPERTOIRE SECTION (North-West: -100vw, -100vh) ================= */}
-            <div className="spatial-section absolute left-[-100vw] top-[-100vh] w-screen h-screen overflow-hidden z-10">
+            {/* ================= REPERTOIRE SECTION (North-West: -100vw, -100dvh) ================= */}
+            <div className="spatial-section absolute left-[-100vw] top-[-100dvh] w-screen h-dvh overflow-hidden z-10">
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('repertoire') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
@@ -738,10 +738,10 @@ export default function App() {
               )}
             </div>
 
-            {/* ================= WATCHLIST SECTION (North: 0, -100vh) ================= */}
-            <div className="spatial-section absolute left-0 top-[-100vh] w-screen h-screen overflow-hidden z-10">
+            {/* ================= WATCHLIST SECTION (North: 0, -100dvh) ================= */}
+            <div className="spatial-section absolute left-0 top-[-100dvh] w-screen h-dvh overflow-hidden z-10">
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('watchlist') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
@@ -766,10 +766,10 @@ export default function App() {
               )}
             </div>
 
-            {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100vh) ================= */}
-            <div className="spatial-section absolute left-[100vw] top-[100vh] w-screen h-screen overflow-hidden z-10 flex items-center justify-center">
+            {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100dvh) ================= */}
+            <div className="spatial-section absolute left-[100vw] top-[100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center">
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('connect') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
@@ -796,10 +796,10 @@ export default function App() {
               )}
             </div>
 
-            {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100vh) ================= */}
-            <div className="spatial-section absolute left-[-100vw] top-[100vh] w-screen h-screen overflow-hidden z-10">
+            {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100dvh) ================= */}
+            <div className="spatial-section absolute left-[-100vw] top-[100dvh] w-screen h-dvh overflow-hidden z-10">
               <div
-                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6vh)] ${
+                className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('certificates') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >

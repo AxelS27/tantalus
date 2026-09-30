@@ -3,7 +3,7 @@ import Skeleton from '../common/Skeleton';
 export default function TimelineRollerSkeleton() {
   return (
     <div className="relative w-full h-full flex items-center justify-center z-20 px-6 sm:px-12 md:px-16 pointer-events-none select-none">
-      <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-10 sm:gap-14 lg:gap-18">
+      <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col spacious:flex-row items-center justify-center gap-6 spacious:gap-18">
         
         {/* LEFT: Detail Content Skeleton */}
         <div className="flex-1 max-w-xl lg:max-w-2xl xl:max-w-3xl flex flex-col items-center justify-center text-center space-y-4">
@@ -30,8 +30,11 @@ export default function TimelineRollerSkeleton() {
           <Skeleton variant="text" className="w-16 h-4 rounded-full bg-white/15 dark:bg-white/10 pt-2" />
         </div>
 
+        <div className="spacious:hidden w-full max-w-sm">
+          <Skeleton className="w-full h-20 rounded-2xl bg-white/20 border border-white/30" />
+        </div>
         {/* RIGHT: Cylindrical Roller Wheel Skeleton */}
-        <div className="flex-shrink-0 flex flex-col items-center justify-center space-y-3">
+        <div className="hidden spacious:flex flex-shrink-0 flex-col items-center justify-center space-y-3">
           {/* Top Arrow Placeholder */}
           <Skeleton variant="circular" className="w-9 h-9 rounded-full bg-white/15 dark:bg-white/10" />
 

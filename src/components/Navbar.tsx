@@ -63,7 +63,7 @@ export function Navbar({ activeTab = 'home', onTabChange, mobileBackAction }: Na
 
   return (
     <>
-    <header className="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex-col items-center">
+    <header className="hidden spacious:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none flex-col items-center">
       <motion.nav
         layout="position"
         initial={{ opacity: 0, y: -20, scale: 0.98 }}
@@ -207,7 +207,7 @@ export function Navbar({ activeTab = 'home', onTabChange, mobileBackAction }: Na
       <button
         type="button"
         onClick={mobileBackAction?.onClick ?? (() => handleSelect('archive'))}
-        className="glass-surface glass-ivory md:hidden fixed top-[calc(1rem+env(safe-area-inset-top))] left-4 z-50 flex h-11 items-center gap-1.5 rounded-full border border-white/60 dark:border-white/20 bg-[#FAF8F5]/75 dark:bg-[#161412]/75 px-3.5 text-xs font-medium text-stone-950 dark:text-stone-100 backdrop-blur-2xl shadow-[0_8px_24px_rgba(20,15,10,0.2),inset_0_1px_1px_rgba(255,255,255,0.7)] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
+        className="glass-surface glass-ivory spacious:hidden fixed top-[calc(1rem+env(safe-area-inset-top))] left-4 z-50 flex h-11 items-center gap-1.5 rounded-full border border-white/60 dark:border-white/20 bg-[#FAF8F5]/75 dark:bg-[#161412]/75 px-3.5 text-xs font-medium text-stone-950 dark:text-stone-100 backdrop-blur-2xl shadow-[0_8px_24px_rgba(20,15,10,0.2),inset_0_1px_1px_rgba(255,255,255,0.7)] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
         aria-label={mobileBackAction?.label ?? 'Back to Archive'}
       >
         <ArrowLeft aria-hidden="true" className="h-4 w-4" />
@@ -216,7 +216,7 @@ export function Navbar({ activeTab = 'home', onTabChange, mobileBackAction }: Na
     )}
     <nav
       aria-label="Main navigation"
-      className="glass-surface glass-ivory md:hidden fixed left-1/2 -translate-x-1/2 bottom-[calc(1.375rem+env(safe-area-inset-bottom))] z-50 grid w-[calc(100%-3rem)] max-w-[340px] h-14 grid-cols-4 items-center rounded-[1.15rem] border border-white/55 dark:border-white/20 bg-[#FAF8F5]/70 dark:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_12px_40px_rgba(20,15,10,0.3),inset_0_1px_0_rgba(255,255,255,0.7)] px-1 select-none"
+      className="glass-surface glass-ivory spacious:hidden fixed left-1/2 -translate-x-1/2 bottom-[calc(1.375rem+env(safe-area-inset-bottom))] z-50 grid w-[calc(100%-3rem)] max-w-[340px] md:max-w-[520px] h-14 md:h-16 grid-cols-4 items-center rounded-[1.15rem] border border-white/55 dark:border-white/20 bg-[#FAF8F5]/70 dark:bg-[#161412]/75 backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_12px_40px_rgba(20,15,10,0.3),inset_0_1px_0_rgba(255,255,255,0.7)] px-1 select-none"
     >
       {mobileNavItems.map(({ id, label, icon: Icon }) => {
         const isActive = id === 'archive' ? activeTab === 'archive' || isSubApp : activeTab === id;
@@ -244,8 +244,8 @@ export function Navbar({ activeTab = 'home', onTabChange, mobileBackAction }: Na
                 className="absolute inset-0 rounded-[0.9rem] bg-white/75 dark:bg-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.75),0_2px_10px_rgba(0,0,0,0.08)]"
               />
             )}
-            <Icon aria-hidden="true" className="relative z-10 h-[18px] w-[18px]" strokeWidth={isActive ? 2.2 : 1.8} />
-            <span className="relative z-10 font-sans text-[9px] font-medium leading-tight tracking-wide whitespace-nowrap">{displayLabel}</span>
+            <Icon aria-hidden="true" className="relative z-10 h-[18px] w-[18px] md:h-5 md:w-5" strokeWidth={isActive ? 2.2 : 1.8} />
+            <span className="relative z-10 font-sans text-[9px] md:text-[11px] font-medium leading-tight tracking-wide whitespace-nowrap">{displayLabel}</span>
           </button>
         );
       })}

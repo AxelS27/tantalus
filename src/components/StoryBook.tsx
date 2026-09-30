@@ -25,6 +25,7 @@ import { storybooksData, type StoryBookItem } from '../data/storybooks/index';
 import { getAssetUrl } from '../lib/assets';
 import StepCounter from './common/StepCounter';
 import { elasticLayoutSpring } from '../lib/motion';
+import { COMPACT_VIEWPORT_QUERY, canScrollWithin } from '../lib/layout';
 
 const BOOKMARK_STORAGE_KEY_PREFIX = 'tantalize_storybook_bookmark_';
 
@@ -160,7 +161,7 @@ const BookCard = memo(function BookCard({
         WebkitFontSmoothing: 'antialiased',
         MozOsxFontSmoothing: 'grayscale',
       }}
-      className="storybook-shelf-card group absolute w-[260px] sm:w-[300px] md:w-[330px] aspect-[1/1.42] transition-shadow cursor-pointer select-none"
+      className="storybook-shelf-card group absolute w-[260px] sm:w-[300px] spacious:w-[330px] aspect-[1/1.42] transition-shadow cursor-pointer select-none"
     >
       {/* 3D BOOK CONTAINER */}
       <div
@@ -389,11 +390,11 @@ export const StoryBook = memo(function StoryBook({
   const mobileJumpStartRef = useRef(0);
   const lastCloseRequestRef = useRef(closeRequest);
   const [isMobileReader, setIsMobileReader] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+    typeof window !== 'undefined' && window.matchMedia(COMPACT_VIEWPORT_QUERY).matches,
   );
 
   useEffect(() => {
-    const media = window.matchMedia('(max-width: 767px)');
+    const media = window.matchMedia(COMPACT_VIEWPORT_QUERY);
     const syncReaderMode = () => setIsMobileReader(media.matches);
     syncReaderMode();
     media.addEventListener('change', syncReaderMode);
@@ -967,13 +968,15 @@ export const StoryBook = memo(function StoryBook({
   const handleWheel = (e: React.WheelEvent) => {
     if (!isActive || isTocOpen) return;
     e.stopPropagation();
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX) &&
+        canScrollWithin(e.target, e.currentTarget, e.deltaY)) return;
 
     const now = Date.now();
     if (now - lastWheelTimeRef.current < 220) return;
 
     if (isReaderSpread) {
       // Phone leaves scroll internally; wheel gestures must not skip unread text.
-      if (window.matchMedia('(max-width: 767px)').matches) return;
+      if (window.matchMedia(COMPACT_VIEWPORT_QUERY).matches) return;
       const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       if (Math.abs(delta) > 15) {
         if (delta > 0) {
@@ -1041,7 +1044,7 @@ export const StoryBook = memo(function StoryBook({
       }
 
       if (isReaderSpread) {
-        if (window.matchMedia('(max-width: 767px)').matches) {
+        if (window.matchMedia(COMPACT_VIEWPORT_QUERY).matches) {
           if (e.key === 'ArrowRight') goToMobilePage(mobilePageIndex + 1);
           if (e.key === 'ArrowLeft') goToMobilePage(mobilePageIndex - 1);
         } else {
@@ -1111,14 +1114,14 @@ export const StoryBook = memo(function StoryBook({
       return (
         <div
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
-          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+          className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Pure Minimalist Book Title */}
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-2.5 min-h-0 py-6 px-4 z-10 my-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] tracking-[0.2em] uppercase">
+            <h2 className="text-2xl sm:text-3xl spacious:text-4xl font-serif font-bold text-[#1F1712] tracking-[0.2em] uppercase">
               {book.title}
             </h2>
             {book.originalTitle && (
@@ -1141,15 +1144,15 @@ export const StoryBook = memo(function StoryBook({
       return (
         <div
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
-          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+          className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Book Title & Clickable Index Table with Hierarchy & Dot Leaders */}
-          <div className={`flex-1 flex flex-col justify-start min-h-0 py-2 px-2 sm:px-6 md:px-8 z-10 ${mobile ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'}`}>
+          <div className={`flex-1 flex flex-col justify-start min-h-0 py-2 px-2 sm:px-6 spacious:px-8 z-10 overflow-y-auto overscroll-contain`}>
             <div className="text-center pb-3">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#1F1712] tracking-wide">
+              <h3 className="text-xl sm:text-2xl spacious:text-3xl font-serif font-bold text-[#1F1712] tracking-wide">
                 Table of Contents
               </h3>
               <p className="text-xs sm:text-sm font-serif italic text-amber-800/80 mt-0.5">
@@ -1170,10 +1173,10 @@ export const StoryBook = memo(function StoryBook({
                     className={`group w-full flex items-baseline justify-between rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer ${mobile ? 'min-h-11 py-2 px-0' : 'py-1 px-2'}`}
                   >
                     <div className="flex items-baseline gap-2.5 min-w-0 flex-1 pr-2">
-                      <span className="font-serif text-xs sm:text-[13px] md:text-sm text-[#8A7B6E] w-16 sm:w-24 md:w-28 flex-shrink-0 text-left uppercase tracking-wider font-medium">
+                      <span className="font-serif text-xs sm:text-[13px] spacious:text-sm text-[#8A7B6E] w-16 sm:w-24 spacious:w-28 flex-shrink-0 text-left uppercase tracking-wider font-medium">
                         {item.number}
                       </span>
-                      <span className={`font-serif font-medium text-[#241D17] group-hover:text-amber-800 flex items-center gap-1.5 ${mobile ? 'text-sm leading-tight' : 'text-xs sm:text-sm md:text-[14.5px] lg:text-[15px] truncate'}`} >
+                      <span className={`font-serif font-medium text-[#241D17] group-hover:text-amber-800 flex items-center gap-1.5 ${mobile ? 'text-sm leading-tight' : 'text-xs sm:text-sm spacious:text-[14.5px] lg:text-[15px] truncate'}`} >
                         {item.title}
                         {isBookmarked && (
                           <Bookmark className="w-3.5 h-3.5 text-amber-700 fill-amber-500/30 flex-shrink-0" />
@@ -1203,10 +1206,10 @@ export const StoryBook = memo(function StoryBook({
       return (
         <div
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
-          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+          className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Pure & Minimalist Center Chapter Division */}
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
@@ -1214,7 +1217,7 @@ export const StoryBook = memo(function StoryBook({
               {page.chapterNumber}
             </span>
 
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1F1712] tracking-wide max-w-md leading-snug">
+            <h3 className="text-2xl sm:text-3xl spacious:text-4xl font-serif font-bold text-[#1F1712] tracking-wide max-w-md leading-snug">
               {page.chapterTitle}
             </h3>
 
@@ -1238,13 +1241,13 @@ export const StoryBook = memo(function StoryBook({
       return (
         <div
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
-          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+          className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Narrative Text Body (Balanced, highly legible editorial font) */}
-          <div className={`flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 px-2 sm:px-4 md:px-6 z-10 ${mobile ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'}`} >
+          <div className={`flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 px-2 sm:px-4 spacious:px-6 z-10 overflow-y-auto overscroll-contain`} >
             {page.paragraphs?.map((paragraph, pIdx) => {
               if (page.isFirstPageOfChapter && pIdx === 0 && paragraph.length > 0) {
                 const firstLetter = paragraph.charAt(0);
@@ -1252,9 +1255,9 @@ export const StoryBook = memo(function StoryBook({
                 return (
                   <p
                     key={pIdx}
-                    className="leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text"
+                    className="leading-[1.66] sm:leading-[1.7] spacious:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] spacious:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text"
                   >
-                    <span className="float-left text-5xl sm:text-6xl md:text-7xl leading-[0.8] pr-3 pt-1 font-serif font-bold text-amber-800 select-text">
+                    <span className="float-left text-5xl sm:text-6xl spacious:text-7xl leading-[0.8] pr-3 pt-1 font-serif font-bold text-amber-800 select-text">
                       {firstLetter}
                     </span>
                     {restOfParagraph}
@@ -1264,7 +1267,7 @@ export const StoryBook = memo(function StoryBook({
               return (
                 <p
                   key={pIdx}
-                  className={`leading-[1.66] sm:leading-[1.7] md:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] md:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text ${
+                  className={`leading-[1.66] sm:leading-[1.7] spacious:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] spacious:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text ${
                     pIdx > 0 || !page.isFirstPageOfChapter ? 'indent-6 sm:indent-8' : ''
                   }`}
                 >
@@ -1287,15 +1290,15 @@ export const StoryBook = memo(function StoryBook({
       return (
         <div
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
-          className="relative w-full h-full p-7 sm:p-9 md:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
+          className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
           {/* Inner Paper Border Accent */}
-          <div className="absolute inset-4 sm:inset-5 md:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
+          <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Center Showcase: Pure Video & Quote */}
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
             {/* Cinematic Animated Winged Man Painting */}
-            <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] aspect-[16/9] rounded-xl overflow-hidden border border-amber-900/20 shadow-xl bg-black/10">
+            <div className="relative w-full max-w-[280px] sm:max-w-[340px] spacious:max-w-[380px] aspect-[16/9] rounded-xl overflow-hidden border border-amber-900/20 shadow-xl bg-black/10">
               <video
                 autoPlay
                 loop
@@ -1309,7 +1312,7 @@ export const StoryBook = memo(function StoryBook({
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            <p className="text-sm sm:text-base md:text-[17px] font-serif italic text-[#3D3126] max-w-md leading-relaxed px-2 mt-2">
+            <p className="text-sm sm:text-base spacious:text-[17px] font-serif italic text-[#3D3126] max-w-md leading-relaxed px-2 mt-2">
               "Icarus died smiling, for to fall is to have once soared"
             </p>
           </div>
@@ -1350,14 +1353,14 @@ export const StoryBook = memo(function StoryBook({
           duration: isZoomingPaper ? 1.5 : 0.85,
           ease: [0.16, 1, 0.3, 1],
         }}
-        className="absolute inset-0 w-full h-full flex flex-col items-center justify-center"
+        className="storybook-shelf absolute inset-0 w-full h-full flex flex-col items-center justify-center compact:justify-start compact:pt-[calc(6rem+env(safe-area-inset-top))] compact:pb-[calc(7rem+env(safe-area-inset-bottom))] compact:overflow-y-auto"
       >
-        <h1 className="md:hidden absolute top-[clamp(5.5rem,16dvh,9rem)] left-0 right-0 z-30 text-center font-serif italic font-light text-4xl tracking-tight text-white select-text" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}>
+        <h1 className="spacious:hidden mb-6 shrink-0 z-30 text-center font-serif italic font-light text-4xl tracking-tight text-white select-text" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}>
           Story Books
         </h1>
 
         {/* FAR-LEFT ARROW (Screen Edge) */}
-        <div className="absolute left-4 sm:left-8 md:left-12 lg:left-16 top-1/2 -translate-y-1/2 z-40">
+        <div className="absolute left-4 sm:left-8 spacious:left-12 lg:left-16 top-1/2 -translate-y-1/2 z-40">
           {selectedIndex > 0 && (
             <button
               onClick={handlePrevShelf}
@@ -1376,7 +1379,7 @@ export const StoryBook = memo(function StoryBook({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
           style={{ perspective: '1600px', transformStyle: 'preserve-3d' }}
-          className={`relative w-full max-w-5xl h-[420px] sm:h-[460px] md:h-[500px] flex items-center justify-center touch-none select-none my-auto ${
+          className={`storybook-shelf-stage relative w-full max-w-5xl shrink-0 h-[420px] sm:h-[460px] spacious:h-[500px] flex items-center justify-center touch-none compact:touch-pan-y select-none my-auto ${
             isDragging ? 'cursor-grabbing' : 'cursor-grab'
           }`}
         >
@@ -1394,7 +1397,7 @@ export const StoryBook = memo(function StoryBook({
         </div>
 
         {/* FAR-RIGHT ARROW (Screen Edge) */}
-        <div className="absolute right-4 sm:right-8 md:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-40">
+        <div className="absolute right-4 sm:right-8 spacious:right-12 lg:right-16 top-1/2 -translate-y-1/2 z-40">
           {selectedIndex < storybooksData.length - 1 && (
             <button
               onClick={handleNextShelf}
@@ -1424,7 +1427,7 @@ export const StoryBook = memo(function StoryBook({
               ease: [0.16, 1, 0.3, 1],
             }}
             style={{ perspective: '2000px', transformStyle: 'preserve-3d' }}
-            className="absolute inset-x-0 top-3 bottom-[calc(6.25rem+env(safe-area-inset-bottom))] md:relative md:inset-auto w-full max-w-6xl xl:max-w-7xl h-auto md:h-[92vh] max-h-[860px] flex flex-col items-center justify-between z-40 md:my-auto px-2 sm:px-4"
+            className="absolute inset-x-0 top-3 bottom-[calc(6.25rem+env(safe-area-inset-bottom))] spacious:relative spacious:inset-auto w-full max-w-6xl xl:max-w-7xl h-auto spacious:h-[92dvh] spacious:max-h-[860px] flex flex-col items-center justify-between z-40 spacious:my-auto px-2 sm:px-4"
           >
             {/* Top Reader Floating Bar */}
             <motion.div
@@ -1432,12 +1435,12 @@ export const StoryBook = memo(function StoryBook({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="w-full flex shrink-0 items-center justify-end md:justify-between px-2 sm:px-4 py-2 min-h-14 z-30 mb-2"
+              className="w-full flex shrink-0 items-center justify-end spacious:justify-between px-2 sm:px-4 py-2 min-h-14 z-30 mb-2"
             >
               {/* Back to Shelf Button */}
               <button
                 onClick={handleCloseSequence}
-                className="glass-surface glass-ivory group hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/85 md:bg-[#FAF8F5]/60 dark:bg-[#161412]/75 md:dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
+                className="glass-surface glass-ivory group hidden spacious:flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/85 spacious:bg-[#FAF8F5]/60 dark:bg-[#161412]/75 spacious:dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:-translate-x-0.5" />
                 <span>Return to Shelf</span>
@@ -1512,7 +1515,7 @@ export const StoryBook = memo(function StoryBook({
                   goToMobilePage(mobilePageIndex + (dx < 0 ? 1 : -1));
                 }
               }}
-              className="md:hidden relative w-full max-w-xl flex-1 min-h-0 rounded-2xl border border-[#D8A048]/70 bg-[#FAF6EE] p-1.5 shadow-[0_24px_60px_rgba(20,10,5,0.45)] overflow-hidden"
+              className="spacious:hidden relative w-full max-w-xl md:max-w-2xl flex-1 min-h-0 rounded-2xl border border-[#D8A048]/70 bg-[#FAF6EE] p-1.5 shadow-[0_24px_60px_rgba(20,10,5,0.45)] overflow-hidden"
             >
               <AnimatePresence mode="wait" initial={false} custom={mobilePageDirection}>
                 <motion.div
@@ -1541,7 +1544,7 @@ export const StoryBook = memo(function StoryBook({
                     setMobilePageIndex(nextPage);
                     setCurrentSpreadIndex(Math.floor(mobilePages[nextPage].pageNumber / 2));
                   }}
-                  className="relative h-full w-full rounded-xl overflow-hidden"
+                  className="storybook-reader-leaf no-scrollbar relative h-full w-full rounded-xl overflow-hidden"
                 >
                   {renderNovelPage(mobilePages[mobilePageIndex], false, true)}
                 </motion.div>
@@ -1568,7 +1571,7 @@ export const StoryBook = memo(function StoryBook({
             </div>
 
             {/* ================= DUAL-PAGE SPREAD PHYSICAL BOOK CONTAINER ================= */}
-            <div className="relative hidden md:flex w-full flex-1 items-stretch justify-center rounded-3xl shadow-[0_35px_100px_rgba(0,0,0,0.9)] border-2 border-[#D8A048]/70 bg-[#160E0A] p-3 sm:p-4 overflow-visible">
+            <div className="relative hidden spacious:flex w-full flex-1 min-h-0 items-stretch justify-center rounded-3xl shadow-[0_35px_100px_rgba(0,0,0,0.9)] border-2 border-[#D8A048]/70 bg-[#160E0A] p-3 sm:p-4 overflow-visible">
               
               {/* Outer Hardcover Base Tray */}
               <div className="absolute inset-0 bg-[#2B1612] rounded-3xl pointer-events-none" />
@@ -1577,29 +1580,29 @@ export const StoryBook = memo(function StoryBook({
               {/* ================= OPEN PARCHMENT SPREAD ================= */}
               <div
                 style={{ perspective: '2200px', transformStyle: 'preserve-3d' }}
-                className="relative w-full h-full flex flex-col md:flex-row rounded-2xl bg-[#FAF6EE] text-[#2B231D] shadow-inner overflow-visible"
+                className="relative w-full h-full flex flex-col spacious:flex-row rounded-2xl bg-[#FAF6EE] text-[#2B231D] shadow-inner overflow-visible"
               >
                 {!turnAnimation ? (
                   <>
                     {/* IDLE LEFT PAGE */}
-                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                    <div className="w-full spacious:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
                       {renderNovelPage(currentSpread?.leftPage, true)}
                     </div>
 
                     {/* IDLE RIGHT PAGE */}
-                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                    <div className="w-full spacious:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
                       {renderNovelPage(currentSpread?.rightPage, false)}
                     </div>
                   </>
                 ) : turnAnimation.direction === 'forward' ? (
                   <>
                     {/* BASE LEFT PAGE (Current Spread Left Page) */}
-                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                    <div className="w-full spacious:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
                       {renderNovelPage(spreads[turnAnimation.fromSpreadIdx]?.leftPage, true)}
                     </div>
 
                     {/* BASE RIGHT PAGE (Upcoming Spread Right Page, already prepared underneath) */}
-                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                    <div className="w-full spacious:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
                       {renderNovelPage(spreads[turnAnimation.toSpreadIdx]?.rightPage, false)}
                     </div>
 
@@ -1634,7 +1637,7 @@ export const StoryBook = memo(function StoryBook({
                         zIndex: 30,
                         willChange: 'transform',
                       }}
-                      className="hidden md:block pointer-events-none"
+                      className="hidden spacious:block pointer-events-none"
                     >
                       {/* FRONT FACE OF TURNING LEAF (From Right Page) */}
                       <div
@@ -1682,12 +1685,12 @@ export const StoryBook = memo(function StoryBook({
                 ) : (
                   <>
                     {/* BASE LEFT PAGE (Upcoming Spread Left Page, already prepared underneath) */}
-                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                    <div className="w-full spacious:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
                       {renderNovelPage(spreads[turnAnimation.toSpreadIdx]?.leftPage, true)}
                     </div>
 
                     {/* BASE RIGHT PAGE (Current Spread Right Page) */}
-                    <div className="w-full md:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
+                    <div className="w-full spacious:w-1/2 h-full flex flex-col overflow-hidden bg-[#FAF6EE]">
                       {renderNovelPage(spreads[turnAnimation.fromSpreadIdx]?.rightPage, false)}
                     </div>
 
@@ -1722,7 +1725,7 @@ export const StoryBook = memo(function StoryBook({
                         zIndex: 30,
                         willChange: 'transform',
                       }}
-                      className="hidden md:block pointer-events-none"
+                      className="hidden spacious:block pointer-events-none"
                     >
                       {/* FRONT FACE (Turning Left Page) */}
                       <div
@@ -1768,11 +1771,11 @@ export const StoryBook = memo(function StoryBook({
                 )}
 
                 {/* Subtle Center Book Spine Crease & Natural Fold Shadow (Ultra-refined, zero blocky occlusion) */}
-                <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-amber-900/15 pointer-events-none z-40" />
-                <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-6 -translate-x-1/2 bg-gradient-to-r from-black/[0.04] via-transparent to-black/[0.04] pointer-events-none z-40" />
+                <div className="hidden spacious:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-amber-900/15 pointer-events-none z-40" />
+                <div className="hidden spacious:block absolute left-1/2 top-0 bottom-0 w-6 -translate-x-1/2 bg-gradient-to-r from-black/[0.04] via-transparent to-black/[0.04] pointer-events-none z-40" />
 
                 {/* Reveal the ribbon only after landing; retract it before turning away. */}
-                <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 z-45 w-5 h-32 overflow-hidden pointer-events-none">
+                <div className="hidden spacious:block absolute top-0 left-1/2 -translate-x-1/2 z-45 w-5 h-32 overflow-hidden pointer-events-none">
                   <AnimatePresence>
                     {!turnAnimation && isCurrentSpreadBookmarked && !isBookmarkRetracting && (
                       <motion.button
@@ -1796,7 +1799,7 @@ export const StoryBook = memo(function StoryBook({
             </div>
 
             {/* A leaf at a time on phones; the two-page controls stay on desktop. */}
-            <div className="md:hidden w-full shrink-0 flex items-center justify-between gap-2 px-2 py-2 mt-2 z-30">
+            <div className="spacious:hidden w-full shrink-0 flex items-center justify-between gap-2 px-2 py-2 mt-2 z-30">
               <button type="button" aria-label="Previous page" onClick={() => goToMobilePage(mobilePageIndex - 1)} disabled={mobilePageIndex === 0} className="flex shrink-0 items-center justify-center gap-1 min-h-11 min-w-11 sm:px-3 rounded-full bg-[#FAF8F5]/75 text-stone-900 font-serif text-sm border border-white/60 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer">
                 <ChevronLeft aria-hidden="true" className="w-4 h-4" />
                 <span className="hidden sm:inline">Previous</span>
@@ -1831,7 +1834,7 @@ export const StoryBook = memo(function StoryBook({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="hidden md:flex w-full flex-wrap sm:flex-nowrap items-center justify-between px-4 py-2 z-30 mt-2"
+              className="hidden spacious:flex w-full shrink-0 flex-wrap sm:flex-nowrap items-center justify-between px-4 py-2 z-30 mt-2"
             >
               {/* Prev Spread Button */}
               <button

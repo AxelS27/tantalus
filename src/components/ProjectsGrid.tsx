@@ -3,6 +3,7 @@ import { animate, motion, useMotionValue } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ImageWithSkeleton from './common/ImageWithSkeleton';
 import StepCounter from './common/StepCounter';
+import { COMPACT_VIEWPORT_QUERY } from '../lib/layout';
 import { allProjects, projectPages, cubeFaces, type ProjectCardItem } from '../data/projects';
 import { getProjectCardImage, getProjectCardSrcSet } from '../lib/thumbnails';
 
@@ -251,8 +252,9 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
   // Mousewheel listener for rotating Cube & Section Handoff
   const handleWheel = (e: React.WheelEvent) => {
-    if (!isActive || window.matchMedia('(max-width: 767px)').matches) return;
+    if (!isActive) return;
     e.stopPropagation();
+    if (window.matchMedia(COMPACT_VIEWPORT_QUERY).matches) return;
     const now = Date.now();
 
     if (now - lastWheelTimeRef.current < 600) return;
@@ -278,7 +280,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       }`}
     >
       {/* Mobile gallery matches the Repertoire and Watchlist reading flow. */}
-      <div ref={mobileScrollRef} className="archive-gallery-scroll-container md:hidden absolute inset-0 overflow-y-auto overflow-x-hidden overscroll-contain">
+      <div ref={mobileScrollRef} className="archive-gallery-scroll-container spacious:hidden absolute inset-0 overflow-y-auto overflow-x-hidden overscroll-contain">
         <div className="relative mx-auto max-w-5xl px-5 pt-16 pb-[calc(8rem+env(safe-area-inset-bottom))]">
           <header className="mb-6 text-center">
             <h1 className="font-serif italic font-light text-5xl tracking-tight text-white select-text" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}>
@@ -286,7 +288,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
             </h1>
           </header>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {allProjects.slice((mobilePage - 1) * mobilePageSize, mobilePage * mobilePageSize).map((project) => (
               <motion.a
                 key={project.id}
@@ -314,7 +316,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
                   />
                 </div>
                 <div className="w-full min-h-12 flex items-center justify-center text-center px-1 py-1.5 select-text">
-                  <h2 title={project.title} className="w-full line-clamp-2 font-sans text-[11px] leading-snug font-semibold text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors">
+                  <h2 title={project.title} className="w-full line-clamp-2 font-sans text-[11px] sm:text-xs leading-snug font-semibold text-stone-950 dark:text-stone-100 group-hover:text-amber-900 dark:group-hover:text-[#FFD88A] transition-colors">
                     {project.title}
                   </h2>
                 </div>
@@ -347,10 +349,10 @@ export const ProjectsGrid = memo(function ProjectsGrid({
       </div>
 
       {/* Desktop: 3D cube with side navigation. */}
-      <div className="relative hidden md:flex w-full items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-14">
+      <div className="relative hidden spacious:flex w-full items-center justify-center gap-4 sm:gap-8 spacious:gap-12 lg:gap-14">
         
         {/* Left Arrow Slot (Hidden on newest / Page 0) */}
-        <div className="w-10 sm:w-12 md:w-14 flex items-center justify-center flex-shrink-0 z-40">
+        <div className="w-10 sm:w-12 spacious:w-14 flex items-center justify-center flex-shrink-0 z-40">
           {currentPage > 0 ? (
             <button
               onClick={handlePrev}
@@ -370,7 +372,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
           style={{ perspective: '1200px' }}
-          className={`relative w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl h-[310px] sm:h-[340px] md:h-[365px] flex items-center justify-center flex-shrink-0 touch-none select-none ${
+          className={`relative w-full max-w-lg sm:max-w-xl spacious:max-w-2xl lg:max-w-3xl h-[310px] sm:h-[340px] spacious:h-[365px] flex items-center justify-center min-w-0 flex-shrink touch-none select-none ${
             isDragging ? 'cursor-grabbing' : 'cursor-grab'
           }`}
         >
@@ -466,7 +468,7 @@ export const ProjectsGrid = memo(function ProjectsGrid({
         </div>
 
         {/* Right Arrow Slot (Hidden on oldest / last page) */}
-        <div className="w-10 sm:w-12 md:w-14 flex items-center justify-center flex-shrink-0 z-40">
+        <div className="w-10 sm:w-12 spacious:w-14 flex items-center justify-center flex-shrink-0 z-40">
           {currentPage < numFaces - 1 ? (
             <button
               onClick={handleNext}
@@ -480,12 +482,12 @@ export const ProjectsGrid = memo(function ProjectsGrid({
 
       </div>
 
-      <div className="hidden md:contents">
+      <div className="hidden spacious:contents">
         <StepCounter current={currentPage + 1} total={numFaces} label="Project page" />
       </div>
 
       {/* Face Indicator Dots */}
-      <div className="hidden md:flex items-center justify-center gap-2.5 pt-4 select-none z-30">
+      <div className="hidden spacious:flex items-center justify-center gap-2.5 pt-4 select-none z-30">
         {cubeFaces.map((face) => (
           <button
             key={face.faceIdx}
