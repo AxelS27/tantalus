@@ -5,11 +5,11 @@ export default function ProjectDetailSkeleton() {
     <div className="relative min-h-screen w-full select-none pointer-events-none font-sans overflow-x-hidden">
       
       {/* Top Floating Navbar Capsule Shimmer */}
-      <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-center w-full px-4 sm:px-8 max-w-5xl">
-        <div className="w-full h-10 sm:h-11 flex items-center justify-between p-1 rounded-full bg-white/60 dark:bg-[#161412]/75 backdrop-blur-2xl border border-white/60 dark:border-stone-700/60 shadow-lg">
+      <header className="fixed top-5 sm:top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-start md:justify-center w-full px-4 sm:px-8 max-w-5xl">
+        <div className="w-fit md:w-full h-10 md:h-11 flex items-center justify-between p-1 rounded-full bg-white/60 dark:bg-[#161412]/75 backdrop-blur-2xl border border-white/60 dark:border-stone-700/60 shadow-lg">
           <Skeleton variant="rounded" className="w-28 sm:w-36 h-8 rounded-full bg-white/70 dark:bg-white/15" />
-          <Skeleton variant="text" className="w-48 sm:w-64 h-4 rounded-full bg-stone-900/20 dark:bg-white/20" />
-          <div className="w-28 sm:w-36 hidden sm:block" />
+          <Skeleton variant="text" className="hidden md:block w-48 sm:w-64 h-4 rounded-full bg-stone-900/20 dark:bg-white/20" />
+          <div className="w-28 sm:w-36 hidden md:block" />
         </div>
       </header>
 
@@ -19,6 +19,7 @@ export default function ProjectDetailSkeleton() {
           
           {/* Section 1: Hero Split Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            <Skeleton className="md:hidden w-3/4 h-10 rounded-xl bg-stone-900/20 dark:bg-white/20" />
             {/* Visual Stage Box */}
             <div className="lg:col-span-6 space-y-3">
               <Skeleton

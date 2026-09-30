@@ -2,18 +2,14 @@ import Skeleton from '../common/Skeleton';
 
 export default function WatchlistGridSkeleton() {
   return (
-    <div className="relative w-full h-full min-h-screen flex flex-col items-center justify-start px-4 sm:px-6 md:px-8 pt-20 sm:pt-24 pb-16 select-none pointer-events-none z-20">
-      <div className="w-full max-w-5xl flex flex-col gap-6">
+    <div className="relative w-full h-full overflow-y-auto select-none pointer-events-none z-20">
+      <div className="relative mx-auto max-w-5xl px-5 sm:px-10 pt-24 spacious:pt-36 pb-[calc(7rem+env(safe-area-inset-bottom))] spacious:pb-24">
         
-        {/* Header Skeleton: Title + Category Pills */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-white/20 dark:border-white/10">
-          <div className="space-y-2">
-            <Skeleton variant="text" className="w-44 sm:w-56 h-8 sm:h-10 rounded-xl bg-white/40 dark:bg-white/15" />
-            <Skeleton variant="text" className="w-60 sm:w-72 h-4 rounded-full bg-white/25 dark:bg-white/10" />
-          </div>
-
-          {/* Category Filter Pills Skeleton */}
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <div className="flex justify-center mb-6 md:mb-10">
+          <Skeleton variant="text" className="w-44 sm:w-56 h-10 sm:h-14 rounded-xl bg-white/40 dark:bg-white/15" />
+        </div>
+        {/* Category Filter Pills Skeleton */}
+        <div className="flex flex-wrap justify-center md:flex-nowrap gap-2 pb-3 md:pb-5 mb-2 md:mb-5">
             {[...Array(4)].map((_, i) => (
               <Skeleton
                 key={i}
@@ -23,11 +19,10 @@ export default function WatchlistGridSkeleton() {
                 }`}
               />
             ))}
-          </div>
         </div>
 
-        {/* 3x5 Poster Cards Grid Skeleton (2:3 Aspect Ratio) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 w-full">
+        {/* Poster cards use the same gallery columns as the loaded page. */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5 w-full">
           {[...Array(15)].map((_, idx) => (
             <div
               key={idx}

@@ -2,11 +2,12 @@ import Skeleton from '../common/Skeleton';
 
 export default function TimelineRollerSkeleton() {
   return (
-    <div className="relative w-full h-full flex items-center justify-center z-20 px-6 sm:px-12 md:px-16 pointer-events-none select-none">
-      <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col spacious:flex-row items-center justify-center gap-6 spacious:gap-18">
+    <div className="relative w-full h-full flex items-center justify-center z-20 spacious:px-16 pointer-events-none select-none">
+      <div className="timeline-content no-scrollbar w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col spacious:flex-row items-center justify-center gap-4 spacious:gap-18 compact:absolute compact:inset-x-0 compact:top-[calc(0.5rem+env(safe-area-inset-top))] compact:bottom-[calc(8.75rem+env(safe-area-inset-bottom))] compact:justify-between compact:overflow-y-auto compact:px-5 compact:py-4">
         
         {/* LEFT: Detail Content Skeleton */}
-        <div className="flex-1 max-w-xl lg:max-w-2xl xl:max-w-3xl flex flex-col items-center justify-center text-center space-y-4">
+        <div className="w-full compact:flex-1 spacious:w-auto spacious:flex-1 max-w-xl lg:max-w-2xl xl:max-w-3xl flex flex-col items-center justify-center compact:justify-end compact:pb-20 md:compact:pb-10 text-center space-y-4">
+          <Skeleton className="spacious:hidden w-44 h-12 mb-6 shrink-0 rounded-xl bg-white/25" />
           {/* Role Title */}
           <Skeleton
             variant="text"
@@ -30,8 +31,8 @@ export default function TimelineRollerSkeleton() {
           <Skeleton variant="text" className="w-16 h-4 rounded-full bg-white/15 dark:bg-white/10 pt-2" />
         </div>
 
-        <div className="spacious:hidden w-full max-w-sm">
-          <Skeleton className="w-full h-20 rounded-2xl bg-white/20 border border-white/30" />
+        <div className="spacious:hidden w-full shrink-0 max-w-[400px] md:max-w-[600px]">
+          <Skeleton className="w-full h-[104px] rounded-2xl bg-white/20 border border-white/30" />
         </div>
         {/* RIGHT: Cylindrical Roller Wheel Skeleton */}
         <div className="hidden spacious:flex flex-shrink-0 flex-col items-center justify-center space-y-3">
