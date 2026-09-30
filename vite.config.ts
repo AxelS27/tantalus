@@ -27,6 +27,10 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '127.0.0.1',
+    // Avoid caching an empty module while an editor is rewriting a source file.
+    watch: {
+      awaitWriteFinish: { stabilityThreshold: 150, pollInterval: 25 },
+    },
   },
   build: {
     target: 'esnext',

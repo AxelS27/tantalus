@@ -79,6 +79,8 @@ function BookmarkRibbonMark() {
 export interface StoryBookProps {
   isActive?: boolean;
   onReachTop?: () => void;
+  onReaderChange?: (isReading: boolean) => void;
+  closeRequest?: number;
 }
 
 interface BookCardProps {
@@ -367,6 +369,8 @@ export interface NovelSpread {
 export const StoryBook = memo(function StoryBook({
   isActive = true,
   onReachTop,
+  onReaderChange,
+  closeRequest = 0,
 }: StoryBookProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(0);
@@ -381,6 +385,20 @@ export const StoryBook = memo(function StoryBook({
   const [currentSpreadIndex, setCurrentSpreadIndex] = useState(0);
   const [mobilePageIndex, setMobilePageIndex] = useState(0);
   const [mobilePageDirection, setMobilePageDirection] = useState(1);
+  const [mobileJumpTarget, setMobileJumpTarget] = useState<number | null>(null);
+  const mobileJumpStartRef = useRef(0);
+  const lastCloseRequestRef = useRef(closeRequest);
+  const [isMobileReader, setIsMobileReader] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)');
+    const syncReaderMode = () => setIsMobileReader(media.matches);
+    syncReaderMode();
+    media.addEventListener('change', syncReaderMode);
+    return () => media.removeEventListener('change', syncReaderMode);
+  }, []);
   const mobileTouchStartRef = useRef<{ x: number; y: number } | null>(null);
   const [isTocOpen, setIsTocOpen] = useState(false);
 
@@ -612,7 +630,10 @@ export const StoryBook = memo(function StoryBook({
   const isFlippingRef = useRef(false);
   const flipTimerRef = useRef<number | null>(null);
 
-  const isMobileReader = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+  // Keep the phone's next leaf aligned with desktop navigation and page turns.
+  useEffect(() => {
+    if (!isMobileReader) setMobilePageIndex(currentSpreadIndex * 2);
+  }, [currentSpreadIndex, isMobileReader]);
   const isCurrentSpreadBookmarked = isMobileReader
     ? savedBookmarkPage === mobilePageIndex && savedBookmarkPage !== null
     : savedBookmarkSpread !== null &&
@@ -701,6 +722,7 @@ export const StoryBook = memo(function StoryBook({
     isFlippingRef.current = false;
     setIsBookmarkRetracting(false);
     setTurnAnimation(null);
+    setMobileJumpTarget(null);
 
     const savedSpread = getSavedBookmarkSpread(book.id);
     setIsCoverOpen(true);
@@ -729,6 +751,7 @@ export const StoryBook = memo(function StoryBook({
 
     setIsReaderSpread(false);
     setIsTocOpen(false);
+    setMobileJumpTarget(null);
 
     // Let the reader start shrinking first, then reveal the shelf beneath it.
     const t1 = window.setTimeout(() => {
@@ -742,6 +765,20 @@ export const StoryBook = memo(function StoryBook({
 
     sequenceTimersRef.current = [t1, t2];
   }, []);
+
+  useEffect(() => {
+    onReaderChange?.(isReaderSpread || isCoverOpen);
+  }, [isReaderSpread, isCoverOpen, onReaderChange]);
+
+  useEffect(() => {
+    if (lastCloseRequestRef.current === closeRequest) return;
+    lastCloseRequestRef.current = closeRequest;
+    handleCloseSequence();
+  }, [closeRequest, handleCloseSequence]);
+
+  useEffect(() => {
+    if (!isActive || !isMobileReader) setMobileJumpTarget(null);
+  }, [isActive, isMobileReader]);
 
   // Jump to specific chapter spread with Sequential Multi-Page Flip Animation
   const handleJumpToChapterByPage = useCallback(
@@ -814,14 +851,28 @@ export const StoryBook = memo(function StoryBook({
     [currentSpreadIndex, savedBookmarkSpread, spreads.length],
   );
 
-  const goToMobilePage = useCallback((targetPage: number) => {
+  const goToMobilePage = useCallback((targetPage: number, sequential = false) => {
     setIsTocOpen(false);
-    if (targetPage < 0 || targetPage >= mobilePages.length || targetPage === mobilePageIndex) return;
-    setMobilePageDirection(targetPage > mobilePageIndex ? 1 : -1);
-    setMobilePageIndex(targetPage);
-    setCurrentSpreadIndex(Math.floor(targetPage / 2));
-    setIsTocOpen(false);
-  }, [mobilePageIndex, mobilePages.length]);
+    if (targetPage < 0 || targetPage >= mobilePages.length) return;
+    mobileJumpStartRef.current = mobilePageIndex;
+    setMobileJumpTarget(sequential && targetPage !== mobilePageIndex ? targetPage : null);
+    if (targetPage === mobilePageIndex) return;
+    const direction = targetPage > mobilePageIndex ? 1 : -1;
+    const nextPage = sequential ? mobilePageIndex + direction : targetPage;
+    setMobilePageDirection(direction);
+    setMobilePageIndex(nextPage);
+    setCurrentSpreadIndex(Math.floor(mobilePages[nextPage].pageNumber / 2));
+  }, [mobilePageIndex, mobilePages]);
+
+  // Match the desktop riffle curve: deliberate edges and an accelerated middle.
+  // A phone swipe has an exit and entry phase, so each takes half the turn time.
+  const mobileJumpDistance = mobileJumpTarget === null ? 0 : Math.abs(mobileJumpTarget - mobileJumpStartRef.current);
+  const mobileJumpProgress = mobileJumpDistance <= 1 ? 0 : Math.max(0, Math.min(1,
+    (Math.abs(mobilePageIndex - mobileJumpStartRef.current) - 1) / (mobileJumpDistance - 1),
+  ));
+  const mobileJumpEdgeWeight = Math.pow(Math.abs(2 * mobileJumpProgress - 1), 1.5);
+  const mobileTurnDuration = mobileJumpTarget === null ? 0.28
+    : mobileJumpDistance === 1 ? 0.4 : (0.18 + 0.22 * mobileJumpEdgeWeight) / 2;
 
   // Turn to Next Spread with 3D Page Turn Animation (Unified with Index Engine)
   const handleNextSpread = useCallback(() => {
@@ -1115,7 +1166,7 @@ export const StoryBook = memo(function StoryBook({
                 return (
                   <button
                     key={item.chapterId}
-                    onClick={() => mobile ? goToMobilePage(item.pageNumber) : handleJumpToChapterByPage(item.pageNumber)}
+                    onClick={() => mobile ? goToMobilePage(item.pageNumber, true) : handleJumpToChapterByPage(item.pageNumber)}
                     className={`group w-full flex items-baseline justify-between rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer ${mobile ? 'min-h-11 py-2 px-0' : 'py-1 px-2'}`}
                   >
                     <div className="flex items-baseline gap-2.5 min-w-0 flex-1 pr-2">
@@ -1381,12 +1432,12 @@ export const StoryBook = memo(function StoryBook({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="w-full flex items-center justify-between px-2 sm:px-4 py-2 pt-14 md:pt-2 z-30 mb-2"
+              className="w-full flex shrink-0 items-center justify-end md:justify-between px-2 sm:px-4 py-2 min-h-14 z-30 mb-2"
             >
               {/* Back to Shelf Button */}
               <button
                 onClick={handleCloseSequence}
-                className="glass-surface glass-ivory group flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/85 md:bg-[#FAF8F5]/60 dark:bg-[#161412]/75 md:dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
+                className="glass-surface glass-ivory group hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/85 md:bg-[#FAF8F5]/60 dark:bg-[#161412]/75 md:dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
               >
                 <ChevronLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:-translate-x-0.5" />
                 <span>Return to Shelf</span>
@@ -1399,7 +1450,9 @@ export const StoryBook = memo(function StoryBook({
                   layout="size"
                   transition={{ layout: elasticLayoutSpring }}
                   onClick={handleToggleBookmark}
+                  disabled={mobileJumpTarget !== null}
                   title={isCurrentSpreadBookmarked ? 'Take off Bookmark' : 'Put Bookmark'}
+                  aria-label={isCurrentSpreadBookmarked ? 'Remove bookmark' : 'Bookmark this page'}
                   className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full backdrop-blur-2xl backdrop-saturate-[180%] border text-xs font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)] ${
                     isCurrentSpreadBookmarked
                       ? 'bg-red-950/40 text-amber-200 border-amber-400/50 shadow-[0_0_15px_rgba(216,160,72,0.3)]'
@@ -1423,6 +1476,7 @@ export const StoryBook = memo(function StoryBook({
                 {/* Table of Contents Drawer Trigger */}
                 <motion.button layout="position" transition={{ layout: elasticLayoutSpring }}
                   onClick={() => setIsTocOpen(true)}
+                  aria-label="Open table of contents"
                   className="glass-surface glass-ivory flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF8F5]/60 dark:bg-[#161412]/60 hover:bg-[#FAF8F5]/80 dark:hover:bg-[#161412]/80 text-stone-900 dark:text-amber-100 backdrop-blur-2xl backdrop-saturate-[180%] border border-white/60 dark:border-white/20 text-xs sm:text-sm font-serif transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.8),0_8px_32px_-6px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.15),0_8px_32px_-6px_rgba(0,0,0,0.3)]"
                 >
                   <List className="w-4 h-4 text-amber-700 dark:text-amber-300" />
@@ -1432,18 +1486,84 @@ export const StoryBook = memo(function StoryBook({
             </motion.div>
 
             {/* Mobile reader: one independent parchment leaf per step. */}
-            <div className="md:hidden relative w-full max-w-xl flex-1 min-h-0 rounded-2xl border border-[#D8A048]/70 bg-[#FAF6EE] p-1.5 shadow-[0_24px_60px_rgba(20,10,5,0.45)] overflow-hidden">
-              <AnimatePresence mode="wait" initial={false}>
+            <div
+              onTouchStart={(event) => {
+                const touch = event.touches[0];
+                mobileTouchStartRef.current = event.touches.length === 1
+                  ? { x: touch.clientX, y: touch.clientY }
+                  : null;
+              }}
+              onTouchMove={(event) => {
+                const start = mobileTouchStartRef.current;
+                const touch = event.touches[0];
+                if (event.touches.length !== 1 || (start && Math.abs(touch.clientY - start.y) > 30)) {
+                  mobileTouchStartRef.current = null;
+                }
+              }}
+              onTouchCancel={() => { mobileTouchStartRef.current = null; }}
+              onTouchEnd={(event) => {
+                const start = mobileTouchStartRef.current;
+                mobileTouchStartRef.current = null;
+                if (!start || isTocOpen || window.getSelection()?.toString()) return;
+                const touch = event.changedTouches[0];
+                const dx = touch.clientX - start.x;
+                const dy = touch.clientY - start.y;
+                if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                  goToMobilePage(mobilePageIndex + (dx < 0 ? 1 : -1));
+                }
+              }}
+              className="md:hidden relative w-full max-w-xl flex-1 min-h-0 rounded-2xl border border-[#D8A048]/70 bg-[#FAF6EE] p-1.5 shadow-[0_24px_60px_rgba(20,10,5,0.45)] overflow-hidden"
+            >
+              <AnimatePresence mode="wait" initial={false} custom={mobilePageDirection}>
                 <motion.div
                   key={`${currentBook.id}-${mobilePageIndex}`}
-                  initial={{ opacity: 0, x: mobilePageDirection * 24, rotateY: mobilePageDirection * 5 }}
-                  animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                  exit={{ opacity: 0, x: -mobilePageDirection * 24, rotateY: -mobilePageDirection * 5 }}
-                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  custom={mobilePageDirection}
+                  variants={{
+                    arriving: (direction: number) => ({ opacity: 0, x: direction * 64, rotateY: direction * 5 }),
+                    visible: { opacity: 1, x: 0, rotateY: 0 },
+                    leaving: (direction: number) => ({ opacity: 0, x: -direction * 64, rotateY: -direction * 5 }),
+                  }}
+                  initial="arriving"
+                  animate="visible"
+                  exit="leaving"
+                  transition={{
+                    duration: mobileTurnDuration,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  onAnimationComplete={(definition) => {
+                    // Each landed leaf triggers the next swipe, never a timer-based teleport.
+                    if (definition !== 'visible' || mobileJumpTarget === null) return;
+                    if (mobilePageIndex === mobileJumpTarget) {
+                      setMobileJumpTarget(null);
+                      return;
+                    }
+                    const nextPage = mobilePageIndex + (mobileJumpTarget > mobilePageIndex ? 1 : -1);
+                    setMobilePageIndex(nextPage);
+                    setCurrentSpreadIndex(Math.floor(mobilePages[nextPage].pageNumber / 2));
+                  }}
                   className="relative h-full w-full rounded-xl overflow-hidden"
                 >
                   {renderNovelPage(mobilePages[mobilePageIndex], false, true)}
                 </motion.div>
+              </AnimatePresence>
+              {/* Compact burgundy bookmark ribbon on the phone leaf. */}
+              <AnimatePresence>
+                {isCurrentSpreadBookmarked && mobileJumpTarget === null && (
+                  <motion.button
+                    key="mobile-bookmark-ribbon"
+                    type="button"
+                    aria-label="Remove bookmark"
+                    title="Remove bookmark"
+                    initial={{ y: -76, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -76, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                    onClick={handleToggleBookmark}
+                    className="absolute top-0 right-5 z-40 w-7 h-[72px] cursor-pointer [filter:drop-shadow(0_3px_3px_rgba(39,17,11,0.3))]"
+                  >
+                    <BookmarkRibbonMark />
+                  </motion.button>
+                )}
               </AnimatePresence>
             </div>
 
@@ -1676,15 +1796,32 @@ export const StoryBook = memo(function StoryBook({
             </div>
 
             {/* A leaf at a time on phones; the two-page controls stay on desktop. */}
-            <div className="md:hidden w-full flex items-center justify-between gap-2 px-2 py-2 mt-2 z-30">
-              <button type="button" onClick={() => goToMobilePage(mobilePageIndex - 1)} disabled={mobilePageIndex === 0} className="min-h-11 min-w-20 px-3 rounded-full bg-[#FAF8F5]/75 text-stone-900 font-serif text-sm border border-white/60 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer">
-                Previous
+            <div className="md:hidden w-full shrink-0 flex items-center justify-between gap-2 px-2 py-2 mt-2 z-30">
+              <button type="button" aria-label="Previous page" onClick={() => goToMobilePage(mobilePageIndex - 1)} disabled={mobilePageIndex === 0} className="flex shrink-0 items-center justify-center gap-1 min-h-11 min-w-11 sm:px-3 rounded-full bg-[#FAF8F5]/75 text-stone-900 font-serif text-sm border border-white/60 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer">
+                <ChevronLeft aria-hidden="true" className="w-4 h-4" />
+                <span className="hidden sm:inline">Previous</span>
               </button>
-              <span className="font-mono text-xs text-white/90 tabular-nums whitespace-nowrap [text-shadow:0_1px_6px_rgba(0,0,0,0.85)]">
-                {mobilePageIndex + 1} / {mobilePages.length}
-              </span>
-              <button type="button" onClick={() => goToMobilePage(mobilePageIndex + 1)} disabled={mobilePageIndex >= mobilePages.length - 1} className="min-h-11 min-w-20 px-3 rounded-full bg-gradient-to-r from-amber-600 to-amber-500 text-white font-serif text-sm border border-amber-400/30 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer">
-                Next
+              <div className="flex items-center justify-center gap-2 min-w-0">
+                <span aria-live="polite" aria-atomic="true" className="font-mono text-xs text-white/90 tabular-nums whitespace-nowrap [text-shadow:0_1px_6px_rgba(0,0,0,0.85)]">
+                  {mobilePageIndex + 1} / {mobilePages.length}
+                </span>
+                {savedBookmarkPage !== null && savedBookmarkPage < mobilePages.length && (
+                  <button
+                    type="button"
+                    onClick={() => goToMobilePage(savedBookmarkPage, true)}
+                    disabled={isCurrentSpreadBookmarked || mobileJumpTarget !== null}
+                    aria-label={mobileJumpTarget !== null ? 'Swiping to bookmark' : isCurrentSpreadBookmarked ? 'At bookmark' : 'Go to bookmarked page'}
+                    title={isCurrentSpreadBookmarked ? 'At Bookmark' : 'Go to Bookmark'}
+                    className="flex shrink-0 items-center justify-center gap-1 min-h-11 min-w-11 px-2 rounded-full bg-[#FAF8F5]/75 text-amber-900 font-serif text-xs whitespace-nowrap disabled:opacity-50 cursor-pointer disabled:cursor-default"
+                  >
+                    <Bookmark className="w-3.5 h-3.5 shrink-0" />
+                    <span className="hidden min-[360px]:inline">{mobileJumpTarget !== null ? 'Swiping...' : isCurrentSpreadBookmarked ? 'At Bookmark' : 'Go to Bookmark'}</span>
+                  </button>
+                )}
+              </div>
+              <button type="button" aria-label="Next page" onClick={() => goToMobilePage(mobilePageIndex + 1)} disabled={mobilePageIndex >= mobilePages.length - 1} className="flex shrink-0 items-center justify-center gap-1 min-h-11 min-w-11 sm:px-3 rounded-full bg-gradient-to-r from-amber-600 to-amber-500 text-white font-serif text-sm border border-amber-400/30 disabled:opacity-35 disabled:cursor-not-allowed cursor-pointer">
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight aria-hidden="true" className="w-4 h-4" />
               </button>
             </div>
 
@@ -1791,7 +1928,7 @@ export const StoryBook = memo(function StoryBook({
               >
                 {/* Front Matter Button */}
                 <button
-                  onClick={() => isMobileReader ? goToMobilePage(0) : handleJumpToChapterByPage(0)}
+                  onClick={() => isMobileReader ? goToMobilePage(0, true) : handleJumpToChapterByPage(0)}
                   className={`w-full text-left p-3 rounded-xl transition-all flex flex-col gap-1 border cursor-pointer ${
                     currentSpreadIndex === 0
                       ? 'bg-amber-500/15 border-amber-500/40 text-amber-950 dark:text-amber-200 shadow-sm'
@@ -1813,7 +1950,7 @@ export const StoryBook = memo(function StoryBook({
                   return (
                     <button
                       key={ch.chapterId}
-                      onClick={() => isMobileReader ? goToMobilePage(ch.pageNumber) : handleJumpToChapterByPage(ch.pageNumber)}
+                      onClick={() => isMobileReader ? goToMobilePage(ch.pageNumber, true) : handleJumpToChapterByPage(ch.pageNumber)}
                       className={`w-full text-left p-3 rounded-xl transition-all flex flex-col gap-1 border cursor-pointer ${
                         isCurrentChapter
                           ? 'bg-amber-500/15 border-amber-500/40 text-amber-950 dark:text-amber-200 shadow-sm'

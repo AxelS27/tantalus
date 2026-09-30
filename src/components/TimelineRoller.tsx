@@ -292,10 +292,16 @@ export const TimelineRoller = memo(function TimelineRoller({
       <StepCounter current={selectedIndex + 1} total={timelineData.length} label="Experience" />
 
       {/* Centered Enlarged Snug Cluster */}
-      <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-14 lg:gap-18 max-md:absolute max-md:inset-x-0 max-md:top-2 max-md:bottom-[calc(8.75rem+env(safe-area-inset-bottom))] max-md:justify-between max-md:overflow-y-auto max-md:overscroll-contain max-md:px-5 max-md:py-4">
+      <div className="w-full max-w-5xl lg:max-w-6xl xl:max-w-7xl flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-14 lg:gap-18 max-md:absolute max-md:inset-x-0 max-md:top-[calc(0.5rem+env(safe-area-inset-top))] max-md:bottom-[calc(8.75rem+env(safe-area-inset-bottom))] max-md:justify-between max-md:overflow-y-auto max-md:overscroll-contain max-md:px-5 max-md:py-4">
         
         {/* LEFT: Detail Content */}
         <div className="w-full max-md:flex-1 md:w-auto md:flex-1 max-w-xl lg:max-w-2xl xl:max-w-3xl flex flex-col items-center justify-center max-md:justify-end max-md:pb-20 text-center select-text z-20">
+          <h1
+            className="md:hidden mb-6 shrink-0 font-serif italic font-light text-5xl tracking-tight text-white"
+            style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}
+          >
+            Timeline
+          </h1>
           <motion.div
             key={activeItem.id}
             initial={{ opacity: 0, y: 14 }}

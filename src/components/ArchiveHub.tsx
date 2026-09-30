@@ -375,7 +375,13 @@ export const ArchiveHub = memo(function ArchiveHub({
       }`}
     >
       {/* ================= 1. LAUNCHPAD HERO VIEWPORT (Full Screen) ================= */}
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 pt-10 pb-[calc(7rem+env(safe-area-inset-bottom))] md:py-16 select-none">
+      <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))] md:py-16 select-none">
+        <h1
+          className="md:hidden mb-8 shrink-0 text-center font-serif italic font-light text-5xl tracking-tight text-white select-text"
+          style={{ textShadow: '0 2px 16px rgba(0,0,0,0.9), 0 8px 36px rgba(0,0,0,0.7)' }}
+        >
+          Archive
+        </h1>
         {/* Compact phone launchpad; keep the wider desktop grid unchanged. */}
         <div className="grid grid-cols-3 md:grid-cols-4 gap-x-2 md:gap-x-8 gap-y-5 md:gap-y-7 justify-items-center w-full max-w-[340px] md:max-w-2xl">
           {launchpadApps.map((app, index) => {

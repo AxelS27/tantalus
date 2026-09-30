@@ -9,6 +9,7 @@ export type NavItem = 'home' | 'storybook' | 'timeline' | 'projects' | 'archive'
 interface NavbarProps {
   activeTab?: NavItem;
   onTabChange?: (tab: NavItem) => void;
+  mobileBackAction?: { label: string; onClick: () => void };
 }
 
 const mainNavItems: { id: 'home' | 'timeline' | 'projects'; label: string }[] = [
@@ -40,7 +41,7 @@ const hoverSpring = {
   mass: 0.6,
 };
 
-export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
+export function Navbar({ activeTab = 'home', onTabChange, mobileBackAction }: NavbarProps) {
   const [hoveredTab, setHoveredTab] = useState<string | null>(null);
   const archivePrefetchProps = getPrefetchProps('archive');
 
@@ -205,12 +206,12 @@ export function Navbar({ activeTab = 'home', onTabChange }: NavbarProps) {
     {isSubApp && (
       <button
         type="button"
-        onClick={() => handleSelect('archive')}
+        onClick={mobileBackAction?.onClick ?? (() => handleSelect('archive'))}
         className="glass-surface glass-ivory md:hidden fixed top-[calc(1rem+env(safe-area-inset-top))] left-4 z-50 flex h-11 items-center gap-1.5 rounded-full border border-white/60 dark:border-white/20 bg-[#FAF8F5]/75 dark:bg-[#161412]/75 px-3.5 text-xs font-medium text-stone-950 dark:text-stone-100 backdrop-blur-2xl shadow-[0_8px_24px_rgba(20,15,10,0.2),inset_0_1px_1px_rgba(255,255,255,0.7)] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700"
-        aria-label="Back to Archive"
+        aria-label={mobileBackAction?.label ?? 'Back to Archive'}
       >
         <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-        <span>Back to Archive</span>
+        <span>{mobileBackAction?.label ?? 'Back to Archive'}</span>
       </button>
     )}
     <nav
