@@ -218,17 +218,67 @@ body {
     padding-bottom: 1.5rem;
   }
 
-  /* A short reader keeps its controls visible and lets the leaf scroll. */
-  .storybook-reader-leaf > div {
+  /* Keep short leaves legible; the measured paginator moves overflow forward. */
+  .storybook-reader-leaf > [data-novel-page] {
     padding: 0.75rem;
   }
 
-  .storybook-reader-leaf > div > div:nth-child(2) {
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: none;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+  [data-novel-page] [data-page-content] {
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    gap: 0.375rem;
+  }
+
+  [data-toc-heading] {
+    padding-bottom: 0;
+  }
+
+  [data-toc-entries] {
+    padding-block: 0;
+  }
+
+  [data-toc-heading] h3 {
+    font-size: 1.25rem;
+    line-height: 1.2;
+  }
+
+  [data-toc-heading] > p,
+  [data-toc-heading] > div {
+    display: none;
+  }
+
+  [data-novel-page="frontispiece"] h2 {
+    font-size: clamp(20px, calc(var(--storybook-leaf-height) * 0.12), 32px);
+  }
+
+  [data-novel-page="chapter-title-leaf"] [data-page-content] {
+    gap: 0.25rem;
+  }
+
+  [data-novel-page="chapter-title-leaf"] h3 {
+    font-size: clamp(16px, calc(var(--storybook-leaf-height) * 0.11), 32px);
+    line-height: 1.1;
+  }
+
+  [data-novel-page="chapter-title-leaf"] [data-page-content] > span,
+  [data-novel-page="chapter-title-leaf"] [data-page-content] > p {
+    font-size: 11px;
+    line-height: 1.2;
+    margin-top: 0;
+    max-width: none;
+  }
+
+  [data-novel-page="finis"] [data-page-content] > div {
+    height: min(40px, calc(var(--storybook-leaf-height) * 0.25));
+    width: auto;
+    flex: none;
+  }
+
+  [data-novel-page="finis"] [data-page-content] > p {
+    font-size: 11px;
+    line-height: 1.3;
+    margin-top: 0;
   }
 }
 
