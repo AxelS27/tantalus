@@ -1,4 +1,4 @@
-import { memo, useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { memo, useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo, type CSSProperties } from 'react';
 import {
   animate,
   motion,
@@ -25,7 +25,12 @@ import { storybooksData, type StoryBookItem } from '../data/storybooks/index';
 import { getAssetUrl } from '../lib/assets';
 import StepCounter from './common/StepCounter';
 import { elasticLayoutSpring } from '../lib/motion';
-import { COMPACT_VIEWPORT_QUERY, canScrollWithin } from '../lib/layout';
+import { COMPACT_VIEWPORT_QUERY } from '../lib/layout';
+import {
+  paginateBook, getReadingAnchor, findAnchorPage,
+  type NovelPageData, type NovelSpread, type ReadingAnchor,
+} from '../lib/storybookPagination';
+export type { NovelPageData, NovelSpread } from '../lib/storybookPagination';
 
 const BOOKMARK_STORAGE_KEY_PREFIX = 'tantalize_storybook_bookmark_';
 
@@ -54,17 +59,36 @@ const getSavedBookmarkPage = (bookId: string): number | null => {
   return spreadIndex === null ? null : spreadIndex * 2;
 };
 
-const saveBookmarkSpread = (bookId: string, spreadIndex: number | null, pageIndex?: number) => {
+const getSavedBookmarkAnchor = (bookId: string): ReadingAnchor | null => {
+  try {
+    const record = localStorage.getItem(`${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`);
+    const anchor = record ? JSON.parse(record)?.anchor : null;
+    if (!anchor || !['frontispiece', 'toc', 'chapter-title-leaf', 'chapter-narrative', 'finis'].includes(anchor.type)) return null;
+    if (anchor.type === 'chapter-narrative' && (!Number.isInteger(anchor.position?.paragraphIndex) ||
+        !Number.isInteger(anchor.position?.offset) || anchor.position.paragraphIndex < 0 || anchor.position.offset < 0)) return null;
+    return anchor;
+  } catch {}
+  return null;
+};
+
+const saveBookmarkSpread = (bookId: string, spreadIndex: number | null, pageIndex?: number, anchor?: ReadingAnchor | null) => {
   try {
     if (spreadIndex === null) {
       localStorage.removeItem(`${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`);
     } else {
       localStorage.setItem(
         `${BOOKMARK_STORAGE_KEY_PREFIX}${bookId}`,
-        JSON.stringify({ spreadIndex, pageIndex: pageIndex ?? spreadIndex * 2, bookmarked: true, updatedAt: Date.now() }),
+        JSON.stringify({ spreadIndex, pageIndex: pageIndex ?? spreadIndex * 2, anchor, bookmarked: true, updatedAt: Date.now() }),
       );
     }
   } catch {}
+};
+
+const readLeafSize = (frame: HTMLDivElement | null) => {
+  const leaf = frame?.querySelector<HTMLElement>('[data-novel-page]');
+  if (!leaf?.clientWidth || !leaf.clientHeight) return null;
+  const style = getComputedStyle(leaf);
+  return { width: Number.parseFloat(style.width), height: Number.parseFloat(style.height) };
 };
 
 function BookmarkRibbonMark() {
@@ -312,61 +336,6 @@ const BookCard = memo(function BookCard({
   );
 });
 
-// Single Page Data representation in a continuous novel flow
-export type NovelPageData =
-  | {
-      type: 'blank-cover';
-      pageNumber: number;
-    }
-  | {
-      type: 'frontispiece';
-      book: StoryBookItem;
-      pageNumber: number;
-    }
-  | {
-      type: 'toc';
-      bookTitle: string;
-      subtitle: string;
-      chapterPageMap: { chapterId: string; number: string; title: string; motif: string; pageNumber: number }[];
-      pageNumber: number;
-    }
-  | {
-      type: 'chapter-title-leaf';
-      chapterId: string;
-      chapterNumber: string;
-      chapterTitle: string;
-      subtitle: string;
-      motif: string;
-      theme: string;
-      emblem?: StoryBookItem['emblem'];
-      pageNumber: number;
-    }
-  | {
-      type: 'chapter-narrative';
-      chapterId: string;
-      chapterNumber: string;
-      chapterTitle: string;
-      subtitle: string;
-      motif: string;
-      paragraphs: string[];
-      isFirstPageOfChapter: boolean; // only page 1 gets drop-cap
-      isLastPageOfChapter: boolean;
-      pageNumber: number;
-    }
-  | {
-      type: 'finis';
-      book: StoryBookItem;
-      pageNumber: number;
-    };
-
-// Spread = 2 Facing Pages (Left & Right)
-export interface NovelSpread {
-  id: string;
-  spreadIndex: number;
-  leftPage: NovelPageData;
-  rightPage: NovelPageData;
-}
-
 export const StoryBook = memo(function StoryBook({
   isActive = true,
   onReachTop,
@@ -404,6 +373,15 @@ export const StoryBook = memo(function StoryBook({
   const [isTocOpen, setIsTocOpen] = useState(false);
 
   const sequenceTimersRef = useRef<number[]>([]);
+  const singleLeafFrameRef = useRef<HTMLDivElement>(null);
+  const spreadFrameRef = useRef<HTMLDivElement>(null);
+  const paginationTemplateRef = useRef<HTMLDivElement>(null);
+  const pendingResumeAnchorRef = useRef<ReadingAnchor | null>(null);
+  const [leafSize, setLeafSize] = useState({ width: 0, height: 0 });
+  const [fontRevision, setFontRevision] = useState(0);
+  const [measuredPagination, setMeasuredPagination] = useState<
+    (ReturnType<typeof paginateBook> & { bookId: string; layoutKey: string }) | null
+  >(null);
 
   // Dragging states
   const isPointerDownRef = useRef(false);
@@ -439,174 +417,24 @@ export const StoryBook = memo(function StoryBook({
     }
   }, [currentBook?.id]);
 
-  // =========================================================================
-  // CONTINUOUS OPTIMAL NOVEL PAGINATOR:
-  // 1. Each new chapter starts with a dedicated Title Leaf on the facing page.
-  // 2. The narrative pages maximize available vertical space from top to bottom
-  //    using continuous sentence-level flow, with zero empty waste and zero overflow.
-  // =========================================================================
-  const { spreads, chapterPageMap } = useMemo(() => {
-    const allPages: NovelPageData[] = [];
-    const chapterMap: { chapterId: string; number: string; title: string; motif: string; pageNumber: number }[] = [];
-
-    // Page 0: Inside Frontispiece / Ex Libris (Left page of Front Matter)
-    allPages.push({
-      type: 'frontispiece',
-      book: currentBook,
-      pageNumber: 0,
+  // A temporary, deterministic layout supplies legacy bookmark positions before
+  // the actual leaf mounts. DOM-measured pagination replaces it before painting.
+  const fallbackPagination = useMemo(() => paginateBook(currentBook, {
+    narrative: paragraphs => paragraphs.reduce((size, paragraph) => size + paragraph.length + 20, 0) <= 880,
+    toc: () => true,
+  }), [currentBook]);
+  const pagination = measuredPagination?.bookId === currentBook.id ? measuredPagination : fallbackPagination;
+  const { pages, chapterPageMap } = pagination;
+  const spreads = useMemo<NovelSpread[]>(() => {
+    const result: NovelSpread[] = [];
+    for (let index = 0; index < pages.length; index += 2) result.push({
+      id: `spread-${index / 2}`, spreadIndex: index / 2,
+      leftPage: pages[index], rightPage: pages[index + 1],
     });
-
-    // Page 1: Table of Contents Placeholder (Right page of Front Matter)
-    allPages.push({
-      type: 'toc',
-      bookTitle: currentBook?.title || '',
-      subtitle: currentBook?.subtitle || '',
-      chapterPageMap: [],
-      pageNumber: 1,
-    });
-
-    let pageCounter = 2;
-
-    // Full narrative capacity budget (calibrated for balanced editorial font size & vertical page fill)
-    const NARRATIVE_CHAR_BUDGET = 880;
-
-    if (currentBook && currentBook.chapters && currentBook.chapters.length > 0) {
-      currentBook.chapters.forEach((ch) => {
-        // Dedicated Chapter Title Leaf page
-        const titleLeafPage = pageCounter++;
-        chapterMap.push({
-          chapterId: ch.id,
-          number: ch.number,
-          title: ch.title,
-          motif: ch.motif,
-          pageNumber: titleLeafPage,
-        });
-
-        allPages.push({
-          type: 'chapter-title-leaf',
-          chapterId: ch.id,
-          chapterNumber: ch.number,
-          chapterTitle: ch.title,
-          subtitle: ch.subtitle,
-          motif: ch.motif,
-          theme: ch.theme,
-          emblem: currentBook.emblem,
-          pageNumber: titleLeafPage,
-        });
-
-        // Narrative text pages (maximized packing with sentence-level splitting)
-        let isFirst = true;
-        let curParas: string[] = [];
-        let curChars = 0;
-
-        const flush = (isLast: boolean) => {
-          if (curParas.length === 0) return;
-          allPages.push({
-            type: 'chapter-narrative',
-            chapterId: ch.id,
-            chapterNumber: ch.number,
-            chapterTitle: ch.title,
-            subtitle: ch.subtitle,
-            motif: ch.motif,
-            paragraphs: [...curParas],
-            isFirstPageOfChapter: isFirst,
-            isLastPageOfChapter: isLast,
-            pageNumber: pageCounter++,
-          });
-          isFirst = false;
-          curParas = [];
-          curChars = 0;
-        };
-
-        for (let pIdx = 0; pIdx < ch.paragraphs.length; pIdx++) {
-          const rawPara = ch.paragraphs[pIdx].trim();
-          if (!rawPara) continue;
-
-          const paraCost = rawPara.length + 20;
-
-          if (curChars + paraCost <= NARRATIVE_CHAR_BUDGET) {
-            curParas.push(rawPara);
-            curChars += paraCost;
-          } else {
-            // Split paragraph into natural sentences so page is filled completely
-            const sentences = rawPara.match(/[^.!?]+[.!?]+(\s+|$)|[^.!?]+$/g) || [rawPara];
-            const fitSentences: string[] = [];
-            const remSentences: string[] = [];
-            let tempChars = curChars;
-
-            for (const s of sentences) {
-              if (tempChars + s.length <= NARRATIVE_CHAR_BUDGET || (fitSentences.length === 0 && curChars < NARRATIVE_CHAR_BUDGET * 0.45)) {
-                fitSentences.push(s);
-                tempChars += s.length;
-              } else {
-                remSentences.push(s);
-              }
-            }
-
-            if (fitSentences.length > 0) {
-              curParas.push(fitSentences.join(' ').trim());
-            }
-
-            flush(false);
-
-            if (remSentences.length > 0) {
-              const remText = remSentences.join(' ').trim();
-              curParas.push(remText);
-              curChars += remText.length + 20;
-            }
-          }
-        }
-
-        if (curParas.length > 0) {
-          flush(true);
-        }
-      });
-    }
-
-    // Final Page: Finis
-    allPages.push({
-      type: 'finis',
-      book: currentBook,
-      pageNumber: pageCounter++,
-    });
-
-    // Update Page 1 (Table of Contents) with the calculated chapterMap
-    allPages[1] = {
-      type: 'toc',
-      bookTitle: currentBook?.title || '',
-      subtitle: currentBook?.subtitle || '',
-      chapterPageMap: chapterMap,
-      pageNumber: 1,
-    };
-
-    // Ensure even number of pages for dual spreads
-    if (allPages.length % 2 !== 0) {
-      allPages.push({
-        type: 'blank-cover',
-        pageNumber: pageCounter++,
-      });
-    }
-
-    // Pair sequential pages into Dual-Page Spreads (Left & Right)
-    const spreadList: NovelSpread[] = [];
-    for (let i = 0; i < allPages.length; i += 2) {
-      const spreadIdx = i / 2;
-      spreadList.push({
-        id: `spread-${spreadIdx}`,
-        spreadIndex: spreadIdx,
-        leftPage: allPages[i] || { type: 'blank-cover', pageNumber: i },
-        rightPage: allPages[i + 1] || { type: 'blank-cover', pageNumber: i + 1 },
-      });
-    }
-
-    return { spreads: spreadList, chapterPageMap: chapterMap };
-  }, [currentBook]);
-
-  // The phone reader uses the same ordered content, but reveals one leaf at a time.
-  const mobilePages = useMemo(
-    () => spreads.flatMap((spread) => [spread.leftPage, spread.rightPage]).filter((page) => page.type !== 'blank-cover'),
-    [spreads],
-  );
+    return result;
+  }, [pages]);
+  const mobilePages = useMemo(() => pages.filter(page => page.type !== 'blank-cover'), [pages]);
+  const readingStateRef = useRef({ pages, pageIndex: 0 });
 
   const currentSpread = useMemo(() => {
     if (!spreads || spreads.length === 0) {
@@ -630,6 +458,11 @@ export const StoryBook = memo(function StoryBook({
   const [isBookmarkRetracting, setIsBookmarkRetracting] = useState(false);
   const isFlippingRef = useRef(false);
   const flipTimerRef = useRef<number | null>(null);
+  readingStateRef.current = {
+    pages,
+    pageIndex: isMobileReader ? mobileJumpTarget ?? mobilePageIndex : (turnAnimation?.toSpreadIdx ?? currentSpreadIndex) * 2,
+  };
+
 
   // Keep the phone's next leaf aligned with desktop navigation and page turns.
   useEffect(() => {
@@ -655,14 +488,14 @@ export const StoryBook = memo(function StoryBook({
     } else {
       // Put Bookmark on this page
       const pageIndex = isMobileReader ? mobilePageIndex : currentSpreadIndex * 2;
-      saveBookmarkSpread(currentBook.id, currentSpreadIndex, pageIndex);
+      saveBookmarkSpread(currentBook.id, currentSpreadIndex, pageIndex, getReadingAnchor(mobilePages[pageIndex]));
       setSavedBookmarkSpread(currentSpreadIndex);
       setSavedBookmarkPage(pageIndex);
       setBookmarkToastMessage('Bookmark Placed');
       setShowBookmarkToast(true);
       window.setTimeout(() => setShowBookmarkToast(false), 2000);
     }
-  }, [currentBook?.id, currentSpreadIndex, isCurrentSpreadBookmarked, isMobileReader, mobilePageIndex]);
+  }, [currentBook?.id, currentSpreadIndex, isCurrentSpreadBookmarked, isMobileReader, mobilePageIndex, mobilePages]);
 
   const clearSequenceTimers = () => {
     sequenceTimersRef.current.forEach((t) => window.clearTimeout(t));
@@ -725,6 +558,7 @@ export const StoryBook = memo(function StoryBook({
     setTurnAnimation(null);
     setMobileJumpTarget(null);
 
+    pendingResumeAnchorRef.current = getSavedBookmarkAnchor(book.id);
     const savedSpread = getSavedBookmarkSpread(book.id);
     setIsCoverOpen(true);
     const resumeSpread = savedSpread !== null && savedSpread < spreads.length ? savedSpread : 0;
@@ -968,15 +802,19 @@ export const StoryBook = memo(function StoryBook({
   const handleWheel = (e: React.WheelEvent) => {
     if (!isActive || isTocOpen) return;
     e.stopPropagation();
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX) &&
-        canScrollWithin(e.target, e.currentTarget, e.deltaY)) return;
 
     const now = Date.now();
     if (now - lastWheelTimeRef.current < 220) return;
 
     if (isReaderSpread) {
-      // Phone leaves scroll internally; wheel gestures must not skip unread text.
-      if (window.matchMedia(COMPACT_VIEWPORT_QUERY).matches) return;
+      if (isMobileReader) {
+        const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (Math.abs(delta) > 15) {
+          goToMobilePage(mobilePageIndex + (delta > 0 ? 1 : -1));
+          lastWheelTimeRef.current = now;
+        }
+        return;
+      }
       const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       if (Math.abs(delta) > 15) {
         if (delta > 0) {
@@ -1044,9 +882,12 @@ export const StoryBook = memo(function StoryBook({
       }
 
       if (isReaderSpread) {
+        if (isTocOpen) return;
+        if (e.key === ' ' && (e.target as HTMLElement)?.closest('button, a, [role="button"]')) return;
+        if (['ArrowRight', 'ArrowLeft', 'PageDown', 'PageUp', ' '].includes(e.key)) e.preventDefault();
         if (window.matchMedia(COMPACT_VIEWPORT_QUERY).matches) {
-          if (e.key === 'ArrowRight') goToMobilePage(mobilePageIndex + 1);
-          if (e.key === 'ArrowLeft') goToMobilePage(mobilePageIndex - 1);
+          if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') goToMobilePage(mobilePageIndex + 1);
+          if (e.key === 'ArrowLeft' || e.key === 'PageUp') goToMobilePage(mobilePageIndex - 1);
         } else {
           if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') handleNextSpread();
           if (e.key === 'ArrowLeft' || e.key === 'PageUp') handlePrevSpread();
@@ -1113,6 +954,7 @@ export const StoryBook = memo(function StoryBook({
       const book = page.book;
       return (
         <div
+          data-novel-page={page.type}
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
           className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
@@ -1120,7 +962,7 @@ export const StoryBook = memo(function StoryBook({
           <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Pure Minimalist Book Title */}
-          <div className="flex-1 flex flex-col items-center justify-center text-center gap-2.5 min-h-0 py-6 px-4 z-10 my-auto">
+          <div data-page-content className="flex-1 flex flex-col items-center justify-center text-center gap-2.5 min-h-0 py-6 px-4 z-10 my-auto">
             <h2 className="text-2xl sm:text-3xl spacious:text-4xl font-serif font-bold text-[#1F1712] tracking-[0.2em] uppercase">
               {book.title}
             </h2>
@@ -1143,6 +985,7 @@ export const StoryBook = memo(function StoryBook({
     if (page.type === 'toc') {
       return (
         <div
+          data-novel-page={page.type}
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
           className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
@@ -1150,8 +993,8 @@ export const StoryBook = memo(function StoryBook({
           <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Book Title & Clickable Index Table with Hierarchy & Dot Leaders */}
-          <div className={`flex-1 flex flex-col justify-start min-h-0 py-2 px-2 sm:px-6 spacious:px-8 z-10 overflow-y-auto overscroll-contain`}>
-            <div className="text-center pb-3">
+          <div data-page-content className="flex-1 flex flex-col justify-start min-h-0 py-2 px-2 sm:px-6 spacious:px-8 z-10 overflow-hidden">
+            <div data-toc-heading className="text-center pb-3 shrink-0">
               <h3 className="text-xl sm:text-2xl spacious:text-3xl font-serif font-bold text-[#1F1712] tracking-wide">
                 Table of Contents
               </h3>
@@ -1162,15 +1005,16 @@ export const StoryBook = memo(function StoryBook({
             </div>
 
             {/* Clickable Index Table with Hierarchy, Dot Leaders & Larger Typography */}
-            <div className={`w-full flex-1 flex flex-col py-1 space-y-1 ${mobile ? 'justify-start shrink-0' : 'justify-between overflow-hidden'}`}>
+            <div data-toc-entries className="w-full flex-none flex flex-col py-1 space-y-1 justify-start">
               {page.chapterPageMap?.map((item) => {
                 const chSpreadIdx = Math.floor(item.pageNumber / 2);
                 const isBookmarked = savedBookmarkSpread !== null && chSpreadIdx === savedBookmarkSpread;
                 return (
                   <button
                     key={item.chapterId}
+                    data-chapter-id={item.chapterId}
                     onClick={() => mobile ? goToMobilePage(item.pageNumber, true) : handleJumpToChapterByPage(item.pageNumber)}
-                    className={`group w-full flex items-baseline justify-between rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer ${mobile ? 'min-h-11 py-2 px-0' : 'py-1 px-2'}`}
+                    className={`group w-full shrink-0 flex items-baseline justify-between rounded-md hover:bg-amber-500/10 text-left transition-colors cursor-pointer ${mobile ? 'min-h-11 py-2 px-0' : 'py-1 px-2'}`}
                   >
                     <div className="flex items-baseline gap-2.5 min-w-0 flex-1 pr-2">
                       <span className="font-serif text-xs sm:text-[13px] spacious:text-sm text-[#8A7B6E] w-16 sm:w-24 spacious:w-28 flex-shrink-0 text-left uppercase tracking-wider font-medium">
@@ -1178,9 +1022,7 @@ export const StoryBook = memo(function StoryBook({
                       </span>
                       <span className={`font-serif font-medium text-[#241D17] group-hover:text-amber-800 flex items-center gap-1.5 ${mobile ? 'text-sm leading-tight' : 'text-xs sm:text-sm spacious:text-[14.5px] lg:text-[15px] truncate'}`} >
                         {item.title}
-                        {isBookmarked && (
-                          <Bookmark className="w-3.5 h-3.5 text-amber-700 fill-amber-500/30 flex-shrink-0" />
-                        )}
+                        <Bookmark aria-hidden="true" className={`w-3.5 h-3.5 text-amber-700 fill-amber-500/30 flex-shrink-0 ${isBookmarked ? '' : 'invisible'}`} />
                       </span>
                       <span className={`${mobile ? 'hidden' : 'flex-1'} border-b border-dotted border-[#8A7B6E]/40 mx-2 mb-1 min-w-[24px]`} />
                     </div>
@@ -1205,6 +1047,7 @@ export const StoryBook = memo(function StoryBook({
     if (page.type === 'chapter-title-leaf') {
       return (
         <div
+          data-novel-page={page.type}
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
           className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
@@ -1212,7 +1055,7 @@ export const StoryBook = memo(function StoryBook({
           <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Pure & Minimalist Center Chapter Division */}
-          <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
+          <div data-page-content className="flex-1 flex flex-col items-center justify-center text-center gap-3 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
             <span className="text-xs sm:text-sm font-serif tracking-[0.35em] text-amber-800 uppercase font-semibold">
               {page.chapterNumber}
             </span>
@@ -1240,6 +1083,7 @@ export const StoryBook = memo(function StoryBook({
     if (page.type === 'chapter-narrative') {
       return (
         <div
+          data-novel-page={page.type}
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
           className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
@@ -1247,7 +1091,7 @@ export const StoryBook = memo(function StoryBook({
           <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Narrative Text Body (Balanced, highly legible editorial font) */}
-          <div className={`flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 px-2 sm:px-4 spacious:px-6 z-10 overflow-y-auto overscroll-contain`} >
+          <div data-page-content className="flex-1 flex flex-col justify-start gap-2.5 sm:gap-3 min-h-0 py-1 px-2 sm:px-4 spacious:px-6 z-10 overflow-hidden">
             {page.paragraphs?.map((paragraph, pIdx) => {
               if (page.isFirstPageOfChapter && pIdx === 0 && paragraph.length > 0) {
                 const firstLetter = paragraph.charAt(0);
@@ -1255,7 +1099,7 @@ export const StoryBook = memo(function StoryBook({
                 return (
                   <p
                     key={pIdx}
-                    className="leading-[1.66] sm:leading-[1.7] spacious:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] spacious:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text"
+                    className="shrink-0 [overflow-wrap:anywhere] leading-[1.66] sm:leading-[1.7] spacious:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] spacious:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text"
                   >
                     <span className="float-left text-5xl sm:text-6xl spacious:text-7xl leading-[0.8] pr-3 pt-1 font-serif font-bold text-amber-800 select-text">
                       {firstLetter}
@@ -1267,7 +1111,7 @@ export const StoryBook = memo(function StoryBook({
               return (
                 <p
                   key={pIdx}
-                  className={`leading-[1.66] sm:leading-[1.7] spacious:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] spacious:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text ${
+                  className={`shrink-0 [overflow-wrap:anywhere] leading-[1.66] sm:leading-[1.7] spacious:leading-[1.74] text-justify font-serif font-normal text-[14.5px] sm:text-[16px] spacious:text-[17px] lg:text-[17.5px] text-[#1A1410] hyphens-auto select-text ${
                     pIdx > 0 || !page.isFirstPageOfChapter ? 'indent-6 sm:indent-8' : ''
                   }`}
                 >
@@ -1289,6 +1133,7 @@ export const StoryBook = memo(function StoryBook({
     if (page.type === 'finis') {
       return (
         <div
+          data-novel-page={page.type}
           style={{ transform: 'translateZ(0)', WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}
           className="relative w-full h-full p-7 sm:p-9 spacious:p-11 lg:p-12 flex flex-col justify-between overflow-hidden bg-[#FAF6EE] text-[#2B231D] [text-rendering:geometricPrecision]"
         >
@@ -1296,7 +1141,7 @@ export const StoryBook = memo(function StoryBook({
           <div className="absolute inset-4 sm:inset-5 spacious:inset-6 border border-amber-900/10 rounded-2xl pointer-events-none" />
 
           {/* Center Showcase: Pure Video & Quote */}
-          <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
+          <div data-page-content className="flex-1 flex flex-col items-center justify-center text-center gap-4 min-h-0 py-6 px-4 sm:px-8 z-10 my-auto">
             {/* Cinematic Animated Winged Man Painting */}
             <div className="relative w-full max-w-[280px] sm:max-w-[340px] spacious:max-w-[380px] aspect-[16/9] rounded-xl overflow-hidden border border-amber-900/20 shadow-xl bg-black/10">
               <video
@@ -1331,14 +1176,169 @@ export const StoryBook = memo(function StoryBook({
     );
   };
 
+  const narrativeTemplate: NovelPageData = {
+    type: 'chapter-narrative', chapterId: 'measurement', chapterNumber: '', chapterTitle: '',
+    subtitle: '', motif: '', paragraphs: ['Measure', 'Measure'], position: { paragraphIndex: 0, offset: 0 },
+    isFirstPageOfChapter: true, isLastPageOfChapter: false, pageNumber: 0,
+  };
+  const tocTemplate: NovelPageData = {
+    type: 'toc', bookTitle: currentBook.title, subtitle: currentBook.subtitle, pageNumber: 1,
+    chapterPageMap: currentBook.chapters.map(chapter => ({
+      chapterId: chapter.id, number: chapter.number, title: chapter.title, motif: chapter.motif, pageNumber: 9999,
+    })),
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    const refresh = () => { if (!cancelled) setFontRevision(revision => revision + 1); };
+    document.fonts.ready.then(refresh);
+    document.fonts.addEventListener('loadingdone', refresh);
+    return () => {
+      cancelled = true;
+      document.fonts.removeEventListener('loadingdone', refresh);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!isReaderSpread) return;
+    const frame = isMobileReader ? singleLeafFrameRef.current : spreadFrameRef.current;
+    if (!frame) return;
+    const measure = () => {
+      const size = readLeafSize(frame);
+      if (!size) return;
+      const { width, height } = size;
+      setLeafSize(previous => Math.abs(previous.width - width) < 0.1 && Math.abs(previous.height - height) < 0.1
+        ? previous : { width, height });
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(frame);
+    measure();
+    return () => observer.disconnect();
+  }, [isReaderSpread, isMobileReader, currentBook.id]);
+
+  useLayoutEffect(() => {
+    if (!isReaderSpread || !leafSize.width || !leafSize.height || !paginationTemplateRef.current) return;
+    const actualSize = readLeafSize(isMobileReader ? singleLeafFrameRef.current : spreadFrameRef.current);
+    if (!actualSize) return;
+    // A breakpoint can change the leaf and typography in the same commit.
+    // Never paginate new typography against dimensions from the previous layout.
+    if (Math.abs(actualSize.width - leafSize.width) >= 0.1 || Math.abs(actualSize.height - leafSize.height) >= 0.1) {
+      setLeafSize(actualSize);
+      return;
+    }
+    const layoutKey = [currentBook.id, leafSize.width, leafSize.height, isMobileReader, fontRevision].join(':');
+    if (measuredPagination?.layoutKey === layoutKey) {
+      pendingResumeAnchorRef.current = null;
+      return;
+    }
+
+    // Clone the exact rendered typography, padding, footer and drop-cap styles.
+    // React owns the templates; this disposable host owns all measurement writes.
+    const host = paginationTemplateRef.current.cloneNode(true) as HTMLDivElement;
+    host.removeAttribute('id');
+    host.inert = true;
+    document.body.appendChild(host);
+    try {
+      const narrative = host.querySelector<HTMLElement>('[data-novel-page="chapter-narrative"]')!;
+      const narrativeBody = narrative.querySelector<HTMLElement>('[data-page-content]')!;
+      const paragraphTemplates = [...narrativeBody.querySelectorAll('p')];
+      const dropCapTemplate = paragraphTemplates[0].querySelector('span')!;
+      const toc = host.querySelector<HTMLElement>('[data-novel-page="toc"]')!;
+      const tocBody = toc.querySelector<HTMLElement>('[data-page-content]')!;
+      const entries = toc.querySelector<HTMLElement>('[data-toc-entries]')!;
+      const entryTemplates = new Map([...entries.querySelectorAll<HTMLElement>('[data-chapter-id]')]
+        .map(entry => [entry.dataset.chapterId!, entry]));
+
+      const fitsBody = (body: HTMLElement, last: Element | null) => {
+        const bottomPadding = Number.parseFloat(getComputedStyle(body).paddingBottom);
+        const bottom = body.getBoundingClientRect().bottom - bottomPadding - 2;
+        return body.clientHeight > 0 && body.scrollHeight <= body.clientHeight &&
+          (!last || last.getBoundingClientRect().bottom <= bottom);
+      };
+      const next = paginateBook(currentBook, {
+        narrative: (paragraphs, firstPage) => {
+          const nodes = paragraphs.map((text, index) => {
+            const dropCap = firstPage && index === 0;
+            const paragraph = paragraphTemplates[dropCap ? 0 : 1].cloneNode(false) as HTMLParagraphElement;
+            if (dropCap) {
+              const mark = dropCapTemplate.cloneNode(false) as HTMLElement;
+              const firstCharacter = [...text][0] || '';
+              mark.textContent = firstCharacter;
+              paragraph.replaceChildren(mark, document.createTextNode(text.slice(firstCharacter.length)));
+            } else paragraph.textContent = text;
+            return paragraph;
+          });
+          narrativeBody.replaceChildren(...nodes);
+          return fitsBody(narrativeBody, nodes.at(-1) ?? null) &&
+            (!firstPage || fitsBody(narrativeBody, nodes[0]?.querySelector('span') ?? null));
+        },
+        toc: chapters => {
+          entries.replaceChildren(...chapters.map(chapter => entryTemplates.get(chapter.chapterId)!.cloneNode(true)));
+          return fitsBody(tocBody, entries);
+        },
+      });
+
+      const previous = readingStateRef.current;
+      const readingAnchor = pendingResumeAnchorRef.current ?? getReadingAnchor(previous.pages[previous.pageIndex]);
+      const nextIndex = Math.max(0, findAnchorPage(next.pages, readingAnchor));
+      pendingResumeAnchorRef.current = null;
+      setTurnAnimation(null);
+      isFlippingRef.current = false;
+      if (flipTimerRef.current !== null) {
+        window.clearTimeout(flipTimerRef.current);
+        flipTimerRef.current = null;
+      }
+      setMobileJumpTarget(null);
+      setMobilePageIndex(nextIndex);
+      setCurrentSpreadIndex(Math.floor(nextIndex / 2));
+      setMeasuredPagination({ ...next, bookId: currentBook.id, layoutKey });
+
+      // Bookmarks follow their text position, not a page number that changes on resize.
+      const savedPage = getSavedBookmarkPage(currentBook.id);
+      if (savedPage !== null) {
+        const anchor = getSavedBookmarkAnchor(currentBook.id) ?? getReadingAnchor(previous.pages[savedPage]);
+        const bookmarkIndex = findAnchorPage(next.pages, anchor);
+        if (bookmarkIndex >= 0) {
+          const spreadIndex = Math.floor(bookmarkIndex / 2);
+          setSavedBookmarkPage(bookmarkIndex);
+          setSavedBookmarkSpread(spreadIndex);
+          saveBookmarkSpread(currentBook.id, spreadIndex, bookmarkIndex, anchor);
+        }
+      }
+    } finally {
+      host.remove();
+    }
+  }, [isReaderSpread, currentBook, leafSize, isMobileReader, fontRevision]);
+
   return (
     <div
       onWheel={isActive ? handleWheel : undefined}
       aria-hidden={!isActive}
+      style={{ '--storybook-leaf-height': `${leafSize.height}px` } as CSSProperties}
       className={`relative w-full h-full flex flex-col items-center justify-center select-none px-4 sm:px-8 py-6 z-20 overflow-hidden transition-opacity duration-300 ${
         isActive ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >
+      {isReaderSpread && (
+        <div
+          ref={paginationTemplateRef}
+          data-layout-key={measuredPagination?.layoutKey}
+          aria-hidden="true"
+          inert
+          className="storybook-reader-leaf fixed left-[-10000px] top-0 opacity-0 pointer-events-none"
+          style={{ width: leafSize.width, height: leafSize.height, '--storybook-leaf-height': `${leafSize.height}px` } as CSSProperties}
+        >
+          {renderNovelPage(narrativeTemplate, false, isMobileReader)}
+          {renderNovelPage(tocTemplate, false, isMobileReader)}
+          {/* Prime the chapter-title font too, before the first animated turn. */}
+          {currentBook.chapters[0] && renderNovelPage({
+            type: 'chapter-title-leaf', chapterId: currentBook.chapters[0].id,
+            chapterNumber: currentBook.chapters[0].number, chapterTitle: currentBook.chapters[0].title,
+            subtitle: currentBook.chapters[0].subtitle, motif: currentBook.chapters[0].motif,
+            theme: currentBook.chapters[0].theme, pageNumber: 0,
+          }, false, isMobileReader)}
+        </div>
+      )}
       {/* ========================================================================= */}
       {/* 1. SHELF LAYER (Zooms slowly & deeply into the center book paper)         */}
       {/* ========================================================================= */}
@@ -1490,6 +1490,7 @@ export const StoryBook = memo(function StoryBook({
 
             {/* Mobile reader: one independent parchment leaf per step. */}
             <div
+              ref={singleLeafFrameRef}
               onTouchStart={(event) => {
                 const touch = event.touches[0];
                 mobileTouchStartRef.current = event.touches.length === 1
@@ -1579,6 +1580,7 @@ export const StoryBook = memo(function StoryBook({
 
               {/* ================= OPEN PARCHMENT SPREAD ================= */}
               <div
+                ref={spreadFrameRef}
                 style={{ perspective: '2200px', transformStyle: 'preserve-3d' }}
                 className="relative w-full h-full flex flex-col spacious:flex-row rounded-2xl bg-[#FAF6EE] text-[#2B231D] shadow-inner overflow-visible"
               >
