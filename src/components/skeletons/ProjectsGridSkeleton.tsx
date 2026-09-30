@@ -3,13 +3,22 @@ import Skeleton from '../common/Skeleton';
 export default function ProjectsGridSkeleton() {
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center select-none pointer-events-none px-4 py-4 overflow-hidden z-20">
-      <div className="spacious:hidden w-full max-w-5xl grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-        {Array.from({ length: 6 }, (_, index) => (
-          <div key={index} className="p-2 rounded-xl bg-white/30 border border-white/30">
-            <Skeleton className="w-full aspect-[4/3] rounded-lg bg-white/15" />
-            <Skeleton className="w-3/4 h-3 mt-3 mx-auto rounded-full bg-white/20" />
+      <div className="spacious:hidden absolute inset-0 overflow-y-auto">
+        <div className="relative mx-auto max-w-5xl px-5 pt-16 pb-[calc(8rem+env(safe-area-inset-bottom))]">
+          <div className="flex justify-center mb-6">
+            <Skeleton className="w-40 h-12 rounded-xl bg-white/25" />
           </div>
-        ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {Array.from({ length: 8 }, (_, index) => (
+              <div key={index} className="min-w-0 p-1.5 rounded-xl bg-white/30 border border-white/30">
+                <Skeleton className="w-full aspect-[4/3] rounded-lg bg-white/15" />
+                <div className="min-h-12 flex items-center justify-center px-1 py-1.5">
+                  <Skeleton className="w-3/4 h-3 rounded-full bg-white/20" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
       {/* 3D Cube Container with Non-Overlapping Flanks */}
       <div className="relative hidden spacious:flex w-full items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-14">

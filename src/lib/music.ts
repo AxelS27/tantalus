@@ -8,6 +8,7 @@ export const MUSIC_TRACKS = [
 
 export type MusicTrackId = (typeof MUSIC_TRACKS)[number]['id'];
 export type PlaybackMode = 'shuffle' | 'sequential';
+export const INTRO_MUSIC_TRACK: MusicTrackId = 'someday-my-prince-will-come';
 export const DEFAULT_MUSIC_ORDER: MusicTrackId[] = MUSIC_TRACKS.map((track) => track.id);
 
 export function normalizeMusicOrder(order: unknown): MusicTrackId[] {
@@ -24,11 +25,13 @@ export class MusicQueue {
   private last: MusicTrackId | null = null;
   private order: MusicTrackId[];
   private mode: PlaybackMode;
+  private openingTrack: MusicTrackId | undefined;
 
-  constructor(order: MusicTrackId[], mode: PlaybackMode) {
+  constructor(order: MusicTrackId[], mode: PlaybackMode, openingTrack?: MusicTrackId) {
     this.order = normalizeMusicOrder(order);
     this.remaining = [...this.order];
     this.mode = mode;
+    this.openingTrack = openingTrack;
   }
 
   next(): MusicTrackId {
@@ -37,9 +40,11 @@ export class MusicQueue {
 
     let choices = this.remaining;
     if (newCycle && choices.length > 1) choices = choices.filter((id) => id !== this.last);
-    const id = this.mode === 'shuffle'
+    // A first-visit introduction has a fixed opening, even in shuffle mode.
+    const id = this.openingTrack ?? (this.mode === 'shuffle'
       ? choices[Math.floor(Math.random() * choices.length)]
-      : choices[0];
+      : choices[0]);
+    this.openingTrack = undefined;
     this.remaining = this.remaining.filter((candidate) => candidate !== id);
     this.last = id;
     return id;

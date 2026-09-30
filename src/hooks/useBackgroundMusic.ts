@@ -7,19 +7,21 @@ export type MusicStatus = 'off' | 'loading' | 'playing' | 'blocked' | 'error';
 
 const sourceFor = (id: MusicTrackId) => getAssetUrl(`/music/${id}.m4a`);
 
-export function useBackgroundMusic(settings: PortfolioSettings) {
+export function useBackgroundMusic(settings: PortfolioSettings, openingTrack?: MusicTrackId) {
   const [trackId, setTrackId] = useState<MusicTrackId | null>(null);
   const [status, setStatus] = useState<MusicStatus>('off');
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const preloadRef = useRef<{ id: MusicTrackId; audio: HTMLAudioElement } | null>(null);
   const currentRef = useRef<MusicTrackId | null>(null);
   const queueRef = useRef<MusicQueue | null>(null);
+  // Keep the initial opening fixed as the intro advances through its stages.
+  const openingTrackRef = useRef(openingTrack);
   const settingsRef = useRef(settings);
   const advanceRef = useRef<() => void>(() => {});
   const failuresRef = useRef(0);
   const configurationRef = useRef({ order: settings.musicOrder, mode: settings.playbackMode });
   settingsRef.current = settings;
-  if (!queueRef.current) queueRef.current = new MusicQueue(settings.musicOrder, settings.playbackMode);
+  if (!queueRef.current) queueRef.current = new MusicQueue(settings.musicOrder, settings.playbackMode, openingTrackRef.current);
 
   const preloadNext = useCallback(() => {
     const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
@@ -89,7 +91,7 @@ export function useBackgroundMusic(settings: PortfolioSettings) {
       preloadRef.current?.audio.removeAttribute('src');
       preloadRef.current = null;
       currentRef.current = null;
-      queueRef.current = new MusicQueue(settingsRef.current.musicOrder, settingsRef.current.playbackMode);
+      queueRef.current = new MusicQueue(settingsRef.current.musicOrder, settingsRef.current.playbackMode, openingTrackRef.current);
       failuresRef.current = 0;
     };
   }, []);

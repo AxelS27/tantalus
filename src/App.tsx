@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Navbar, type NavItem } from './components/Navbar';
-import { type PortfolioSettings, getSavedSettings } from './lib/settings';
+import { type PortfolioSettings, getSavedSettings, hasSeenThemeEntrance, markThemeEntranceSeen } from './lib/settings';
+import ThemeEntrance from './components/ThemeEntrance';
 import { getAssetUrl } from './lib/assets';
 import { getRenderQuality } from './lib/deviceQuality';
 import {
@@ -23,7 +24,7 @@ import type { ArchiveAppId } from './components/ArchiveHub';
 import { prefetchSection, prefetchSectionBackground } from './lib/prefetch';
 import { getProjectById } from './data/projects';
 import { useBackgroundMusic } from './hooks/useBackgroundMusic';
-import { MUSIC_TRACKS } from './lib/music';
+import { INTRO_MUSIC_TRACK, MUSIC_TRACKS } from './lib/music';
 
 // Lazy-loaded code-split section chunks
 const TimelineRoller = lazy(() =>
@@ -118,7 +119,12 @@ export default function App() {
   const activeTab = routeInfo.tab;
   const activeProjectId = routeInfo.projectId;
   const [settings, setSettings] = useState<PortfolioSettings>(getSavedSettings);
-  const music = useBackgroundMusic(settings);
+  const [entryPhase, setEntryPhase] = useState<'choosing' | 'quote' | 'entering' | 'ready'>(() =>
+    hasSeenThemeEntrance() ? 'ready' : 'choosing'
+  );
+  const portfolioRef = useRef<HTMLDivElement>(null);
+  const didChooseThemeRef = useRef(false);
+  const music = useBackgroundMusic(settings, entryPhase === 'choosing' ? INTRO_MUSIC_TRACK : undefined);
   const [renderQuality] = useState(getRenderQuality);
   const prefersReducedMotion = useReducedMotion();
   const shouldReduceMotion = settings.reducedMotion || prefersReducedMotion;
@@ -152,6 +158,25 @@ export default function App() {
     document.documentElement.classList.toggle('dark', settings.theme === 'dark');
     document.documentElement.style.setProperty('--glass-opacity', String(settings.glassOpacity / 100));
   }, [settings.theme, settings.glassOpacity]);
+
+  const handleChooseTheme = useCallback((theme: PortfolioSettings['theme']) => {
+    handleUpdateSettings({ theme });
+    didChooseThemeRef.current = true;
+    setEntryPhase('quote');
+  }, [handleUpdateSettings]);
+
+  const handleEntryComplete = useCallback(() => setEntryPhase('entering'), []);
+  const handleEntryExitComplete = useCallback(() => {
+    if (didChooseThemeRef.current) markThemeEntranceSeen();
+    setEntryPhase('ready');
+  }, []);
+
+  useEffect(() => {
+    if (entryPhase === 'ready' && didChooseThemeRef.current) {
+      portfolioRef.current?.focus({ preventScroll: true });
+      didChooseThemeRef.current = false;
+    }
+  }, [entryPhase]);
 
   // Keep metadata in sync for client-side navigation as well as static deep links.
   useEffect(() => {
@@ -428,6 +453,7 @@ export default function App() {
   const isSectionRendered = (tab: NavItem) =>
     tab === activeTab || tab === transitionFrom || tab === transitionTarget;
   const isBackgroundLive = (tab: NavItem) =>
+    entryPhase === 'ready' &&
     settings.ambientParallax &&
     renderQuality !== 'reduced' &&
     !shouldReduceMotion &&
@@ -435,6 +461,24 @@ export default function App() {
 
   return (
     <ErrorBoundary>
+      <AnimatePresence onExitComplete={handleEntryExitComplete}>
+        {(entryPhase === 'choosing' || entryPhase === 'quote') && (
+          <ThemeEntrance
+            key="theme-entrance"
+            onChoose={handleChooseTheme}
+            onComplete={handleEntryComplete}
+            reducedMotion={!!shouldReduceMotion}
+          />
+        )}
+      </AnimatePresence>
+      <div
+        ref={portfolioRef}
+        tabIndex={-1}
+        inert={entryPhase !== 'ready'}
+        aria-hidden={entryPhase !== 'ready'}
+        className="w-screen h-dvh outline-none"
+      >
+      {entryPhase !== 'choosing' && <>
       <AnimatePresence>
         {music.status === 'playing' && currentTrack && (
           <motion.p
@@ -447,7 +491,7 @@ export default function App() {
             aria-label={`${currentTrack.title} is playing`}
             className={`pointer-events-none fixed z-[60] flex gap-1 font-serif italic text-xs sm:text-sm text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.8)] ${
               activeTab === 'storybook'
-                ? 'left-1/2 -translate-x-1/2 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] spacious:bottom-2 max-w-[calc(100vw-3rem)] justify-center'
+                ? 'left-1/2 -translate-x-1/2 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] max-w-[calc(100vw-3rem)] justify-center spacious:left-auto spacious:right-6 spacious:translate-x-0 spacious:bottom-6 spacious:justify-end'
                 : 'right-4 sm:right-6 bottom-[calc(8.25rem+env(safe-area-inset-bottom))] spacious:bottom-6 max-w-[calc(100vw-2rem)]'
             }}`}
           >
@@ -599,7 +643,7 @@ export default function App() {
               {visitedTabs.has('storybook') && (
                 <Suspense fallback={<StoryBookSkeleton />}>
                   <StoryBook
-                    isActive={isSectionRendered('storybook')}
+                    isActive={entryPhase === 'ready' && isSectionRendered('storybook')}
                     onReachTop={handleStoryBookTop}
                     onReaderChange={setIsStoryBookReading}
                     closeRequest={storyBookCloseRequest}
@@ -632,7 +676,7 @@ export default function App() {
               {visitedTabs.has('timeline') && (
                 <Suspense fallback={<TimelineRollerSkeleton />}>
                   <TimelineRoller
-                    isActive={isSectionRendered('timeline')}
+                    isActive={entryPhase === 'ready' && isSectionRendered('timeline')}
                     onReachEnd={handleTimelineEnd}
                     onReachStart={handleTimelineStart}
                   />
@@ -664,7 +708,7 @@ export default function App() {
               {visitedTabs.has('projects') && (
                 <Suspense fallback={<ProjectsGridSkeleton />}>
                   <ProjectsGrid
-                    isActive={isSectionRendered('projects')}
+                    isActive={entryPhase === 'ready' && isSectionRendered('projects')}
                     onReachEnd={handleProjectsEnd}
                     onReachStart={handleProjectsStart}
                     onSelectProject={handleSelectProject}
@@ -696,7 +740,7 @@ export default function App() {
               {visitedTabs.has('archive') && (
                 <Suspense fallback={<ArchiveHubSkeleton />}>
                   <ArchiveHub
-                    isActive={isSectionRendered('archive')}
+                    isActive={entryPhase === 'ready' && isSectionRendered('archive')}
                     settings={settings}
                     onUpdateSettings={handleUpdateSettings}
                     musicStatus={music.status}
@@ -731,7 +775,7 @@ export default function App() {
               {visitedTabs.has('repertoire') && (
                 <Suspense fallback={<RepertoireGridSkeleton />}>
                   <RepertoireGrid
-                    isActive={isSectionRendered('repertoire')}
+                    isActive={entryPhase === 'ready' && isSectionRendered('repertoire')}
                     onReachTop={handleRepertoireTop}
                   />
                 </Suspense>
@@ -759,7 +803,7 @@ export default function App() {
               {visitedTabs.has('watchlist') && (
                 <Suspense fallback={<WatchlistGridSkeleton />}>
                   <WatchlistGrid
-                    isActive={isSectionRendered('watchlist')}
+                    isActive={entryPhase === 'ready' && isSectionRendered('watchlist')}
                     onReachTop={handleWatchlistTop}
                   />
                 </Suspense>
@@ -789,7 +833,7 @@ export default function App() {
               {visitedTabs.has('connect') && (
                 <Suspense fallback={<ConnectHubSkeleton />}>
                   <ConnectHub
-                    isActive={isSectionRendered('connect')}
+                    isActive={entryPhase === 'ready' && isSectionRendered('connect')}
                     onReachTop={handleConnectTop}
                   />
                 </Suspense>
@@ -819,7 +863,7 @@ export default function App() {
               {visitedTabs.has('certificates') && (
                 <Suspense fallback={<CertificatesCoverflowSkeleton />}>
                   <CertificatesCoverflow
-                    isActive={isSectionRendered('certificates')}
+                    isActive={entryPhase === 'ready' && isSectionRendered('certificates')}
                     onReachTop={handleCertificatesTop}
                   />
                 </Suspense>
@@ -829,6 +873,8 @@ export default function App() {
           </motion.div>
         </div>
       )}
+      </>}
+      </div>
     </ErrorBoundary>
   );
 }
