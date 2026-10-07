@@ -57,6 +57,9 @@ const backgroundPaths: Record<CanvasBackgroundKey, string> = {
 /** Starts fetching and decoding a canvas background before the camera needs it. */
 export function prefetchSectionBackground(key: CanvasBackgroundKey): void {
   if (typeof window === 'undefined' || prefetchedBackgrounds.has(key) || shouldSkipPrefetch()) return;
+  // Mobile mounts the requested image on navigation. A separate Image.decode()
+  // would duplicate the full-screen bitmap in memory during the transition.
+  if (window.matchMedia('(max-width: 767px)').matches) return;
 
   prefetchedBackgrounds.add(key);
   const image = new Image();

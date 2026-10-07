@@ -126,6 +126,9 @@ export default function App() {
   const didChooseThemeRef = useRef(false);
   const music = useBackgroundMusic(settings, entryPhase === 'choosing' ? INTRO_MUSIC_TRACK : undefined);
   const [renderQuality] = useState(getRenderQuality);
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+  );
   const prefersReducedMotion = useReducedMotion();
   const shouldReduceMotion = settings.reducedMotion || prefersReducedMotion;
   const [isNavigating, setIsNavigating] = useState(false);
@@ -374,6 +377,13 @@ export default function App() {
 
   useEffect(() => startPerformanceMonitoring(), []);
 
+  useEffect(() => {
+    const viewport = window.matchMedia('(max-width: 767px)');
+    const updateViewport = () => setIsMobileViewport(viewport.matches);
+    viewport.addEventListener('change', updateViewport);
+    return () => viewport.removeEventListener('change', updateViewport);
+  }, []);
+
   useEffect(() => () => {
     if (preparationFrameRef.current !== null) {
       window.cancelAnimationFrame(preparationFrameRef.current);
@@ -452,9 +462,12 @@ export default function App() {
   const currentTrack = MUSIC_TRACKS.find((track) => track.id === music.trackId);
   const isSectionRendered = (tab: NavItem) =>
     tab === activeTab || tab === transitionFrom || tab === transitionTarget;
+  // Only decode visible artwork on mobile; desktop retains the full panorama.
+  const shouldMountBackground = (tab: NavItem) => !isMobileViewport || isSectionRendered(tab);
   const isBackgroundLive = (tab: NavItem) =>
     entryPhase === 'ready' &&
     settings.ambientParallax &&
+    !isMobileViewport &&
     renderQuality !== 'reduced' &&
     !shouldReduceMotion &&
     isSectionRendered(tab);
@@ -546,7 +559,7 @@ export default function App() {
               y: coords.y,
             }}
             transition={{
-              duration: shouldReduceMotion ? 0.25 : 1.6,
+              duration: shouldReduceMotion ? 0.25 : isMobileViewport ? 0.55 : 1.6,
               ease: shouldReduceMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
             }}
             onAnimationComplete={handleCameraAnimationComplete}
@@ -561,7 +574,7 @@ export default function App() {
                   isBackgroundLive('home') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('home') && <img
                   src={getAssetUrl('/images/tantalize/home.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/home-960.webp')} 960w, ${getAssetUrl('/images/tantalize/home-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/home.webp')} 1672w`}
                   sizes="106vw"
@@ -569,7 +582,7 @@ export default function App() {
                   fetchPriority="high"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
               </div>
 
               {/* Upper-Left Editorial Identity */}
@@ -626,7 +639,7 @@ export default function App() {
                   isBackgroundLive('storybook') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('storybook') && <img
                   src={getAssetUrl('/images/tantalize/storybook.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/storybook-960.webp')} 960w, ${getAssetUrl('/images/tantalize/storybook-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/storybook.webp')} 1672w`}
                   sizes="106vw"
@@ -635,7 +648,7 @@ export default function App() {
                   loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/20 pointer-events-none" />
               </div>
 
@@ -660,7 +673,7 @@ export default function App() {
                   isBackgroundLive('timeline') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('timeline') && <img
                   src={getAssetUrl('/images/tantalize/timeline.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/timeline-960.webp')} 960w, ${getAssetUrl('/images/tantalize/timeline-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/timeline.webp')} 1672w`}
                   sizes="106vw"
@@ -668,7 +681,7 @@ export default function App() {
                   loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/16 via-transparent to-black/10 pointer-events-none" />
               </div>
 
@@ -692,7 +705,7 @@ export default function App() {
                   isBackgroundLive('projects') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('projects') && <img
                   src={getAssetUrl('/images/tantalize/projects.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/projects-960.webp')} 960w, ${getAssetUrl('/images/tantalize/projects-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/projects.webp')} 1672w`}
                   sizes="106vw"
@@ -700,7 +713,7 @@ export default function App() {
                   loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
               </div>
 
@@ -724,7 +737,7 @@ export default function App() {
                   isBackgroundLive('archive') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('archive') && <img
                   src={getAssetUrl('/images/tantalize/archives.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/archives-960.webp')} 960w, ${getAssetUrl('/images/tantalize/archives-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/archives.webp')} 1671w`}
                   sizes="106vw"
@@ -732,7 +745,7 @@ export default function App() {
                   loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
               </div>
 
@@ -761,7 +774,7 @@ export default function App() {
                   isBackgroundLive('repertoire') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('repertoire') && <img
                   src={getAssetUrl('/images/tantalize/repertoire.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/repertoire-960.webp')} 960w, ${getAssetUrl('/images/tantalize/repertoire-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/repertoire.webp')} 1672w`}
                   sizes="106vw"
@@ -770,7 +783,7 @@ export default function App() {
                   loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
               </div>
               {visitedTabs.has('repertoire') && (
                 <Suspense fallback={<RepertoireGridSkeleton />}>
@@ -789,7 +802,7 @@ export default function App() {
                   isBackgroundLive('watchlist') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('watchlist') && <img
                   src={getAssetUrl('/images/tantalize/watchlist.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/watchlist-960.webp')} 960w, ${getAssetUrl('/images/tantalize/watchlist-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/watchlist.webp')} 1672w`}
                   sizes="106vw"
@@ -798,7 +811,7 @@ export default function App() {
                   loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
               </div>
               {visitedTabs.has('watchlist') && (
                 <Suspense fallback={<WatchlistGridSkeleton />}>
@@ -817,7 +830,7 @@ export default function App() {
                   isBackgroundLive('connect') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('connect') && <img
                   src={getAssetUrl('/images/tantalize/connect.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/connect-960.webp')} 960w, ${getAssetUrl('/images/tantalize/connect-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/connect.webp')} 1672w`}
                   sizes="106vw"
@@ -825,7 +838,7 @@ export default function App() {
                   loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
               </div>
 
@@ -847,7 +860,7 @@ export default function App() {
                   isBackgroundLive('certificates') ? 'ambient-canvas-background--live' : ''
                 } ${isNavigating ? 'ambient-canvas-background--paused' : ''}`}
               >
-                <img
+                {shouldMountBackground('certificates') && <img
                   src={getAssetUrl('/images/tantalize/certificates.webp')}
                   srcSet={`${getAssetUrl('/images/tantalize/certificates-960.webp')} 960w, ${getAssetUrl('/images/tantalize/certificates-1280.webp')} 1280w, ${getAssetUrl('/images/tantalize/certificates.webp')} 1672w`}
                   sizes="106vw"
@@ -855,7 +868,7 @@ export default function App() {
                   loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover object-center pointer-events-none"
-                />
+                />}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/10 to-black/20 pointer-events-none" />
               </div>
 

@@ -147,6 +147,28 @@ body {
   animation-play-state: paused;
 }
 
+/* On phones the artwork fills one screen at a time. Avoid masking and repeatedly
+   filtering full-screen layers while the spatial camera moves. */
+@media (max-width: 767px) {
+  .ambient-canvas-background {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .canvas-quality-balanced [class*="backdrop-blur"],
+  .canvas-quality-reduced [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  nav[aria-label="Main navigation"],
+  button[aria-label="Back to Archive"],
+  button[aria-label="Return to Shelf"] {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}
+
 /* Only the glass tint is adjustable; keep text, borders, shadows and blur readable. */
 .glass-surface.glass-surface,
 .glass-surface.glass-surface:hover,

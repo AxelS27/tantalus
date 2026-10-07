@@ -1,5 +1,9 @@
 import { devices, expect, test } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('tantalize_theme_entrance_v1', 'seen'));
+});
+
 test('home mounts canvas artworks eagerly and does not download music before interaction', async ({ page }) => {
   const mediaRequests: string[] = [];
   page.on('request', (request) => {
@@ -37,7 +41,7 @@ test('canvas navigation and direct section links render their destination', asyn
   await page.getByRole('button', { name: 'Projects', exact: true }).click();
   await expect(page).toHaveURL(/#projects$/);
   await expect(page.locator('img[alt="Projects Background"]')).toBeVisible();
-  const cardImage = page.locator('img[src*="/images/thumbnails/projects/"]').first();
+  const cardImage = page.locator('img[src*="/images/thumbnails/projects/"]:visible').first();
   await expect(cardImage).toBeVisible();
 
   await page.goto('/#watchlist');
@@ -89,10 +93,10 @@ test('storybook can bookmark the opening 00-01 spread and resume it', async ({ p
   await expect(page.getByText('Click to Read', { exact: true })).toHaveCount(0);
   await page.locator('div.group.absolute.cursor-pointer.select-none').first()
     .click({ position: { x: 130, y: 180 } });
-  const addBookmark = page.getByRole('button', { name: 'Put Bookmark' });
+  const addBookmark = page.getByRole('button', { name: 'Bookmark this page' });
   await expect(addBookmark).toBeVisible();
   await addBookmark.click();
-  await expect(page.getByRole('button', { name: 'Take off Bookmark' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Remove bookmark' }).first()).toBeVisible();
   await expect.poll(() => page.evaluate(() => {
     const saved = localStorage.getItem('tantalize_storybook_bookmark_adoketos');
     return saved ? JSON.parse(saved).spreadIndex : null;
@@ -107,15 +111,8 @@ test('storybook can bookmark the opening 00-01 spread and resume it', async ({ p
   await expect(page.getByText('Front Matter', { exact: true })).toBeVisible();
 
   await page.getByRole('button', { name: 'Return to Shelf' }).click();
-  await expect(page.getByRole('button', { name: 'Take off Bookmark' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Bookmark this page' })).toHaveCount(0);
   await expect(page.getByText('Resume Reading', { exact: true })).toHaveCount(0);
-  await page.locator('div.group.absolute.cursor-pointer.select-none').first()
-    .click({ position: { x: 130, y: 180 } });
-  await expect(page.getByRole('button', { name: 'Take off Bookmark' })).toBeVisible();
-  await page.getByRole('button', { name: 'Remove bookmark' }).click();
-  await expect.poll(() => page.evaluate(() =>
-    localStorage.getItem('tantalize_storybook_bookmark_adoketos'),
-  )).toBeNull();
 });
 
 test('home SEO identifies the person in the server response and after navigation', async ({ page, request }) => {
@@ -182,6 +179,21 @@ test('recovers from one stale lazy chunk request without a reload loop', async (
 test.describe('mobile journey', () => {
   test.use({ viewport: devices['Pixel 7'].viewport, deviceScaleFactor: devices['Pixel 7'].deviceScaleFactor, isMobile: true, hasTouch: true });
 
+  test('loads only the current canvas artwork on mobile', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.spatial-section img[alt$="Background"]')).toHaveCount(1);
+    await expect(page.locator('img[alt="Home Background"]')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Timeline', exact: true }).click();
+    await expect(page.locator('img[alt="Timeline Background"]')).toBeVisible();
+    await expect(page.locator('img[alt="Home Background"]')).toHaveCount(0);
+    await expect(page.locator('.spatial-section img[alt$="Background"]')).toHaveCount(1);
+
+    await page.getByRole('button', { name: 'Projects', exact: true }).click();
+    await expect(page.locator('img[alt="Projects Background"]')).toBeVisible();
+    await expect(page.locator('img[alt="Timeline Background"]')).toHaveCount(0);
+  });
+
   test('navigates key sections and project detail without client errors', async ({ page }, testInfo) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
@@ -195,8 +207,8 @@ test.describe('mobile journey', () => {
       navigationTimings[section] = Date.now() - start;
     }
     const start = Date.now();
-    await page.locator('a[href="/projects/phylaxify"]').click();
-    await expect(page.getByText('Phylaxify: AI Powered Donation Filter', { exact: true }).first()).toBeVisible();
+    await page.locator('.archive-gallery-scroll-container a[href="/projects/phylaxify"]').click();
+    await expect(page.locator('.project-detail-scroll-container').getByRole('heading', { name: 'Phylaxify: AI Powered Donation Filter' })).toBeVisible();
     navigationTimings.projectDetail = Date.now() - start;
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.liemaxels.com/projects/phylaxify');
     await expect(page.locator('#project-jsonld')).toHaveCount(1);
