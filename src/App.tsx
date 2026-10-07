@@ -273,7 +273,20 @@ export default function App() {
     // not from scrolling past the edge of a section or carousel.
     if (!immediate && window.matchMedia('(max-width: 767px)').matches) return;
     if (newTab === activeTabRef.current) return;
-    if (isTransitioningRef.current && !immediate) return;
+    if (isTransitioningRef.current && !immediate && !isMobileViewport) return;
+
+    if (isMobileViewport) {
+      // Phone navigation is a dock switch, not a pan across a 3x3 GPU surface.
+      // Leave visited sections mounted so their scroll and carousel state survive.
+      setVisitedTabs((visited) => {
+        if (visited.has(newTab)) return visited;
+        const next = new Set(visited);
+        next.add(newTab);
+        return next;
+      });
+      commitTabChange(newTab, syncHistory);
+      return;
+    }
 
     if (preparationFrameRef.current !== null) {
       window.cancelAnimationFrame(preparationFrameRef.current);
@@ -309,7 +322,7 @@ export default function App() {
         commitTabChange(newTab, syncHistory);
       });
     });
-  }, [commitTabChange]);
+  }, [commitTabChange, isMobileViewport]);
 
   const handleCameraAnimationComplete = useCallback(() => {
     if (!isTransitioningRef.current || activeTabRef.current !== transitionTarget) return;
@@ -493,7 +506,7 @@ export default function App() {
       >
       {entryPhase !== 'choosing' && <>
       <AnimatePresence>
-        {music.status === 'playing' && currentTrack && (
+        {music.status === 'playing' && currentTrack && !activeProjectId && (
           <motion.p
             key={currentTrack.id}
             initial={{ opacity: 0, y: 6 }}
@@ -553,22 +566,22 @@ export default function App() {
 
           {/* 2D Spatial Canvas World with GPU Off-Thread Transform Acceleration */}
           <motion.div
-            initial={{ x: coords.x, y: coords.y }}
+            initial={isMobileViewport ? false : { x: coords.x, y: coords.y }}
             animate={{
-              x: coords.x,
-              y: coords.y,
+              x: isMobileViewport ? '0%' : coords.x,
+              y: isMobileViewport ? '0%' : coords.y,
             }}
             transition={{
-              duration: shouldReduceMotion ? 0.25 : isMobileViewport ? 0.55 : 1.6,
+              duration: isMobileViewport ? 0 : shouldReduceMotion ? 0.25 : 1.6,
               ease: shouldReduceMotion ? 'easeOut' : [0.22, 1, 0.36, 1],
             }}
             onAnimationComplete={handleCameraAnimationComplete}
-            className={`canvas-quality-${renderQuality} absolute inset-0 w-full h-full bg-[#161412] transform-gpu ${
-              isNavigating ? 'canvas-world--moving will-change-transform' : ''
-            }`}
+            className={`canvas-quality-${renderQuality} absolute inset-0 w-full h-full bg-[#161412] ${
+              !isMobileViewport ? 'transform-gpu' : ''
+            } ${isNavigating ? 'canvas-world--moving will-change-transform' : ''}`}
           >
             {/* ================= 1. HOME SECTION (Center: 0, 0) ================= */}
-            <div className="spatial-section absolute left-0 top-0 w-screen h-dvh overflow-hidden z-10">
+            <div className={`spatial-section ${activeTab === 'home' ? 'spatial-section--active' : ''} absolute left-0 top-0 w-screen h-dvh overflow-hidden z-10`}>
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('home') ? 'ambient-canvas-background--live' : ''
@@ -632,7 +645,7 @@ export default function App() {
             </div>
 
             {/* ================= STORY BOOK SECTION (North-East: +100vw, -100dvh) ================= */}
-            <div className="spatial-section absolute left-[100vw] top-[-100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center">
+            <div className={`spatial-section ${activeTab === 'storybook' ? 'spatial-section--active' : ''} absolute left-[100vw] top-[-100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center`}>
               {/* Background Image with Ambient Parallax */}
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
@@ -666,7 +679,7 @@ export default function App() {
             </div>
 
             {/* ================= 2. TIMELINE SECTION (East: +100vw, 0) ================= */}
-            <div className="spatial-section absolute left-[100vw] top-0 w-screen h-dvh overflow-hidden z-10 flex items-center justify-center">
+            <div className={`spatial-section ${activeTab === 'timeline' ? 'spatial-section--active' : ''} absolute left-[100vw] top-0 w-screen h-dvh overflow-hidden z-10 flex items-center justify-center`}>
               {/* Background Image with Ultra-Subtle Vignette */}
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
@@ -698,7 +711,7 @@ export default function App() {
             </div>
 
             {/* ================= 3. PROJECTS SECTION (South: 0, +100dvh) ================= */}
-            <div className="spatial-section absolute left-0 top-[100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center">
+            <div className={`spatial-section ${activeTab === 'projects' ? 'spatial-section--active' : ''} absolute left-0 top-[100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center`}>
               {/* Background Image with Subtle Vignette */}
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
@@ -731,7 +744,7 @@ export default function App() {
             </div>
 
             {/* ================= 4. ARCHIVE SECTION (West: -100vw, 0) ================= */}
-            <div className="spatial-section absolute left-[-100vw] top-0 w-screen h-dvh overflow-hidden z-10">
+            <div className={`spatial-section ${activeTab === 'archive' ? 'spatial-section--active' : ''} absolute left-[-100vw] top-0 w-screen h-dvh overflow-hidden z-10`}>
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('archive') ? 'ambient-canvas-background--live' : ''
@@ -768,7 +781,7 @@ export default function App() {
             </div>
 
             {/* ================= REPERTOIRE SECTION (North-West: -100vw, -100dvh) ================= */}
-            <div className="spatial-section absolute left-[-100vw] top-[-100dvh] w-screen h-dvh overflow-hidden z-10">
+            <div className={`spatial-section ${activeTab === 'repertoire' ? 'spatial-section--active' : ''} absolute left-[-100vw] top-[-100dvh] w-screen h-dvh overflow-hidden z-10`}>
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('repertoire') ? 'ambient-canvas-background--live' : ''
@@ -796,7 +809,7 @@ export default function App() {
             </div>
 
             {/* ================= WATCHLIST SECTION (North: 0, -100dvh) ================= */}
-            <div className="spatial-section absolute left-0 top-[-100dvh] w-screen h-dvh overflow-hidden z-10">
+            <div className={`spatial-section ${activeTab === 'watchlist' ? 'spatial-section--active' : ''} absolute left-0 top-[-100dvh] w-screen h-dvh overflow-hidden z-10`}>
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('watchlist') ? 'ambient-canvas-background--live' : ''
@@ -824,7 +837,7 @@ export default function App() {
             </div>
 
             {/* ================= 5. CONNECT SECTION (Bottom-Right: +100vw, +100dvh) ================= */}
-            <div className="spatial-section absolute left-[100vw] top-[100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center">
+            <div className={`spatial-section ${activeTab === 'connect' ? 'spatial-section--active' : ''} absolute left-[100vw] top-[100dvh] w-screen h-dvh overflow-hidden z-10 flex items-center justify-center`}>
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('connect') ? 'ambient-canvas-background--live' : ''
@@ -854,7 +867,7 @@ export default function App() {
             </div>
 
             {/* ================= 6. CERTIFICATES SECTION (Bottom-Left: -100vw, +100dvh) ================= */}
-            <div className="spatial-section absolute left-[-100vw] top-[100dvh] w-screen h-dvh overflow-hidden z-10">
+            <div className={`spatial-section ${activeTab === 'certificates' ? 'spatial-section--active' : ''} absolute left-[-100vw] top-[100dvh] w-screen h-dvh overflow-hidden z-10`}>
               <div
                 className={`ambient-canvas-background absolute -inset-[3vw] w-[calc(100%+6vw)] h-[calc(100%+6dvh)] ${
                   isBackgroundLive('certificates') ? 'ambient-canvas-background--live' : ''

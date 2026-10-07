@@ -150,15 +150,41 @@ body {
 /* On phones the artwork fills one screen at a time. Avoid masking and repeatedly
    filtering full-screen layers while the spatial camera moves. */
 @media (max-width: 767px) {
+  /* Native scrolling stays in a stationary viewport instead of a transformed
+     3x3 world. Only the current section participates in paint/compositing. */
+  .spatial-section {
+    left: 0;
+    top: 0;
+    display: none;
+  }
+
+  .spatial-section--active {
+    display: flex;
+  }
+
   .ambient-canvas-background {
     mask-image: none;
     -webkit-mask-image: none;
   }
 
   .canvas-quality-balanced [class*="backdrop-blur"],
-  .canvas-quality-reduced [class*="backdrop-blur"] {
+  .canvas-quality-reduced [class*="backdrop-blur"],
+  .project-detail-scroll-container [class*="backdrop-blur"] {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+
+  /* Outrank the configurable glass tint so long-form text stays readable without blur. */
+  .project-detail-scroll-container article.glass-surface.glass-surface.glass-surface {
+    background-color: rgba(250, 248, 245, 0.92);
+  }
+
+  .dark .project-detail-scroll-container article.glass-surface.glass-surface.glass-surface {
+    background-color: rgba(22, 20, 18, 0.94);
+  }
+
+  .skeleton-shimmer::after {
+    animation: none;
   }
 
   nav[aria-label="Main navigation"],

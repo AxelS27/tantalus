@@ -77,6 +77,8 @@ export function prefetchSectionBackground(key: CanvasBackgroundKey): void {
 /** Pre-warms project card thumbnails (default: page 1) to avoid skeleton delay. */
 export function prefetchProjectThumbnails(pageIndex = 0): void {
   if (typeof window === 'undefined' || shouldSkipPrefetch()) return;
+  // Visible gallery cards already load their own thumbnails on phones.
+  if (window.matchMedia('(max-width: 767px)').matches) return;
   const page = projectPages[pageIndex];
   if (!page) return;
 
