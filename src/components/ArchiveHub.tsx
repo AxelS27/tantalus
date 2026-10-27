@@ -709,7 +709,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                               Acoustic Atmosphere
                             </h4>
                             <p className="text-xs font-sans text-stone-600 dark:text-stone-400">
-                              A continuous collection of five piano pieces.
+                              A continuous collection of piano pieces.
                             </p>
                           </div>
 
@@ -784,7 +784,7 @@ export const ArchiveHub = memo(function ArchiveHub({
                               <span className="text-xs sm:text-sm font-sans font-semibold text-stone-900 dark:text-stone-100">Play Order</span>
                               <p className="text-xs font-sans text-stone-500 dark:text-stone-400">
                                 {activeSettings.playbackMode === 'shuffle'
-                                  ? 'All five songs play once before reshuffling.'
+                                  ? 'All songs play once before reshuffling.'
                                   : 'Arrange the order they play in.'}
                               </p>
                             </div>

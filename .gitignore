@@ -26,6 +26,7 @@ source-audio/
 *.njsproj
 *.sln
 *.sw?
+.pi/skills/
 
 # Environment
 .env

@@ -2,6 +2,7 @@ export const MUSIC_TRACKS = [
   { id: 'cinderella-dream', title: 'A Dream Is a Wish Your Heart Makes', artist: 'Leiki Ueda' },
   { id: 'cinderella-so-this-is-love', title: 'So This Is Love', artist: 'Leiki Ueda' },
   { id: 'moon-river', title: 'Moon River', artist: 'Piano Solo' },
+  { id: 'once-upon-a-dream', title: 'Once Upon a Dream', artist: 'Piano Solo' },
   { id: 'someday-my-prince-will-come', title: 'Someday My Prince Will Come', artist: 'Leiki Ueda' },
   { id: 'when-you-wish-upon-a-star', title: 'When You Wish Upon a Star', artist: 'Kno Piano Music' },
 ] as const;
